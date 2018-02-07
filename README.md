@@ -4,5 +4,5 @@ This repository contains all code the draft paper *Accelerating delayed-acceptan
 
 linked folders:
 
-* On desktiop: "C:\\Users\\samuel\\Dropbox\\Phd Education\\Projects\\project 1 accelerated DA and DWP SDE\\code"
+* On desktop: "C:\\Users\\samuel\\Dropbox\\Phd Education\\Projects\\project 1 accelerated DA and DWP SDE\\code"
 * On laptop: "C:\\Users\\samue\\OneDrive\\Documents\\GitHub\\adamcmcpaper"
