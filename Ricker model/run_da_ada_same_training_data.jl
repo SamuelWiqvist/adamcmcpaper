@@ -1,4 +1,4 @@
-# Script for running da and ada using the same traninig data
+# Script for running DA and ADA using the same traninig data
 
 # set up
 
@@ -26,7 +26,7 @@ problem.adaptive_update = AMUpdate_gen(eye(3), 2.4/sqrt(3), 0.3, 1., 0.8, 25)
 problem.alg_param.N = 1000 # nbr particels
 problem.alg_param.R = 50000 # nbr iterations
 problem.alg_param.burn_in = 0 # burn in
-problem.alg_param.length_training_data = 5000
+problem.alg_param.length_training_data = 2000
 problem.alg_param.alg = "MCWM" # we should only! use the MCWM algorithm
 problem.alg_param.compare_GP_and_PF = false
 problem.alg_param.noisy_est = false
@@ -77,63 +77,60 @@ problem_traning.alg_param.alg = "MCWM"
 #problem_traning.adaptive_update = AMUpdate_gen(eye(3), 2.4/sqrt(3), 0.2, 1., 0.8, 25)
 problem_traning.adaptive_update = AMUpdate_gen(eye(3), 2.4/sqrt(3), 0.4, 1., 0.8, 25)
 
-load_tranining_data = true
+load_training_data = false
 
-if !load_tranining_data
+if !load_training_data
 
+  # generate training data
+  tic()
+  # collect data
+  res_training, theta_training, loglik_training, cov_matrix = MCMC(problem_traning, true, true)
 
-# generate training data
-tic()
-# collect data
-res_training, theta_training, loglik_training, cov_matrix = MCMC(problem_traning, true, true)
-
-time_pre_er = toc()
-
-
-# write outputs
-res = res_training[1]
-
-Theta = res.Theta_est
-loglik = res.loglik_est
-accept_vec = res.accept_vec
-prior_vec = res.prior_vec
-
-loglik_avec_priorvec = zeros(3, length(loglik))
-loglik_avec_priorvec[1,:] = loglik
-loglik_avec_priorvec[2,:] = accept_vec
-loglik_avec_priorvec[3,:] = prior_vec
-
-algorithm_parameters = zeros(10, 2)
-
-algorithm_parameters[1,1] = problem_traning.alg_param.burn_in
-algorithm_parameters[2:4,1] = problem_traning.model_param.theta_true
-algorithm_parameters[5:7,1] = problem_traning.model_param.theta_0
-algorithm_parameters[8:end,:] = problem_traning.prior_dist.Theta_parameters
-
-writetable("Results/Theta_training.csv", convert(DataFrame, Theta))
-writetable("Results/loglik_avec_priorvec_training.csv", convert(DataFrame, loglik_avec_priorvec))
-writetable("Results/algorithm_parameters_training.csv", convert(DataFrame, algorithm_parameters))
+  time_pre_er = toc()
 
 
-# split tranining and test data
+  # write outputs
+  res = res_training[1]
 
-theta_test = theta_training[:,(end-length_test_data+1):end]
-loglik_test = loglik_training[(end-length_test_data+1):end]
+  Theta = res.Theta_est
+  loglik = res.loglik_est
+  accept_vec = res.accept_vec
+  prior_vec = res.prior_vec
 
-data_test = [theta_test; loglik_test']
+  loglik_avec_priorvec = zeros(3, length(loglik))
+  loglik_avec_priorvec[1,:] = loglik
+  loglik_avec_priorvec[2,:] = accept_vec
+  loglik_avec_priorvec[3,:] = prior_vec
 
-theta_training = theta_training[:,1:length_training_data]
-loglik_training = loglik_training[1:length_training_data]
+  algorithm_parameters = zeros(10, 2)
 
-data_training = [theta_training; loglik_training']
+  algorithm_parameters[1,1] = problem_traning.alg_param.burn_in
+  algorithm_parameters[2:4,1] = problem_traning.model_param.theta_true
+  algorithm_parameters[5:7,1] = problem_traning.model_param.theta_0
+  algorithm_parameters[8:end,:] = problem_traning.prior_dist.Theta_parameters
 
-save("gp_training_and_test_data_ricker.jld", "res_training", res_training, "theta_training", theta_training, "loglik_training", loglik_training, "theta_test", theta_test, "loglik_test", loglik_test,"cov_matrix",cov_matrix)
+  writetable("Results/Theta_training.csv", convert(DataFrame, Theta))
+  writetable("Results/loglik_avec_priorvec_training.csv", convert(DataFrame, loglik_avec_priorvec))
+  writetable("Results/algorithm_parameters_training.csv", convert(DataFrame, algorithm_parameters))
+
+
+  # split tranining and test data
+
+  theta_test = theta_training[:,(end-length_test_data+1):end]
+  loglik_test = loglik_training[(end-length_test_data+1):end]
+
+  data_test = [theta_test; loglik_test']
+
+  theta_training = theta_training[:,1:length_training_data]
+  loglik_training = loglik_training[1:length_training_data]
+
+  data_training = [theta_training; loglik_training']
+
+  save("gp_training_and_test_data_ricker_test_run.jld", "res_training", res_training, "theta_training", theta_training, "loglik_training", loglik_training, "theta_test", theta_test, "loglik_test", loglik_test,"cov_matrix",cov_matrix)
 
 else
 
-
-
-@load "gp_training_and_test_data_ricker.jld"
+  @load "gp_training_and_test_data_ricker.jld"
 
 end
 
@@ -182,14 +179,7 @@ accelerated_da = false
 
 problem.model_param.theta_0 = theta_training[:, end]
 
-res, res_traning, theta_training, loglik_training, assumption_list, loglik_list = dagpMCMC(problem_traning, problem, gp, cov_matrix)
-
-# profiling
-#using ProfileView
-#Profile.clear()
-#res, res_traning, theta_training, loglik_training, assumption_list, loglik_list = @profile dagpMCMC(problem_traning, problem, gp, cov_matrix,accelerated_da)
-#ProfileView.view()
-
+res, res_traning, theta_training, loglik_training, assumption_list, loglik_list = DAGPMCMC(problem_traning, problem, gp, cov_matrix)
 
 
 mcmc_results = Result(res[1].Theta_est, res[1].loglik_est, res[1].accept_vec, res[1].prior_vec)
@@ -215,13 +205,13 @@ algorithm_parameters[5:7,1] = problem.model_param.theta_0
 algorithm_parameters[8:end,:] = problem.prior_dist.Theta_parameters
 
 if !accelerated_da
-  writetable("Results/Theta_ergp.csv", convert(DataFrame, Theta))
-  writetable("Results/loglik_avec_priorvec_ergp.csv", convert(DataFrame, loglik_avec_priorvec))
-  writetable("Results/algorithm_parameters_ergp.csv", convert(DataFrame, algorithm_parameters))
+  writetable("Results/Theta_dagpmcmc.csv", convert(DataFrame, Theta))
+  writetable("Results/loglik_avec_priorvec_dagpmcmc.csv", convert(DataFrame, loglik_avec_priorvec))
+  writetable("Results/algorithm_parameters_dagpmcmc.csv", convert(DataFrame, algorithm_parameters))
 else
-  writetable("Results/Theta_ergpaccelerated.csv", convert(DataFrame, Theta))
-  writetable("Results/loglik_avec_priorvec_ergpaccelerated.csv", convert(DataFrame, loglik_avec_priorvec))
-  writetable("Results/algorithm_parameters_ergpaccelerated.csv", convert(DataFrame, algorithm_parameters))
+  writetable("Results/Theta_adagpmcmc.csv", convert(DataFrame, Theta))
+  writetable("Results/loglik_avec_priorvec_adagpmcmc.csv", convert(DataFrame, loglik_avec_priorvec))
+  writetable("Results/algorithm_parameters_adagpmcmc.csv", convert(DataFrame, algorithm_parameters))
 end
 
 

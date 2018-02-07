@@ -1,5 +1,4 @@
-# script to plot results for PMCMC and MCWM
-
+# plotting script for  PMCMC, MCWM, DA-GP-MCMC, and ADA-GP-MCMC
 
 # load packages
 using DataFrames
@@ -8,17 +7,16 @@ using DataFrames
 include("plotting.jl")
 
 # set job name
-jobname = "_training"
+jobname = "test_new_code_structure"
 jobname = "pmcmc"
 jobname = "lunarc_pmcmc_test"
 jobname = "pmcmc_lunarc"
 jobname = "mcwm"
 jobname = "scaling_mcwm_10000"
 jobname = "test_new_code_structure"
-
-jobname = "_ergp"
-jobname = "_ergpaccelerated"
-
+jobname = "_training"
+jobname = "_dagpmcmc"
+jobname = "_adagpmcmc"
 
 Theta = Array(readtable("./Results/Theta"*jobname*".csv"))
 loklik_avec_priorv = Array(readtable("./Results/loglik_avec_priorvec"*jobname*".csv"))

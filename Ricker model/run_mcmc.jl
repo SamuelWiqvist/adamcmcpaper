@@ -9,7 +9,7 @@ jobname = ""
 problem = set_up_problem(ploton = false)
 
 problem.alg_param.N = 1000
-problem.alg_param.R = 5000
+problem.alg_param.R = 10000
 problem.alg_param.burn_in = 2000
 problem.data.y = Array(readtable("y_data_set_2.csv"))[:,1]
 #problem.data.y = Array(readtable("y_data_200_obs_3.csv"))[:,1]
@@ -23,7 +23,7 @@ problem.alg_param.print_interval = 1000 #problem.alg_param.R
 #problem.model_param.theta_0 = problem.model_param.theta_true
 
 # MCWM
-jobname = "test_200_obs_pmcmc"
+jobname = "test_new_code_structure"
 problem.alg_param.alg = "MCWM"
 problem.adaptive_update = AMUpdate_gen(eye(3), 2.4/sqrt(3), 0.4, 1., 0.8, 25)
 

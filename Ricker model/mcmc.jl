@@ -1,23 +1,21 @@
-# This file contains the functions related to the PMCMC, MCWM and gpPMCMC algorithms
+# This file contains the functions related to the PMCMC, MCWM and (A)DA-GP-MCMC algorithms for the Ricker model
 
+# load particle filter
 include("pf.jl")
 
+
 ################################################################################
-###                       MCMC and gpMCMC algorithms                        ####
+######               algorithms                                            #####
 ################################################################################
+
+# PMCMC/MCWM
 
 doc"""
-    MCMC(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=false)
+    MCMC(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=false) # this function should be merged with the generate_training_test_data function!
 
-Runs the particle Markov chain Monte Carlo algorithm.
-
-# Inputs
-* `Problem`: type that describes the problem
-
-# Outputs
-* `Results`: type with the results
+Runs PMCMC or MCWM for the Ricker model.
 """
-function MCMC(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=false) # this function should be merged with the generate_training_test_data function!
+function MCMC(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=false)
 
   # data
   y = problem.data.y
@@ -29,12 +27,15 @@ function MCMC(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=
   alg = problem.alg_param.alg # use PMCMC or MCWM
   pf_alg = problem.alg_param.pf_alg # pf algorithm bootsrap of apf
   print_interval = problem.alg_param.print_interval # print accaptance rate and covarince function ever print_interval:th iteration
-  loglik_star = zeros(Float64)
 
   # model parameters
   theta_true = problem.model_param.theta_true # [log(r) log(phi) log(sigma)]
   theta_known = problem.model_param.theta_known # NaN
   theta_0 = problem.model_param.theta_0 # [log(r_0) log(phi_0) log(sigma_0)]
+
+  # parameters for prior dist
+  dist_type = problem.prior_dist.dist
+  Theta_parameters = problem.prior_dist.Theta_parameters
 
   # pre-allocate matricies and vectors and variables
   Theta = zeros(length(theta_0),R)
@@ -42,7 +43,7 @@ function MCMC(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=
   accept_vec = zeros(R)
   prior_vec = zeros(R)
   theta_star = zeros(length(theta_0),1)
-
+  loglik_star = zeros(Float64)
   a_log = 0
 
   # pre-allocate matricies and vectors for storing data
@@ -51,17 +52,9 @@ function MCMC(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=
     loglik_val = zeros(R-burn_in)
   end
 
-  # draw u's for checking if u < a
-  u_log = log(rand(R))
-  a_log = 0
-
-
   # parameters for adaptive update
   adaptive_update_params = set_adaptive_alg_params(problem.adaptive_update, length(theta_0),Theta[:,1], R)
 
-  # parameters for prior dist
-  dist_type = problem.prior_dist.dist
-  Theta_parameters = problem.prior_dist.Theta_parameters
 
   # print information at start of algorithm
   @printf "Starting MCMC with adaptive RW estimating %d parameters\n" length(theta_true)
@@ -115,8 +108,6 @@ function MCMC(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=
       loglik_star = pf(y, theta_star,theta_known, N,print_on)
     end
 
-    println(theta_star)
-
     prior_log_star = evaluate_prior(theta_star,Theta_parameters, problem.prior_dist.dist)
     prior_log_old = evaluate_prior(Theta[:,r-1],Theta_parameters, problem.prior_dist.dist)
 
@@ -126,8 +117,8 @@ function MCMC(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=
     if alg == "MCWM"
       a_log = loglik_star + prior_log_star +  jacobian_log_star - (pf(y, Theta[:,r-1],theta_known,N,print_on) +  prior_log_old + jacobian_log_old)
     else
-        # calc accaptace probability for the PMCMC algorithm
-        a_log = loglik_star + prior_log_star +  jacobian_log_star - (loglik[r-1] +  prior_log_old + jacobian_log_old)
+      # calc accaptace probability for the PMCMC algorithm
+      a_log = loglik_star + prior_log_star +  jacobian_log_star - (loglik[r-1] +  prior_log_old + jacobian_log_old)
     end
 
     # generate log(u)
@@ -139,7 +130,6 @@ function MCMC(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=
       Theta_val[:,r-burn_in] = theta_star
       loglik_val[r-burn_in] = loglik_star
     end
-
 
     if accept # the proposal is accapted
       Theta[:,r] = theta_star # update chain with new proposals
@@ -161,7 +151,7 @@ function MCMC(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=
   @printf "Prior distribution: %s\n" problem.prior_dist.dist
   @printf "Particel filter: %s\n" pf_alg
 
-
+  # return results
   if store_data && return_cov_matrix
     cov_prop_kernel = get_covariance(problem.adaptive_update,adaptive_update_params, R)
     return return_results(Theta,loglik,accept_vec,prior_vec, problem,adaptive_update_params), Theta_val, loglik_val, cov_prop_kernel
@@ -175,18 +165,14 @@ function MCMC(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=
 
 end
 
+# DA-GP-MCMC
+
 doc"""
-    dagpMCMC(problem::gpProblem)
+    DAGPMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov_matrix::Matrix)
 
-Runs the early-rejection Gaussian process particels Markov chain Monte Carlo algorithm.
-
-# Inputs
-* `Problem`: type that discribes the problem
-
-# Outputs
-* `Results`: type with the results
+Runs the DA-GP-MCMC algorithm for the Ricker model.
 """
-function dagpMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov_matrix::Matrix)
+function DAGPMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov_matrix::Matrix)
 
   # data
   y = problem.data.y
@@ -239,7 +225,7 @@ function dagpMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
   pdf_indecies_selction = zeros(nbr_predictions)
   secound_stage_direct_limit = zero(Float64)
   secound_stage_direct = false
-  nbr_obs_left_tail = 0
+  nbr_ordinary_mh = 0
   nbr_split_accaptance_region = 0
   nbr_split_accaptance_region_early_accept = 0
   assumption_list = []
@@ -253,24 +239,13 @@ function dagpMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
   time_fit_gp = 0
   time_er_part = 0
 
-  # create gp object
-  #gp = GPModel("est_method",zeros(6), zeros(4),
-  #eye(length_training_data-20), zeros(length_training_data-20),zeros(2,length_training_data-20),
-  #collect(1:10))
-
-  # draw u's for checking if u < a
-  u_log = log(rand(R))
-
-
   # parameters for prior dist
   dist_type = problem.prior_dist.dist
   Theta_parameters = problem.prior_dist.Theta_parameters
 
-
   # da new
   std_limit = 0
   loglik_gp_new_std = 0
-
 
   # set start value
   #theta_0 = theta_training[:, end] # start at last value of the chain for the training part
@@ -327,7 +302,7 @@ function dagpMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
     if mod(r-1,print_interval) == 0
       print_on = true # print ESS and Nbr resample each print_interval:th iteration
       # print accaptance probability
-      @printf "Acceptance rate on iteration %d to %d is %.4f\n" r-print_interval r-1  sum(accept_vec[r-print_interval:r-1])/( r-1 - (r-print_interval) )
+      @printf "Acceptance rate on iteration %d to %d is %.4f %%\n" r-print_interval r-1  sum(accept_vec[r-print_interval:r-1])/( r-1 - (r-print_interval) )*100
       # print covariance matrix
       @printf "Covariance:\n"
       print_covariance(problem.adaptive_update,adaptive_update_params, r)
@@ -341,7 +316,7 @@ function dagpMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
 
       # secound stage direct
 
-      nbr_obs_left_tail = nbr_obs_left_tail + 1
+      nbr_ordinary_mh +=  1
 
 
       # Gaussian random walk using secound stage direct kernel
@@ -355,26 +330,21 @@ function dagpMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
         loglik_star = pf(y, theta_star,theta_known,N,print_on)
       end
 
-      if dist_type == "Uniform" # uniform priors
 
-        prior_log_star = evaluate_prior(theta_star,Theta_parameters)
+      prior_log_star = evaluate_prior(theta_star,Theta_parameters, problem.prior_dist.dist)
+      prior_log_old = evaluate_prior(Theta[:,r-1],Theta_parameters, problem.prior_dist.dist)
 
-        if prior_log_star == -Inf # reject if the proposed theta is outside the prior
-          prior_vec[r] = 1;
-          accept = false;
-        else
+      jacobian_log_star = jacobian(theta_star)
+      jacobian_log_old = jacobian(Theta[:,r-1])
 
-          # compute accaptance probability
-          if alg == "MCWM"
-            a_log = loglik_star - pf(y, Theta[:,r-1],theta_known,N,print_on)
-          else
-            a_log = loglik_star  -  loglik[r-1]
-          end
-
-          # calc accaptance decision
-          accept = u_log[r] < a_log
-        end
+      if alg == "MCWM"
+        a_log = loglik_star + prior_log_star +  jacobian_log_star - (pf(y, Theta[:,r-1],theta_known,N,print_on) +  prior_log_old + jacobian_log_old)
+      else
+        # calc accaptace probability for the PMCMC algorithm
+        a_log = loglik_star + prior_log_star +  jacobian_log_star - (loglik[r-1] +  prior_log_old + jacobian_log_old)
       end
+
+      accept = log(rand()) < a_log
 
       if accept # the proposal is accapted
         Theta[:,r] = theta_star # update chain with new values
@@ -387,6 +357,8 @@ function dagpMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
 
 
     else
+
+      # first stage
 
       # Gaussian random walk using DA proposal kernel
       for i = 1:size(theta_gp_predictions,2)
@@ -471,35 +443,35 @@ function dagpMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
       # set proposal
       theta_star = theta_gp_predictions[:,index_keep_gp_er]
 
-      # the ordinary DA method
+      prior_log_star = evaluate_prior(theta_star,Theta_parameters, problem.prior_dist.dist)
+      prior_log_old = evaluate_prior(Theta[:,r-1],Theta_parameters, problem.prior_dist.dist)
 
-      if dist_type == "Uniform" # uniform priors
-        prior_log_star = evaluate_prior(theta_star,Theta_parameters)
-        if prior_log_star == -Inf # reject if the proposed theta is outside the prior
-          prior_vec[r] = 1;
-          accept_gp = false;
-        else
-          # todo:
-          # should we recompute the loglik_gp_old value here?
-          loglik_gp_old = predict(Theta[:,r-1], gp, pred_method,est_method,noisy_est)[1]
-          a_gp = loglik_gp_new  -  loglik_gp_old
-          accept_gp = u_log[r] < a_gp # calc accept
-          # store accaptance probability
-          accept_prob_log[1, r] = a_gp
-        end
-      end
+      jacobian_log_star = jacobian(theta_star)
+      jacobian_log_old = jacobian(Theta[:,r-1])
 
-      if !accept_gp
+      # should we recompute the loglik_gp_old value here?
+      # we currently recompute loglik_gp_old here!
+      loglik_gp_old = predict(Theta[:,r-1], gp, pred_method,est_method,noisy_est)[1]
+
+      a_gp = loglik_gp_new + prior_log_star +  jacobian_log_star -  (loglik_gp_old - prior_log_old - jacobian_log_old)
+      accept = log(rand()) < a_gp # calc accept
+
+      # store accaptance probability
+      accept_prob_log[1, r] = a_gp
+
+
+      if !accept
         # keep old values
-        nbr_early_rejections = nbr_early_rejections + 1
+        nbr_early_rejections += 1
         Theta[:,r] = Theta[:,r-1]
         loglik[r] = loglik[r-1]
         # adaptation of covaraince matrix for the proposal distribution
         # adaptation(problem.adaptive_update, adaptive_update_params, Theta, r,a_gp)
       else
 
-        # run PF
-        nbr_second_stage = nbr_second_stage+1
+        # secound stage
+
+        nbr_second_stage += 1
 
         if pf_alg == "apf"
           error("The auxiliary particle filter is not implemented")
@@ -507,29 +479,17 @@ function dagpMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
           loglik_star = pf(y, theta_star,theta_known,N,print_on)
         end
 
-        if dist_type == "Uniform" # uniform priors
-          prior_log_star = evaluate_prior(theta_star,Theta_parameters)
-          if prior_log_star == -Inf # reject if the proposed theta is outside the prior
-            prior_vec[r] = 1;
-            accept = false;
-          else
-            # calc accaptance probability using PF
-
-            if alg == "MCWM"
-              a_log = (loglik_star + loglik_gp_old)  -  (pf(y, Theta[:,r-1],theta_known,N,print_on) + loglik_gp_new)
-            else
-              a_log = (loglik_star + loglik_gp_old)  -  (loglik[r-1]  + loglik_gp_new)
-            end
-
-
-            accept = log(rand()) < a_log # calc accaptance decision
-            accept_prob_log[2, r] = a_log # store data
-
-          end
+        if alg == "MCWM"
+          a_log = (loglik_star + loglik_gp_old)  -  (pf(y, Theta[:,r-1],theta_known,N,print_on) + loglik_gp_new)
+        else
+          a_log = (loglik_star + loglik_gp_old)  -  (loglik[r-1]  + loglik_gp_new)
         end
 
+        accept = log(rand()) < a_log # calc accaptance decision
+        accept_prob_log[2, r] = a_log # store data
+
         if accept # the proposal is accapted
-          nbr_second_stage_accepted = nbr_second_stage_accepted+1
+          nbr_second_stage_accepted += 1
           Theta[:,r] = theta_star # update chain with proposal
           loglik[r] = loglik_star
           accept_vec[r] = 1
@@ -544,7 +504,7 @@ function dagpMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
   time_da_part = toc()
   times = [time_pre_er time_fit_gp time_da_part]
 
-  @printf "Ending ergpMCMC with adaptive RW estimating %d parameters\n" length(theta_true)
+  @printf "Ending DA-GP-MCMC with adaptive RW estimating %d parameters\n" length(theta_true)
   @printf "Algorithm: %s\n" alg
   @printf "Adaptation algorithm: %s\n" typeof(problem.adaptive_update)
   @printf "Prior distribution: %s\n" problem.prior_dist.dist
@@ -553,32 +513,25 @@ function dagpMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
   @printf "Time fit GP model:  %.0f\n" time_fit_gp
   @printf "Time er-part:  %.0f\n" time_da_part
   @printf "Number early-rejections: %.d\n"  nbr_early_rejections
-  @printf "Secound stage direct limit: %.f\n"  secound_stage_direct_limit
-  @printf "Number of left-tail obs. with direct run of stage 2: %d\n"  nbr_obs_left_tail
+  @printf "Number of cases directly to ordinary MH: %d\n"  nbr_ordinary_mh
   @printf "Number cases in secound stage: %d\n"  nbr_second_stage
   @printf "Number accepted in secound stage: %d\n"  nbr_second_stage_accepted
 
 
   # return resutls
-  return return_gp_results(gp, Theta,loglik,accept_vec,prior_vec, compare_GP_PF, data_gp_pf,nbr_early_rejections, problem, adaptive_update_params,accept_prob_log,times), res_training, theta_training, loglik_training,assumption_list,loglik_list
+  return return_da_results(gp, Theta,loglik,accept_vec,prior_vec, compare_GP_PF, data_gp_pf,nbr_early_rejections, problem, adaptive_update_params,accept_prob_log,times), res_training, theta_training, loglik_training,assumption_list,loglik_list
 
 end
 
 
-
+# ADA-GP-MCMC
 
 doc"""
-    dagpMCMC(problem::gpProblem)
+    ADAGPMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov_matrix::Matrix, prob_cases::Vector)
 
-Runs the early-rejection Gaussian process particels Markov chain Monte Carlo algorithm.
-
-# Inputs
-* `Problem`: type that discribes the problem
-
-# Outputs
-* `Results`: type with the results
+Runs the ADA-GP-MCMC algorithm for the Ricker model.
 """
-function adagpMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov_matrix::Matrix, prob_cases::Vector)
+function ADAGPMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov_matrix::Matrix, prob_cases::Vector)
 
   # data
   y = problem.data.y
@@ -1114,7 +1067,7 @@ end
 
 
 ################################################################################
-######               help functions for MCMC/gpPMCMC                       #####
+######               help functions                                        #####
 ################################################################################
 
 doc"""
@@ -1144,7 +1097,7 @@ doc"""
 
 Constructs the return type of the resutls from the gpPMCMC algorithm.
 """
-function return_gp_results(gp, Theta,loglik,accept_vec,prior_vec, compare_GP_PF,
+function return_da_results(gp, Theta,loglik,accept_vec,prior_vec, compare_GP_PF,
   data_gp_pf,nbr_early_rejections, problem, adaptive_update_params,accept_prob_log,times)
   if typeof(problem.adaptive_update) == AMUpdate_gen
     return (gpResult(Theta, loglik, accept_vec, prior_vec,compare_GP_PF,data_gp_pf,nbr_early_rejections), adaptive_update_params[6],gp,accept_prob_log,times)
