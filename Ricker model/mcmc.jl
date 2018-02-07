@@ -604,10 +604,6 @@ function ADAGPMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
   nbr_case_4 = 0
 
 
-  # draw u's for checking if u < a
-  u_log = log(rand(R))
-
-
   # parameters for prior dist
   dist_type = problem.prior_dist.dist
   Theta_parameters = problem.prior_dist.Theta_parameters
@@ -690,12 +686,10 @@ function ADAGPMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
 
       # secound stage direct
 
-      nbr_obs_left_tail = nbr_obs_left_tail + 1
-
+      nbr_ordinary_mh +=  1
 
       # Gaussian random walk using secound stage direct kernel
       (theta_star, ) = gaussian_random_walk(kernel_secound_stage_direct, adaptive_update_params_secound_stage_direct, Theta[:,r-1], r)
-
 
       # calc loglik using proposed parameters
       if pf_alg == "apf"
@@ -704,26 +698,20 @@ function ADAGPMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
         loglik_star = pf(y, theta_star,theta_known,N,print_on)
       end
 
-      if dist_type == "Uniform" # uniform priors
+      prior_log_star = evaluate_prior(theta_star,Theta_parameters, problem.prior_dist.dist)
+      prior_log_old = evaluate_prior(Theta[:,r-1],Theta_parameters, problem.prior_dist.dist)
 
-        prior_log_star = evaluate_prior(theta_star,Theta_parameters)
+      jacobian_log_star = jacobian(theta_star)
+      jacobian_log_old = jacobian(Theta[:,r-1])
 
-        if prior_log_star == -Inf # reject if the proposed theta is outside the prior
-          prior_vec[r] = 1;
-          accept = false;
-        else
-
-          # compute accaptance probability
-          if alg == "MCWM"
-            a_log = loglik_star - pf(y, Theta[:,r-1],theta_known,N,print_on)
-          else
-            a_log = loglik_star  -  loglik[r-1]
-          end
-
-          # calc accaptance decision
-          accept = u_log[r] < a_log
-        end
+      if alg == "MCWM"
+        a_log = loglik_star + prior_log_star +  jacobian_log_star - (pf(y, Theta[:,r-1],theta_known,N,print_on) +  prior_log_old + jacobian_log_old)
+      else
+        # calc accaptace probability for the PMCMC algorithm
+        a_log = loglik_star + prior_log_star +  jacobian_log_star - (loglik[r-1] +  prior_log_old + jacobian_log_old)
       end
+
+      accept = log(rand()) < a_log
 
       if accept # the proposal is accapted
         Theta[:,r] = theta_star # update chain with new values
@@ -1040,7 +1028,7 @@ function ADAGPMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
   @printf "Time er-part:  %.0f\n" time_da_part
   @printf "Number early-rejections: %d\n"  nbr_early_rejections
   @printf "Secound stage direct limit: %.f\n"  secound_stage_direct_limit
-  @printf "Number of left-tail obs. with direct run of stage 2: %d\n"  nbr_obs_left_tail
+  @printf "Number of cases directly to ordinary MH: %d\n"  nbr_ordinary_mh
 
   @printf "Number split accaptance region: %d\n" nbr_split_accaptance_region
   @printf "Number split accaptance region early-accept: %d\n"  nbr_split_accaptance_region_early_accept

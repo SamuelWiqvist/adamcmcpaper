@@ -51,7 +51,7 @@ problem.data.y = Array(readtable("y_data_set_2.csv"))[:,1]
 ##                         training data                                      ##
 ################################################################################
 
-load_tranining_data = true
+load_tranining_data = false
 
 # set up training problem
 
@@ -135,7 +135,7 @@ if !load_tranining_data
 
     data_training = [theta_training; loglik_training']
 
-    save("gp_training_and_test_data_ricker.jld", "res_training", res_training, "theta_training", theta_training, "loglik_training", loglik_training, "theta_test", theta_test, "loglik_test", loglik_test,"cov_matrix",cov_matrix)
+    save("gp_training_and_test_data_ricker_test.jld", "res_training", res_training, "theta_training", theta_training, "loglik_training", loglik_training, "theta_test", theta_test, "loglik_test", loglik_test,"cov_matrix",cov_matrix)
 
 
 else
@@ -302,17 +302,13 @@ RMSE_ml_sample = RMSE(loglik_pf, loglik_sample)
 ##  Compute residuals                                                                          ##
 ################################################################################
 
-# todo
-
 residuals = loglik_pf - loglik_sample
-
 
 # plot residuals
 PyPlot.figure(figsize=(10,5))
 PyPlot.plot(residuals)
 PyPlot.ylabel("Residual",fontsize=text_size)
 PyPlot.xlabel("Index",fontsize=text_size)
-
 
 PyPlot.figure(figsize=(7,5))
 PyPlot.plot(data_test[1,:], residuals, "*b")
@@ -324,19 +320,15 @@ PyPlot.plot(data_test[2,:], residuals, "*b")
 PyPlot.ylabel("Residual",fontsize=text_size)
 PyPlot.xlabel(L"$\log \phi$",fontsize=text_size)
 
-
 PyPlot.figure(figsize=(7,5))
 PyPlot.plot(data_test[3,:], residuals, "*b")
 PyPlot.ylabel("Residual",fontsize=text_size)
 PyPlot.xlabel(L"$\log \sigma$",fontsize=text_size)
 
-
 PyPlot.figure(figsize=(7,5))
 PyPlot.plot(data_test[4,:], residuals, "*b")
 PyPlot.ylabel("Residual",fontsize=text_size)
 PyPlot.xlabel(L"$\ell$",fontsize=text_size)
-
-
 
 PyPlot.figure(figsize=(7,5))
 h1 = PyPlot.plt[:hist](residuals,100, normed=true)

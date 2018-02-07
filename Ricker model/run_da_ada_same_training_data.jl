@@ -24,10 +24,10 @@ problem.adaptive_update = AMUpdate_gen(eye(3), 2.4/sqrt(3), 0.3, 1., 0.8, 25)
 
 # set algorithm parameters
 problem.alg_param.N = 1000 # nbr particels
-problem.alg_param.R = 50000 # nbr iterations
+problem.alg_param.R = 10000 # nbr iterations
 problem.alg_param.burn_in = 0 # burn in
 problem.alg_param.length_training_data = 2000
-problem.alg_param.alg = "MCWM" # we should only! use the MCWM algorithm
+problem.alg_param.alg = "PMCMC" # we should only! use the MCWM algorithm
 problem.alg_param.compare_GP_and_PF = false
 problem.alg_param.noisy_est = false
 problem.alg_param.pred_method = "sample"
@@ -223,19 +223,32 @@ end
 # estimate probabilities for combinations of signs for the GP and PF estimations
 
 n = size(data_training,2)
+n_burn_in = problem_traning.alg_param.burn_in
 
+idx_training_start = n_burn_in+1
+idx_training_end = idx_training_start+n-1
+
+idx_test_start = idx_training_end+1
+idx_test_end = idx_test_start+n-1
+
+idx_training_old = idx_training_start-1:idx_training_end-1
+idx_test_old = idx_test_start-1:idx_test_end-1
+
+loglik_training_old = res_training[1].loglik_est[idx_training_old]
+loglik_test_old = res_training[1].loglik_est[idx_test_old]
+
+dim = length(problem.model_param.theta_true)
 data_signs = zeros(4,n)
-data_signs[3,:] = data_training[4,:]
-data_signs[4,:] = res_training[1].loglik_est[end-n+1:end]
+data_signs[3,:] = data_training[dim+1,:]
+data_signs[4,:] = loglik_training_old
 
 noisy_pred = problem.alg_param.noisy_est
 
-
 for i = 1:n
-  (loglik_est_star, var_pred_ml, prediction_sample_ml) = predict(data_training[1:3,i],gp,noisy_pred)
-  (loglik_est_old, var_pred_ml, prediction_sample_ml) = predict(res_training[1].Theta_est[:,i+n],gp,noisy_pred)
-  data_signs[1,i] = loglik_est_star[1]
-  data_signs[2,i] = loglik_est_old[1]
+  (loglik_est_star, var_pred_ml, prediction_sample_ml_star) = predict(data_training[1:dim,i],gp,noisy_pred)
+  (loglik_est_old, var_pred_ml, prediction_sample_ml_old) = predict(res_training[1].Theta_est[:,idx_training_old[i]],gp,noisy_pred)
+  data_signs[1,i] = prediction_sample_ml_star[1]
+  data_signs[2,i] = prediction_sample_ml_old[1]
 end
 
 nbr_GP_star_geq_GP_old = zero(Int64)
