@@ -36,13 +36,16 @@ function MCMC(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=
   theta_known = problem.model_param.theta_known # NaN
   theta_0 = problem.model_param.theta_0 # [log(r_0) log(phi_0) log(sigma_0)]
 
-  # pre-allocate matricies and vectors
+  # pre-allocate matricies and vectors and variables
   Theta = zeros(length(theta_0),R)
   loglik = zeros(R)
   accept_vec = zeros(R)
   prior_vec = zeros(R)
   theta_star = zeros(length(theta_0),1)
 
+  a_log = 0
+
+  # pre-allocate matricies and vectors for storing data
   if store_data
     Theta_val = zeros(length(theta_0),R-burn_in)
     loglik_val = zeros(R-burn_in)
@@ -61,7 +64,7 @@ function MCMC(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=
   Theta_parameters = problem.prior_dist.Theta_parameters
 
   # print information at start of algorithm
-  @printf "Starting PMCMC with adaptive RW estimating %d parameters\n" length(theta_true)
+  @printf "Starting MCMC with adaptive RW estimating %d parameters\n" length(theta_true)
   @printf "MCMC algorithm: %s\n" alg
   @printf "Adaptation algorithm: %s\n" typeof(problem.adaptive_update)
   @printf "Prior distribution: %s\n" problem.prior_dist.dist
@@ -91,6 +94,8 @@ function MCMC(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=
     # print acceptance rate for the last print_interval iterations
     if mod(r-1,print_interval) == 0
       print_on = true # print ESS and Nbr resample each print_interval:th iteration
+      # print progress
+      @printf "Percentage done: %.2f %% \n" 100*(r-1)/R
       # print accaptace rate
       @printf "Acceptance rate on iteration %d to %d is %.4f\n" r-print_interval r-1  sum(accept_vec[r-print_interval:r-1])/( r-1 - (r-print_interval) )
       # print covaraince function
@@ -110,40 +115,25 @@ function MCMC(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=
       loglik_star = pf(y, theta_star,theta_known, N,print_on)
     end
 
+    println(theta_star)
 
-
-        jacobian_log_star = jacobian(theta_star, parameter_transformation)
-        jacobian_log_old = jacobian(Theta[:,r-1], parameter_transformation)
-
-        prior_log_star = evaluate_prior(theta_star,Theta_parameters)
-        prior_log_old = evaluate_prior(Theta[:,r-1],Theta_parameters)
-
-        #a_log = log(abc_likelihood_star) + prior_log_star +  jacobian_log_star - (log(abc_likelihood_old) +  prior_log_old + jacobian_log_old)
-        a_log = log(abc_likelihood_star) + prior_log_star  - (log(abc_likelihood_old) +  prior_log_old)
-
-    prior_log_star = evaluate_prior(theta_star,Theta_parameters)
-    prior_log_old = evaluate_prior(Theta[:,r-1],Theta_parameters)
+    prior_log_star = evaluate_prior(theta_star,Theta_parameters, problem.prior_dist.dist)
+    prior_log_old = evaluate_prior(Theta[:,r-1],Theta_parameters, problem.prior_dist.dist)
 
     jacobian_log_star = jacobian(theta_star)
     jacobian_log_old = jacobian(Theta[:,r-1])
 
-
-    if dist_type == "Uniform" # uniform priors
-      prior_log_star = evaluate_prior(theta_star,Theta_parameters)
-      if prior_log_star == -Inf # reject if the proposed theta is outside the prior
-        prior_vec[r] = 1
-        accept = false
-      else
-        if alg == "MCWM"
-          a_log = loglik_star + prior_log_star +  jacobian_log_star - (pf(y, Theta[:,r-1],theta_known,N,print_on) +  prior_log_old + jacobian_log_old)
-
-        else
-          # calc accaptace probability for the PMCMC algorithm
-          a_log = loglik_star + prior_log_star +  jacobian_log_star - (loglik[r-1] +  prior_log_old + jacobian_log_old)
-        end
-        accept = u_log[r] < a_log # calc accaptace decision
-      end
+    if alg == "MCWM"
+      a_log = loglik_star + prior_log_star +  jacobian_log_star - (pf(y, Theta[:,r-1],theta_known,N,print_on) +  prior_log_old + jacobian_log_old)
+    else
+        # calc accaptace probability for the PMCMC algorithm
+        a_log = loglik_star + prior_log_star +  jacobian_log_star - (loglik[r-1] +  prior_log_old + jacobian_log_old)
     end
+
+    # generate log(u)
+    u_log = log(rand())
+
+    accept = u_log < a_log # calc accaptace decision
 
     if store_data && r > burn_in # store data
       Theta_val[:,r-burn_in] = theta_star
@@ -1123,117 +1113,6 @@ function adagpMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
 end
 
 
-#=
-
-doc"""
-    ISMCMC(problem::Problem, isparameters::ISParameters)
-
-Runs the importance sampling MCMC algorithm.
-
-# Inputs
-* `Problem`: type that describes the problem
-* `isparameters`: type for parameters of the IS part
-
-# Outputs
-* `Results`: type with the results
-"""
-function ISMCMC(problem::Problem, isparameters::ISParameters) # this function should be merged with the generate_training_test_data function!
-
-  # todo
-  # implement the IS1 and IS2 algorithm
-  # utilize parallelization for the IS part!
-
-  # todo
-  # 1) run MCWM to generate training data set for the GP model
-  # 2) fit GP model to traning data
-  # 3) run DA part and store all proposals
-  # 4) compute the unbiased est- via IS1 or IS2 in parallel
-
-  # todo
-  # problem is the model for the MCWM alg.
-
-  # todo
-  # the pf filter should return all particels and all normalized wegiths
-
-  # isparameters
-  # method
-  # settings for the GP model
-  # length and particels for the Da part
-
-  # we will firstly only using and non-adaptive RW for the DA part
-
-  # data
-  y = problem.data.y
-
-  length_training_data = problem.alg_param.R - problem.alg_param.burn_in
-  N = isparameters.N
-  R = isparameters.R
-  method = isparameters.method
-  est_method = isparameters.est_method
-  lasso = isparameters.lasso
-  pred_method = isparameters.pred_method
-  noisy_est = isparameters.noisy_est
-
-  # create gp object
-  gp = GPModel("est_method",zeros(6), zeros(4),
-  eye(length_training_data-20), zeros(length_training_data-20),zeros(2,length_training_data-20),
-  collect(1:10))
-
-  tic()
-  # collect data
-  res_training, theta_training, loglik_training, cov_matrix = MCMC(problem_training, true, true)
-
-  time_pre_er = toc()
-
-  tic()
-
-  data_training = [theta_training; loglik_training']
-
-  # fit GP model
-  if est_method == "ml"
-    # fit GP model using ml
-    perc_outlier = 0.1 # used when using PMCMC for trainig data 0.05
-    tail_rm = "left"
-
-    ml_est(gp, data_training,"SE", lasso,perc_outlier,tail_rm)
-  else
-    error("The two stage estimation method is not in use")
-    #two_stage_est(gp, data_training)
-  end
-
-
-  time_fit_gp = toc()
-
-  for r = 1:R
-
-    # generate theta_star
-
-    # first stage: use GP model
-
-    # Secound stage store theta_star and loglik est from GP model
-
-
-  end
-
-  # run IS1 algorithm
-
-  # for all thetas that passed stage 1:
-  # run PF and retun particels and normalized wegiths
-  # compute estimation
-
-  # run IS1 algorithm
-
-  # for all "jumpes" that passed stage 1:
-  # run PF and retun particels and normalized wegiths
-  # compute estimation
-
-  return res_training, theta_training, loglik_training, gp
-
-end
-
-
-=#
-
 ################################################################################
 ######               help functions for MCMC/gpPMCMC                       #####
 ################################################################################
@@ -1286,7 +1165,7 @@ Calculates the `log-likelihood` for the prior distribution for the parameters `t
 # Inputs
 * `log_likelihood`: log P(theta_star)
 """
-function  evaluate_prior(theta_star, Theta_parameters, dist_type = "Unifrom")
+function  evaluate_prior(theta_star, Theta_parameters, dist_type = "Uniform")
 
   # set start value for loglik
   log_likelihood = 0.
@@ -1304,12 +1183,13 @@ function  evaluate_prior(theta_star, Theta_parameters, dist_type = "Unifrom")
 
 end
 
+
 doc"""
     log_unifpdf(x::Float64, a::Float64,b::Float64)
 
 Computes log(unifpdf(x,a,b)).
 """
-function log_unifpdf(x::Float64, a::Float64, b::Float64)
+function log_unifpdf(x::Real, a::Real, b::Real)
   if  x >= a && x<= b
     return -log(b-a);
   else
@@ -1329,130 +1209,3 @@ function jacobian(theta::Vector)
   return sum(theta)
 
 end
-
-
-#=
-################################################################################
-######          Particle filter and help functions for pf                  #####
-################################################################################
-
-doc"""
-    pf(y::Array{Float64}, theta::Array{Float64},theta_known::Float64,N::Int64,
-plotflag::Bool=false, return_weigths_and_particles::Bool=false)
-
-pf runs the bootstrap particel filter for the Ricker model.
-"""
-function pf(y::Array{Float64}, theta::Array{Float64},theta_known::Float64,N::Int64,
-plotflag::Bool=false, return_weigths_and_particles::Bool=false)
-
-  # set parameter values
-  r = exp(theta[1])
-  phi = exp(theta[2])
-  sigma = exp(theta[3])
-
-  # set startvalue for loglik
-  loglik = 0.
-
-  # set length pf data
-  T = length(y)
-
-  # pre-allocate matriceis
-  x = zeros(N,T) # particels
-  w = zeros(N,T) # weigts
-  x_anc = zeros(N,T+1) # ancestral particels
-
-  # set start values
-  xint = rand(Uniform(1,30),N,1)
-  x_anc[:,1] = xint # set anc particels for t = 1
-
-  # set gaussian noise
-  e = rand(Normal(0,sigma), N,T)
-
-  for t = 1:T
-
-  if t == 1 # first iteration
-
-    # propagate particels
-    x[:,1] = r*xint.*exp(-xint .+ e[:,1]);
-
-    # calc weigths and update loglik
-    (w[:,t], loglik) = calc_weigths(y[t],x[:,t],phi,loglik,N)
-
-  else
-
-    # resample particels
-    ind = stratresample(w[:,t-1], N)
-    x_resample = x[ind,t-1]
-
-
-    x_anc[:,t+1] = x_resample # store ancestral particels
-
-    # propagate particels
-    x[:,t] = r*x_resample.*exp(-x_resample .+ e[:,t])
-
-    # calc weigths and update loglik
-    (w[:,t], loglik) = calc_weigths(y[t],x[:,t],phi,loglik,N)
-  end
-
-  end
-
-  if plotflag # plot ESS at last iteration
-  @printf "ESS: %.4f\n" 1/sum(w[:,end].^2)
-  end
-
-  if return_weigths_and_particles
-  # return loglik, weigths and particels
-  loglik, w, x
-  else
-  # return loglik
-  return loglik
-  end
-end
-
-
-# help functions for particle filter
-
-doc"""
-    calc_weigths(y::Array{Float64},x::Array{Float64},phi::Float64,loglik::Float64,N::Int64)
-
-Calculates the weigths in the particel filter and the estiamtes the loglikelihood value.
-"""
-function calc_weigths(y::Float64,x::Array{Float64},phi::Float64,loglik::Float64,N::Int64)
-  logweigths = y*log(x.*phi)  .- x*phi # compute logweigths
-  constant = maximum(logweigths) # find largets wegith
-  weigths = exp(logweigths - constant) # subtract largets weigth and compute weigths
-  loglik =  loglik + constant + log(sum(weigths)) - log(N) # update loglik
-  return weigths/sum(weigths), loglik
-end
-
-
-doc"""
-    stratresample(p , N)
-
-Stratified resampling.
-
-Sample N times with repetitions from a distribution on [1:length(p)] with probabilities p. See [link](http://www.cornebise.com/julien/publis/isba2012-slides.pdf).
-"""
-function stratresample(p , N)
-
-  p = p/sum(p)  # normalize, just in case...
-
-  cdf_approx = cumsum(p)
-  cdf_approx[end] = 1
-  #I = zeros(N,1)
-  indx = zeros(Int64, N)
-  U = rand(N,1)
-  U = U/N + (0:(N - 1))/N
-  index = 1
-  for k = 1:N
-    while (U[k] > cdf_approx[index])
-      index = index + 1
-    end
-    indx[k] = index
-  end
-
-  return indx
-
-end
-
-=#

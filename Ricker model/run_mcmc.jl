@@ -1,4 +1,4 @@
-# Script for running PMCMC/MCWM 
+# Script for running PMCMC/MCWM
 
 include("rickermodel.jl")
 
@@ -11,8 +11,8 @@ problem = set_up_problem(ploton = false)
 problem.alg_param.N = 1000
 problem.alg_param.R = 5000
 problem.alg_param.burn_in = 2000
-problem.data.y = Array(readtable("y_data_set_1.csv"))[:,1]
-problem.data.y = Array(readtable("y_data_200_obs_3.csv"))[:,1]
+problem.data.y = Array(readtable("y_data_set_2.csv"))[:,1]
+#problem.data.y = Array(readtable("y_data_200_obs_3.csv"))[:,1]
 
 #Array(readtable("y.csv"))[:,1]
 #problem.data.y = Array(readtable("y_data_set_abc.csv"))[:,1] #Array(readtable("y.csv"))[:,1]
