@@ -11,11 +11,11 @@ using Distributions
 if Sys.CPU_CORES == 8
   include("C:\\Users\\samuel\\Dropbox\\Phd Education\\Projects\\project 1 accelerated DA and DWP SDE\\code\\utilities\\posteriorinference.jl")
 else
-  include("C:\\Users\\samue\\Dropbox\\Phd Education\\Projects\\project 1 accelerated DA and DWP SDE\\code\\utilities\\posteriorinference.jl")
+  include("C:\\Users\\samue\\OneDrive\\Documents\\GitHub\\adamcmcpaper\\utilities\\posteriorinference.jl")
 end
 
 
-# plotting function 
+# plotting function
 
 
 doc"""
