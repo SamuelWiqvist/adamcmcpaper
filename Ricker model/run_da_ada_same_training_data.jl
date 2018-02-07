@@ -32,9 +32,9 @@ problem.alg_param.compare_GP_and_PF = false
 problem.alg_param.noisy_est = false
 problem.alg_param.pred_method = "sample"
 problem.alg_param.nbr_predictions = 1
-problem.alg_param.print_interval = 10000 # problem.alg_param.R#
+problem.alg_param.print_interval = 1000 # problem.alg_param.R#
 problem.alg_param.selection_method = "max_loglik"  # "local_loglik_approx" # "max_loglik"
-problem.alg_param.beta_MH = 0.1 # "local_loglik_approx" # "max_loglik"
+problem.alg_param.beta_MH = 1 # "local_loglik_approx" # "max_loglik"
 problem.alg_param.std_limit = 1
 
 #problem.data.y = Array(readtable("y.csv"))[:,1]
@@ -78,6 +78,8 @@ problem_traning.alg_param.alg = "MCWM"
 problem_traning.adaptive_update = AMUpdate_gen(eye(3), 2.4/sqrt(3), 0.4, 1., 0.8, 25)
 
 load_training_data = false
+
+
 
 if !load_training_data
 
@@ -126,11 +128,11 @@ if !load_training_data
 
   data_training = [theta_training; loglik_training']
 
-  save("gp_training_and_test_data_ricker_test_run.jld", "res_training", res_training, "theta_training", theta_training, "loglik_training", loglik_training, "theta_test", theta_test, "loglik_test", loglik_test,"cov_matrix",cov_matrix)
+  save("gp_training_and_test_data_ricker_gen_local.jld", "res_training", res_training, "theta_training", theta_training, "loglik_training", loglik_training, "theta_test", theta_test, "loglik_test", loglik_test,"cov_matrix",cov_matrix)
 
 else
 
-  @load "gp_training_and_test_data_ricker.jld"
+  @load "gp_training_and_test_data_ricker_gen_local.jld"
 
 end
 

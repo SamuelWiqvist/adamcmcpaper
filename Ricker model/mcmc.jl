@@ -301,6 +301,8 @@ function DAGPMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
     # print acceptance rate for the last print_interval iterations
     if mod(r-1,print_interval) == 0
       print_on = true # print ESS and Nbr resample each print_interval:th iteration
+      # print progress
+      @printf "Percentage done: %.2f %% \n" 100*(r-1)/R
       # print accaptance probability
       @printf "Acceptance rate on iteration %d to %d is %.4f %%\n" r-print_interval r-1  sum(accept_vec[r-print_interval:r-1])/( r-1 - (r-print_interval) )*100
       # print covariance matrix
@@ -454,6 +456,7 @@ function DAGPMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
       loglik_gp_old = predict(Theta[:,r-1], gp, pred_method,est_method,noisy_est)[1]
 
       a_gp = loglik_gp_new + prior_log_star +  jacobian_log_star -  (loglik_gp_old - prior_log_old - jacobian_log_old)
+
       accept = log(rand()) < a_gp # calc accept
 
       # store accaptance probability
