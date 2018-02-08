@@ -24,17 +24,17 @@ problem.adaptive_update = AMUpdate_gen(eye(3), 2.4/sqrt(3), 0.3, 1., 0.8, 25)
 
 # set algorithm parameters
 problem.alg_param.N = 1000 # nbr particels
-problem.alg_param.R = 10000 # nbr iterations
+problem.alg_param.R = 25000 # nbr iterations
 problem.alg_param.burn_in = 0 # burn in
 problem.alg_param.length_training_data = 2000
-problem.alg_param.alg = "PMCMC" # we should only! use the MCWM algorithm
+problem.alg_param.alg = "MCWM" # we should only! use the MCWM algorithm
 problem.alg_param.compare_GP_and_PF = false
 problem.alg_param.noisy_est = false
 problem.alg_param.pred_method = "sample"
 problem.alg_param.nbr_predictions = 1
 problem.alg_param.print_interval = 1000 # problem.alg_param.R#
 problem.alg_param.selection_method = "max_loglik"  # "local_loglik_approx" # "max_loglik"
-problem.alg_param.beta_MH = 1 # "local_loglik_approx" # "max_loglik"
+problem.alg_param.beta_MH = 0.1 # "local_loglik_approx" # "max_loglik"
 problem.alg_param.std_limit = 1
 
 #problem.data.y = Array(readtable("y.csv"))[:,1]
@@ -67,7 +67,6 @@ problem_traning.alg_param.print_interval = 1000
 # PMCMC
 problem_traning.alg_param.alg = "MCWM"
 
-
 # use AM alg for adaptive updating
 #problem.adaptive_update = AMUpdate(eye(3), 2.4/sqrt(3), 1., 0.7, 25)
 
@@ -77,9 +76,7 @@ problem_traning.alg_param.alg = "MCWM"
 #problem_traning.adaptive_update = AMUpdate_gen(eye(3), 2.4/sqrt(3), 0.2, 1., 0.8, 25)
 problem_traning.adaptive_update = AMUpdate_gen(eye(3), 2.4/sqrt(3), 0.4, 1., 0.8, 25)
 
-load_training_data = false
-
-
+load_training_data = true
 
 if !load_training_data
 
@@ -89,7 +86,6 @@ if !load_training_data
   res_training, theta_training, loglik_training, cov_matrix = MCMC(problem_traning, true, true)
 
   time_pre_er = toc()
-
 
   # write outputs
   res = res_training[1]
@@ -114,7 +110,6 @@ if !load_training_data
   writetable("Results/Theta_training.csv", convert(DataFrame, Theta))
   writetable("Results/loglik_avec_priorvec_training.csv", convert(DataFrame, loglik_avec_priorvec))
   writetable("Results/algorithm_parameters_training.csv", convert(DataFrame, algorithm_parameters))
-
 
   # split tranining and test data
 
@@ -285,8 +280,43 @@ accelerated_da = true
 
 problem.model_param.theta_0 = theta_training[:, end]
 
-res, res_traning, theta_training, loglik_training, assumption_list, loglik_list = adagpMCMC(problem_traning, problem, gp, cov_matrix, prob_cases)
+res, res_traning, theta_training, loglik_training, assumption_list, loglik_list = ADAGPMCMC(problem_traning, problem, gp, cov_matrix, prob_cases)
 
+
+mcmc_results = Result(res[1].Theta_est, res[1].loglik_est, res[1].accept_vec, res[1].prior_vec)
+
+
+# write output
+Theta = mcmc_results.Theta_est
+loglik = mcmc_results.loglik_est
+
+accept_vec = mcmc_results.accept_vec
+prior_vec = mcmc_results.prior_vec
+
+loglik_avec_priorvec = zeros(3, length(loglik))
+loglik_avec_priorvec[1,:] = loglik
+loglik_avec_priorvec[2,:] = accept_vec
+loglik_avec_priorvec[3,:] = prior_vec
+
+algorithm_parameters = zeros(10, 2)
+
+algorithm_parameters[1,1] = problem.alg_param.burn_in + 1
+algorithm_parameters[2:4,1] = problem.model_param.theta_true
+algorithm_parameters[5:7,1] = problem.model_param.theta_0
+algorithm_parameters[8:end,:] = problem.prior_dist.Theta_parameters
+
+if !accelerated_da
+  writetable("Results/Theta_dagpmcmc.csv", convert(DataFrame, Theta))
+  writetable("Results/loglik_avec_priorvec_dagpmcmc.csv", convert(DataFrame, loglik_avec_priorvec))
+  writetable("Results/algorithm_parameters_dagpmcmc.csv", convert(DataFrame, algorithm_parameters))
+else
+  writetable("Results/Theta_adagpmcmc.csv", convert(DataFrame, Theta))
+  writetable("Results/loglik_avec_priorvec_adagpmcmc.csv", convert(DataFrame, loglik_avec_priorvec))
+  writetable("Results/algorithm_parameters_adagpmcmc.csv", convert(DataFrame, algorithm_parameters))
+end
+
+
+# run analysis
 #=
 # profiling
 using ProfileView
@@ -378,35 +408,3 @@ PyPlot.figure()
 h = PyPlot.plt[:hist](dist_ll_pf_new_ll_pf_old[idx_diff],50)
 
 =#
-
-mcmc_results = Result(res[1].Theta_est, res[1].loglik_est, res[1].accept_vec, res[1].prior_vec)
-
-
-# write output
-Theta = mcmc_results.Theta_est
-loglik = mcmc_results.loglik_est
-
-accept_vec = mcmc_results.accept_vec
-prior_vec = mcmc_results.prior_vec
-
-loglik_avec_priorvec = zeros(3, length(loglik))
-loglik_avec_priorvec[1,:] = loglik
-loglik_avec_priorvec[2,:] = accept_vec
-loglik_avec_priorvec[3,:] = prior_vec
-
-algorithm_parameters = zeros(10, 2)
-
-algorithm_parameters[1,1] = problem.alg_param.burn_in + 1
-algorithm_parameters[2:4,1] = problem.model_param.theta_true
-algorithm_parameters[5:7,1] = problem.model_param.theta_0
-algorithm_parameters[8:end,:] = problem.prior_dist.Theta_parameters
-
-if !accelerated_da
-  writetable("Results/Theta_ergp.csv", convert(DataFrame, Theta))
-  writetable("Results/loglik_avec_priorvec_ergp.csv", convert(DataFrame, loglik_avec_priorvec))
-  writetable("Results/algorithm_parameters_ergp.csv", convert(DataFrame, algorithm_parameters))
-else
-  writetable("Results/Theta_ergpaccelerated.csv", convert(DataFrame, Theta))
-  writetable("Results/loglik_avec_priorvec_ergpaccelerated.csv", convert(DataFrame, loglik_avec_priorvec))
-  writetable("Results/algorithm_parameters_ergpaccelerated.csv", convert(DataFrame, algorithm_parameters))
-end

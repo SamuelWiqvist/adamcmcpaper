@@ -51,7 +51,7 @@ problem.data.y = Array(readtable("y_data_set_2.csv"))[:,1]
 ##                         training data                                      ##
 ################################################################################
 
-load_tranining_data = false
+load_tranining_data = true
 
 # set up training problem
 
@@ -135,7 +135,7 @@ if !load_tranining_data
 
     data_training = [theta_training; loglik_training']
 
-    save("gp_training_and_test_data_ricker_test.jld", "res_training", res_training, "theta_training", theta_training, "loglik_training", loglik_training, "theta_test", theta_test, "loglik_test", loglik_test,"cov_matrix",cov_matrix)
+    save("gp_training_and_test_data_ricker_gen_local.jld", "res_training", res_training, "theta_training", theta_training, "loglik_training", loglik_training, "theta_test", theta_test, "loglik_test", loglik_test,"cov_matrix",cov_matrix)
 
 
 else
@@ -143,7 +143,7 @@ else
   #@load "gp_training_$(set_nbr_params)_par.jld"
   #@load "gp_training_$(set_nbr_params)_par.jld"
 
-  @load "gp_training_and_test_data_ricker.jld"
+  @load "gp_training_and_test_data_ricker_gen_local.jld"
 
 end
 

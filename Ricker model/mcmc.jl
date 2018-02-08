@@ -587,7 +587,7 @@ function ADAGPMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
   pdf_indecies_selction = zeros(nbr_predictions)
   secound_stage_direct_limit = zero(Float64)
   secound_stage_direct = false
-  nbr_obs_left_tail = 0
+  nbr_ordinary_mh = 0
   nbr_split_accaptance_region = 0
   nbr_split_accaptance_region_early_accept = 0
   nbr_split_accaptance_region_early_reject = 0
@@ -674,8 +674,10 @@ function ADAGPMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
     # print acceptance rate for the last print_interval iterations
     if mod(r-1,print_interval) == 0
       print_on = true # print ESS and Nbr resample each print_interval:th iteration
+      # print progress
+      @printf "Percentage done: %.2f %% \n" 100*(r-1)/R
       # print accaptance probability
-      @printf "Acceptance rate on iteration %d to %d is %.4f\n" r-print_interval r-1  sum(accept_vec[r-print_interval:r-1])/( r-1 - (r-print_interval) )
+      @printf "Acceptance rate on iteration %d to %d is %.4f %%\n" r-print_interval r-1  sum(accept_vec[r-print_interval:r-1])/( r-1 - (r-print_interval) )*100
       # print covariance matrix
       @printf "Covariance:\n"
       print_covariance(problem.adaptive_update,adaptive_update_params, r)
@@ -727,6 +729,8 @@ function ADAGPMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
 
 
     else
+
+      # stage 1
 
       # Gaussian random walk using DA proposal kernel
       for i = 1:size(theta_gp_predictions,2)
@@ -811,56 +815,52 @@ function ADAGPMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
       # set proposal
       theta_star = theta_gp_predictions[:,index_keep_gp_er]
 
-      # stage 1:
+      prior_log_star = evaluate_prior(theta_star,Theta_parameters, problem.prior_dist.dist)
+      prior_log_old = evaluate_prior(Theta[:,r-1],Theta_parameters, problem.prior_dist.dist)
 
-      if dist_type == "Uniform" # uniform priors
-        prior_log_star = evaluate_prior(theta_star,Theta_parameters)
-        if prior_log_star == -Inf # reject if the proposed theta is outside the prior
-          prior_vec[r] = 1;
-          accept_gp = false;
-        else
-          # todo:
-          # should we recompute the loglik_gp_old value here?
-          #loglik_gp_old = predict(Theta[:,r-1], gp, pred_method,est_method,noisy_est, true)
-          prediction_sample, sigma_pred = predict(Theta[:,r-1], gp, pred_method,est_method,noisy_est, true)
-          loglik_gp_old = prediction_sample[1]
-          loglik_gp_old_std = sigma_pred[1]
-          a_gp = loglik_gp_new  -  loglik_gp_old
-          accept_gp = u_log[r] < a_gp # calc accept
-          # store accaptance probability
-          accept_prob_log[1, r] = a_gp
-        end
-      end
+      jacobian_log_star = jacobian(theta_star)
+      jacobian_log_old = jacobian(Theta[:,r-1])
 
-      if !accept_gp # early-reject
+      # should we recompute the loglik_gp_old value here?
+      # we currently recompute loglik_gp_old here!
+      prediction_sample, sigma_pred = predict(Theta[:,r-1], gp, pred_method,est_method,noisy_est, true)
+      loglik_gp_old = prediction_sample[1]
+      loglik_gp_old_std = sigma_pred[1]
 
+      a_gp = loglik_gp_new + prior_log_star +  jacobian_log_star -  (loglik_gp_old - prior_log_old - jacobian_log_old)
+
+      accept = log(rand()) < a_gp # calc accept
+
+      # store accaptance probability
+      accept_prob_log[1, r] = a_gp
+
+
+      if !accept
         # keep old values
-        nbr_early_rejections = nbr_early_rejections + 1
+        nbr_early_rejections += 1
         Theta[:,r] = Theta[:,r-1]
         loglik[r] = loglik[r-1]
-        # adaptation of covaraince matrix for the proposal distribution
-        # adaptation(problem.adaptive_update, adaptive_update_params, Theta, r,a_gp)
-
       else
+
+        # stage 2 usign A-DA
 
         nbr_second_stage = nbr_second_stage+1
 
 
-        # stage 2
-        # A-DA
         u_log_hat = log(rand())
 
         if loglik_gp_old < loglik_gp_new
 
-          nbr_split_accaptance_region = nbr_split_accaptance_region+1
+          # select case 1 or 3
+          if rand(Bernoulli(prob_cases[1])) == 1
 
-          if rand(Bernoulli(prob_cases[1])) == 1 #&& loglik_gp_new_std < std_limit && loglik_gp_old_std < std_limit
+            # case 1
 
             nbr_case_1 = nbr_case_1 + 1
 
-            # run case 1
             if u_log_hat < loglik_gp_old - loglik_gp_new
-              nbr_second_stage_accepted = nbr_second_stage_accepted+1
+
+              # early-accept
               nbr_split_accaptance_region_early_accept = nbr_split_accaptance_region_early_accept+1
               Theta[:,r] = theta_star # update chain with proposal
               loglik[r] = NaN
@@ -868,33 +868,28 @@ function ADAGPMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
 
             else
 
+              # run ordinary stage 2
+
               if pf_alg == "apf"
                 error("The auxiliary particle filter is not implemented")
               elseif pf_alg == "bootstrap"
                 loglik_star = pf(y, theta_star,theta_known,N,print_on)
               end
 
-              if dist_type == "Uniform" # uniform priors
-                prior_log_star = evaluate_prior(theta_star,Theta_parameters)
-                if prior_log_star == -Inf # reject if the proposed theta is outside the prior
-                  prior_vec[r] = 1;
-                  accept = false;
-                else
-                  # calc accaptance probability using PF
-                  # can only run MCWM in this case
-                  loglik_old = pf(y, Theta[:,r-1],theta_known,N,print_on)
-                  a_log = (loglik_star + loglik_gp_old)  -  (loglik_old + loglik_gp_new)
-                  assumption = loglik_star > loglik_old
-                  push!(loglik_list, [loglik_star loglik[r-1] loglik_gp_new loglik_gp_old loglik_gp_new_std])
-                  push!(assumption_list, assumption)
-                  accept = u_log_hat < a_log # calc accaptance decision
-                  accept_prob_log[2, r] = a_log # store data
-                end
-              end
+
+              # calc accaptance probability using PF
+              # can only run MCWM in this case
+              loglik_old = pf(y, Theta[:,r-1],theta_known,N,print_on)
+              a_log = (loglik_star + loglik_gp_old)  -  (loglik_old + loglik_gp_new)
+              assumption = loglik_star > loglik_old
+              push!(loglik_list, [loglik_star loglik[r-1] loglik_gp_new loglik_gp_old loglik_gp_new_std])
+              push!(assumption_list, assumption)
+              accept = u_log_hat < a_log # calc accaptance decision
+              accept_prob_log[2, r] = a_log # store data
+
 
               if accept # the proposal is accapted
                 nbr_second_stage_accepted = nbr_second_stage_accepted+1
-
                 Theta[:,r] = theta_star # update chain with proposal
                 loglik[r] = NaN
                 accept_vec[r] = 1
@@ -906,51 +901,46 @@ function ADAGPMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
 
         else
 
-          # run case 3
+          # case 3
           nbr_case_3 = nbr_case_3 + 1
 
           if u_log_hat > loglik_gp_old - loglik_gp_new
+
+            # early-reject
             nbr_split_accaptance_region_early_reject = nbr_split_accaptance_region_early_reject+1
             Theta[:,r] = Theta[:,r-1] # keep old values
             loglik[r] = loglik[r-1]
             accept_vec[r] = 1
+
           else
 
-          if pf_alg == "apf"
-            error("The auxiliary particle filter is not implemented")
-          elseif pf_alg == "bootstrap"
-            loglik_star = pf(y, theta_star,theta_known,N,print_on)
-          end
+            # run ordinary stage 2
 
-          if dist_type == "Uniform" # uniform priors
-            prior_log_star = evaluate_prior(theta_star,Theta_parameters)
-            if prior_log_star == -Inf # reject if the proposed theta is outside the prior
-              prior_vec[r] = 1;
-              accept = false;
-            else
-              # calc accaptance probability using PF
-              # can only run MCWM in this case
-              loglik_old = pf(y, Theta[:,r-1],theta_known,N,print_on)
-              a_log = (loglik_star + loglik_gp_old)  -  (loglik_old + loglik_gp_new)
-              assumption = loglik_star > loglik_old
-              push!(loglik_list, [loglik_star loglik[r-1] loglik_gp_new loglik_gp_old loglik_gp_new_std])
-              push!(assumption_list, assumption)
-              accept = u_log_hat < a_log # calc accaptance decision
-              accept_prob_log[2, r] = a_log # store data
+            if pf_alg == "apf"
+              error("The auxiliary particle filter is not implemented")
+            elseif pf_alg == "bootstrap"
+              loglik_star = pf(y, theta_star,theta_known,N,print_on)
             end
-          end
 
-          if accept # the proposal is accapted
-            nbr_second_stage_accepted = nbr_second_stage_accepted+1
+            # calc accaptance probability using PF
+            # can only run MCWM in this case
+            loglik_old = pf(y, Theta[:,r-1],theta_known,N,print_on)
+            a_log = (loglik_star + loglik_gp_old)  -  (loglik_old + loglik_gp_new)
+            assumption = loglik_star > loglik_old
+            push!(loglik_list, [loglik_star loglik[r-1] loglik_gp_new loglik_gp_old loglik_gp_new_std])
+            push!(assumption_list, assumption)
+            accept = u_log_hat < a_log # calc accaptance decision
+            accept_prob_log[2, r] = a_log # store data
 
-
-            Theta[:,r] = theta_star # update chain with proposal
-            loglik[r] = NaN
-            accept_vec[r] = 1
-          else
-            Theta[:,r] = Theta[:,r-1] # keep old values
-            loglik[r] = loglik[r-1]
-          end
+            if accept # the proposal is accapted
+              nbr_second_stage_accepted = nbr_second_stage_accepted+1
+              Theta[:,r] = theta_star # update chain with proposal
+              loglik[r] = NaN
+              accept_vec[r] = 1
+            else
+              Theta[:,r] = Theta[:,r-1] # keep old values
+              loglik[r] = loglik[r-1]
+            end
         end
 
       end
@@ -958,11 +948,15 @@ function ADAGPMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
 
   else
 
+    # select case 2 or 4
+
     if rand(Bernoulli(prob_cases[2])) == 1
 
       # case 2
+
       nbr_case_2 = nbr_case_2 + 1
 
+      # run ordinary stage 2
 
       if pf_alg == "apf"
         error("The auxiliary particle filter is not implemented")
@@ -970,27 +964,19 @@ function ADAGPMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
         loglik_star = pf(y, theta_star,theta_known,N,print_on)
       end
 
-      if dist_type == "Uniform" # uniform priors
-        prior_log_star = evaluate_prior(theta_star,Theta_parameters)
-        if prior_log_star == -Inf # reject if the proposed theta is outside the prior
-          prior_vec[r] = 1;
-          accept = false;
-        else
-          # calc accaptance probability using PF
-          # can only run MCWM in this case
-          loglik_old = pf(y, Theta[:,r-1],theta_known,N,print_on)
-          a_log = (loglik_star + loglik_gp_old)  -  (loglik_old + loglik_gp_new)
-          assumption = loglik_star > loglik_old
-          push!(loglik_list, [loglik_star loglik[r-1] loglik_gp_new loglik_gp_old loglik_gp_new_std])
-          push!(assumption_list, assumption)
-          accept = u_log_hat < a_log # calc accaptance decision
-          accept_prob_log[2, r] = a_log # store data
-        end
-      end
+      # calc accaptance probability using PF
+      # can only run MCWM in this case
+      loglik_old = pf(y, Theta[:,r-1],theta_known,N,print_on)
+      a_log = (loglik_star + loglik_gp_old)  -  (loglik_old + loglik_gp_new)
+      assumption = loglik_star > loglik_old
+      push!(loglik_list, [loglik_star loglik[r-1] loglik_gp_new loglik_gp_old loglik_gp_new_std])
+      push!(assumption_list, assumption)
+      accept = u_log_hat < a_log # calc accaptance decision
+      accept_prob_log[2, r] = a_log # store data
+
 
       if accept # the proposal is accapted
         nbr_second_stage_accepted = nbr_second_stage_accepted+1
-
         Theta[:,r] = theta_star # update chain with proposal
         loglik[r] = NaN
         accept_vec[r] = 1
@@ -1005,7 +991,7 @@ function ADAGPMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
        nbr_case_4 = nbr_case_4 + 1
 
        # accept directly
-       nbr_second_stage_accepted = nbr_second_stage_accepted+1
+       nbr_split_accaptance_region_early_accept = nbr_split_accaptance_region_early_accept+1
 
        Theta[:,r] = theta_star # update chain with proposal
        loglik[r] = NaN
@@ -1030,10 +1016,8 @@ function ADAGPMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
   @printf "Time fit GP model:  %.0f\n" time_fit_gp
   @printf "Time er-part:  %.0f\n" time_da_part
   @printf "Number early-rejections: %d\n"  nbr_early_rejections
-  @printf "Secound stage direct limit: %.f\n"  secound_stage_direct_limit
   @printf "Number of cases directly to ordinary MH: %d\n"  nbr_ordinary_mh
 
-  @printf "Number split accaptance region: %d\n" nbr_split_accaptance_region
   @printf "Number split accaptance region early-accept: %d\n"  nbr_split_accaptance_region_early_accept
   @printf "Number split accaptance region early-reject: %d\n"  nbr_split_accaptance_region_early_reject
 
@@ -1052,7 +1036,7 @@ function ADAGPMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
   @printf "Number case 4: %d\n"  nbr_case_4
 
   # return resutls
-  return return_gp_results(gp, Theta,loglik,accept_vec,prior_vec, compare_GP_PF, data_gp_pf,nbr_early_rejections, problem, adaptive_update_params,accept_prob_log,times), res_training, theta_training, loglik_training,assumption_list,loglik_list
+  return return_da_results(gp, Theta,loglik,accept_vec,prior_vec, compare_GP_PF, data_gp_pf,nbr_early_rejections, problem, adaptive_update_params,accept_prob_log,times), res_training, theta_training, loglik_training,assumption_list,loglik_list
 
 end
 
