@@ -1,5 +1,12 @@
 # Script for running DA and ADA using the same traninig data
 
+# go to Ricker model folder
+try 
+  cd("Ricker model")
+catch
+ warn("Already in the Ricker model folder")
+end
+
 # set up
 
 include("rickermodel.jl")

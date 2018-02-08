@@ -1,5 +1,12 @@
 # Script for testing the fit of the GP model
 
+# go to Ricker model folder
+try
+  cd("Ricker model")
+catch
+  warn("Already in the Ricker model folder")
+end
+
 include("rickermodel.jl")
 
 using JLD

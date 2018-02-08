@@ -1,5 +1,12 @@
 # Script for running PMCMC/MCWM
 
+# go to Ricker model folder
+try 
+  cd("Ricker model")
+catch
+  warn("Already in the Ricker model folder")
+end
+
 include("rickermodel.jl")
 
 
