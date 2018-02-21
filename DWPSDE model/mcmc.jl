@@ -59,7 +59,7 @@ function MCMC(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=
   dist_type = problem.prior_dist.dist
   Theta_parameters = problem.prior_dist.Theta_parameters
 
-  @printf "#####################################################################"
+  @printf "#####################################################################\n"
 
 
   # print information at start of algorithm
@@ -175,7 +175,7 @@ function MCMC(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=
   @printf "Prior distribution: %s\n" problem.prior_dist.dist
   @printf "Particel filter: %s, on %d cores\n" pf_alg nbr_of_cores
 
-  @printf "#####################################################################"
+  @printf "#####################################################################\n"
 
 
   if store_data && return_cov_matrix
@@ -700,7 +700,7 @@ function adagpMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
   kernel_secound_stage_direct = noAdaptation(xi^2*cov_matrix)
   adaptive_update_params_secound_stage_direct = set_adaptive_alg_params(kernel_secound_stage_direct, length(theta_0),Theta[:,1], R)
 
-  @printf "#####################################################################"
+  @printf "#####################################################################\n"
 
   # print information at start of algorithm
   @printf "Starting DA-GP-MCMC with adaptive RW estimating %d parameters\n" length(theta_true)
@@ -1115,7 +1115,7 @@ function adagpMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
   @printf "Number case 3: %d\n"  nbr_case_3
   @printf "Number case 4: %d\n"  nbr_case_4
 
-  @printf "#####################################################################"
+  @printf "#####################################################################\n"
 
   # return resutls
   return return_gp_results(gp, Theta,loglik,accept_vec,prior_vec, compare_GP_PF, data_gp_pf,nbr_early_rejections, problem, adaptive_update_params,accept_prob_log,times), res_training, theta_training, loglik_training,assumption_list,loglik_list
