@@ -97,14 +97,10 @@ problem_training.adaptive_update =  AMUpdate_gen(eye(set_nbr_params), 1/sqrt(set
 if !load_tranining_data
 
 	if !log_scale_prior
-	  tic()
-	  res_training, theta_training, loglik_training, cov_matrix = MCMC(problem_training, true, true)
-	  time_pre_er = toc()
+	  res_training, theta_training, loglik_training, cov_matrix = @time MCMC(problem_training, true, true)
 	  #export_parameters(res_problem_normal_prior_est_AM_gen[2],jobname)
 	else
-	  tic()
 	  res_training, theta_training, loglik_training, cov_matrix  = @time MCMC(problem_training_nonlog, true, true)
-	  time_pre_er = toc()
 	end
 
 	export_data(problem_training, res_training[1],"da_ada_gpMCMC_training_data"*global_jobname)
