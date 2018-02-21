@@ -1,5 +1,12 @@
 # set up
 
+# set correct path
+try
+  cd("DWPSDE model")
+catch
+  warn("Already in the Ricker model folder")
+end
+
 include("set_up.jl")
 
 using JLD
@@ -10,16 +17,16 @@ using HDF5
 ################################################################################
 
 # nbr of iterations
-nbr_iterations = 10000 # should be 10000
+nbr_iterations = 2000 # should be 10000
 
 # nbr parameters
-set_nbr_params = 7  # should be 7
+set_nbr_params = 2  # should be 7
 
 # nbr particels
-nbr_particels = 200 # should be 200
+nbr_particels = 25 # should be 200
 
 # nbr cores
-nbr_of_cores= 8 # should be > 8
+nbr_of_cores= 4 # should be > 8
 
 # brun-in
 burn_in = 1
@@ -43,10 +50,10 @@ dt_U = 1. # new = 1 old = 1
 length_training_data = 5000 # thid should ne 5000
 
 # job name
-global_jobname = "est7_betamh_01"
+global_jobname = "est2_test_new_code"
 
 # load stored data
-load_tranining_data = true
+load_tranining_data = false
 
 
 ################################################################################
@@ -62,8 +69,8 @@ if set_nbr_params == 2
 end
 
 nbr_iterations_tranining = burn_in_tranining +length_training_data
-nbr_particels_tranining = 200
-nbr_of_cores_tranining = 8
+nbr_particels_tranining = 25 # should be 200
+nbr_of_cores_tranining = 2 # should be 8
 
 ################################################################################
 ##                         set model parameters  for training                               ##
@@ -102,7 +109,7 @@ if !load_tranining_data
 
 	export_data(problem_training, res_training[1],"da_ada_gpMCMC_training_data"*global_jobname)
 
-	save("gp_training_$(set_nbr_params)_par.jld", "res_training", res_training, "theta_training", theta_training, "loglik_training", loglik_training,"cov_matrix",cov_matrix)
+	save("gp_training_$(set_nbr_params)_par_test_new_code.jld", "res_training", res_training, "theta_training", theta_training, "loglik_training", loglik_training,"cov_matrix",cov_matrix)
 
 else
 
