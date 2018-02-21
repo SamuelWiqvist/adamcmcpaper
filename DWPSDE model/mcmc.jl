@@ -1,9 +1,11 @@
-# contains the code for the PCMCM, MCWM and particel filters with assiciated help functions
-
+# contains the code for the PCMCM, MCWM and A(DA)-GP-MCMC algorithms with assiciated help functions
 
 ################################################################################
-###                       PCMMC/gpPMCMC                                     ####
+######               algorithms                                            #####
 ################################################################################
+
+
+# PMCMC/MCWM
 
 doc"""
     MCMC(problem::Problem, store_data::Bool=false)
@@ -90,7 +92,7 @@ function MCMC(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=
   Theta[:,1] = theta_0
 
   if pf_alg == "parallel_apf"
-    loglik[1] = apf_paralell(Z, Theta[:,1],theta_known,N,dt,nbr_x0, nbr_x,subsample_interval,true,false, nbr_of_proc)
+    error("The auxiliary particle filter is not implemented")
   elseif pf_alg == "parallel_bootstrap"
     loglik[1] = pf_paralell(Z, Theta[:,1],theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,true,false, nbr_of_proc,loglik_vec)
   end
@@ -126,7 +128,7 @@ function MCMC(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=
 
     # calc loglik using proposed parameters
     if pf_alg == "parallel_apf"
-      loglik_star = apf_paralell(Z, theta_star,theta_known, N,dt,nbr_x0, nbr_x,subsample_interval,print_on,false, nbr_of_proc)
+      error("The auxiliary particle filter is not implemented")
     elseif pf_alg == "parallel_bootstrap"
       loglik_star = pf_paralell(Z, theta_star,theta_known, N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,print_on,false, nbr_of_proc,loglik_vec)
     end
@@ -141,7 +143,7 @@ function MCMC(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=
       if pf_alg == "parallel_bootstrap"
         loglik_current =  pf_paralell(Z, Theta[:,r-1],theta_known, N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,print_on, false, nbr_of_proc,loglik_vec)
       elseif pf_alg == "parallel_apf"
-        loglik_current =  apf_paralell(Z, Theta[:,r-1],theta_known, N,dt,nbr_x0, nbr_x,subsample_interval,print_on, false, nbr_of_proc)
+        error("The auxiliary particle filter is not implemented")
       end
     else
       loglik_current = loglik[r-1]
@@ -220,6 +222,7 @@ function MCMC(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=
 
 end
 
+# DA-GP-MCMC
 
 doc"""
     dagpMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov_matrix::Matrix)
@@ -362,7 +365,7 @@ function dagpMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
   Theta[:,1] = theta_0
 
   if pf_alg == "parallel_apf"
-    #loglik[1] = apf_paralell(Z, Theta[:,1],theta_known,N,dt,nbr_x0, nbr_x,subsample_interval,true,false, nbr_of_proc)
+    error("The auxiliary particle filter is not implemented")
   elseif pf_alg == "parallel_bootstrap"
     loglik[1] = pf_paralell(Z, Theta[:,1],theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,true,false, nbr_of_proc, loglik_vec)
   end
@@ -625,6 +628,7 @@ function dagpMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
 end
 
 
+# ADA-GP_MCMC
 
 doc"""
     adagpMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov_matrix::Matrix)
@@ -781,7 +785,7 @@ function adagpMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
   Theta[:,1] = theta_0
 
   if pf_alg == "parallel_apf"
-    #loglik[1] = apf_paralell(Z, Theta[:,1],theta_known,N,dt,nbr_x0, nbr_x,subsample_interval,true,false, nbr_of_proc)
+    error("The auxiliary particle filter is not implemented")
   elseif pf_alg == "parallel_bootstrap"
     loglik[1] = pf_paralell(Z, Theta[:,1],theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,true,false, nbr_of_proc,loglik_vec)
   end
@@ -1168,11 +1172,8 @@ function adagpMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
 end
 
 
-
-
-
 ################################################################################
-###               Help functions for PMCMC and gpPMCMC                       ###
+######               help functions                                        #####
 ################################################################################
 
 doc"""
@@ -1220,7 +1221,7 @@ function set_nbr_cores(nbr_of_cores::Int64, pf_alg::String)
     if pf_alg == "parallel_bootstrap"
       @everywhere include("run_pf_paralell.jl")
     else
-      @everywhere include("run_apf_paralell.jl")
+      error("The auxiliary particle filter is not implemented")
     end
   else
     nbr_of_proc = length(workers())
@@ -1457,43 +1458,6 @@ end
 
 
 doc"""
-    apf_paralell(Z::Array{Float64},theta::Array{Float64},theta_known::Array{Float64}, N::Int64,dt::Float64, nbr_x0::Int64, nbr_x::Int64,subsample_interval::Int64,print_on::Bool, store_weigths::Bool, nbr_of_proc::Int64)
-
-Runs the auxiliar particle filter filter and estiamtes the `log-likelihood`
-P(`Z`|`theta`)
-"""
-function apf_paralell(Z::Array{Float64},theta::Array{Float64},theta_known::Array{Float64}, N::Int64,dt::Float64, nbr_x0::Int64, nbr_x::Int64,subsample_interval::Int64,print_on::Bool, return_weigths_and_particels::Bool, nbr_of_proc::Int64)
-
-  # set parameters
-  (Κ, Γ, A,B,c,d,g,f,power1,power2,sigma) = set_parameters(theta, theta_known,length(theta))
-
-
-  # set value for constant b function
-  b_const = sqrt(2.*sigma^2 / 2.)
-
-  # set values needed for calculations in Float64
-  (subsample_interval_calc, nbr_x0_calc, nbr_x_calc,N_calc) = map(Float64, (subsample_interval, nbr_x0, nbr_x,N))
-
-  if !return_weigths_and_particels
-    # run nbr_of_proc parallel estimations
-    loglik = @parallel (+) for i = 1:nbr_of_proc
-      run_apf_paralell(Z,theta,theta_known, N, N_calc, dt, nbr_x0, nbr_x0_calc, nbr_x, nbr_x_calc, subsample_interval, subsample_interval_calc, print_on, return_weigths_and_particels, Κ, Γ, A, B, c, d, f, g, power1, power2, b_const)
-    end
-
-    # return the average of the nbr_of_proc estimations
-    return loglik/nbr_of_proc
-  else
-    # run nbr_of_proc parallel estimations
-    (loglik,weigths, particels) = run_apf_paralell(Z,theta,theta_known, N, N_calc, dt, nbr_x0, nbr_x0_calc, nbr_x, nbr_x_calc, subsample_interval, subsample_interval_calc, print_on, return_weigths_and_particels, Κ, Γ, A, B, c, d, f, g, power1, power2, b_const)
-
-    # return the average of the nbr_of_proc estimations
-    return loglik, weigths, particels
-  end
-
-end
-
-
-doc"""
     set_parameters(theta::Array{Float64}, theta_known::Array{Float64}, nbr_of_unknown_parameters::Int64)
 
 Sets the model parameters according to the nbr of unknown parameters. Help function for pf.
@@ -1544,164 +1508,6 @@ end
 ################################################################################
 ###            Functions for particle filter diagnostics                    ####
 ################################################################################
-
-doc"""
-    compare_pf_apf(problem::Problem, nbr_iterations::Int64=100)
-
-Runs the boostrap filter and the auxiliar particle filter for nbr_iterations times.
-
-# Inputs
-
-* `problem`: the type decribing the problem
-* `nbr_iterations`: number of iterations of the particel filters
-
-# Output
-
-* `loglik_matrix`: A nbr_iterations x nbr_iterations matrix with the computed log-likelihood values
-
-"""
-function compare_pf_apf(problem::Problem, nbr_iterations::Int64=100)
-
-  # data
-  Z = problem.data.Z
-
-  # algorithm parameters
-  R = problem.alg_param.R
-  N = problem.alg_param.N
-  burn_in = problem.alg_param.burn_in
-  pf_alg = problem.alg_param.pf_alg
-  nbr_x0  = problem.alg_param.nbr_x0
-  nbr_x = problem.alg_param.nbr_x
-  subsample_interval = problem.alg_param.subsample_int
-  dt = problem.alg_param.dt
-
-  # model parameters
-  theta_true = problem.model_param.theta_true
-  theta_known = problem.model_param.theta_known
-  theta_0 = problem.model_param.theta_0
-
-
-  # pre-allocate matrix for storing computed loglik values
-  loglik_matrix = zeros(nbr_iterations,2) # pf apf
-
-
-  @printf "Starting compare_pf_apf\n"
-
-
-  # add processors and set nbr_pf_proc if using parallel pf
-  if length(workers()) == 1
-    nbr_of_proc = problem.alg_param.nbr_of_cores # set nbr of workers to use
-    addprocs(nbr_of_proc)
-    #@everywhere include("run_pf_paralell.jl")
-    #@everywhere include("run_apf_paralell.jl")
-  else
-    nbr_of_proc = length(workers())
-  end
-
-  ploton = false
-
-  # run pf
-  @printf "Runnig pf %d times\n" nbr_iterations
-  @everywhere include("run_pf_paralell.jl")
-  for j = 1:nbr_iterations
-    if ploton
-      @printf "Running pf, iteration: %d\n" j
-    end
-    loglik_matrix[j,1] = pf_paralell(Z, theta_true,theta_known,N,dt,nbr_x0, nbr_x,subsample_interval,true,false, nbr_of_proc)
-  end
-
-  # run apf
-  @printf "Runnig apf %d times\n" nbr_iterations
-  @everywhere include("run_apf_paralell.jl")
-  for j = 1:nbr_iterations
-    if ploton
-      @printf "Running apf, iteration: %d\n" j
-    end
-    loglik_matrix[j,2] = apf_paralell(Z, theta_true,theta_known,N,dt,nbr_x0, nbr_x,subsample_interval,true,false, nbr_of_proc)
-  end
-
-  return loglik_matrix
-
-end
-
-doc"""
-    compare_pf_apf(problem::Problem, nbr_iterations::Int64=100, theta_compute::Array)
-
-Runs the boostrap filter and the auxiliar particle filter for nbr_iterations times.
-
-# Inputs
-
-* `problem`: the type decribing the problem
-* `nbr_iterations`: number of iterations of the particel filters
-
-# Output
-
-* `loglik_matrix`: A nbr_iterations x nbr_iterations matrix with the computed log-likelihood values
-
-"""
-function compare_pf_apf(problem::Problem, nbr_iterations::Int64, theta_compute::Array)
-
-  # data
-  Z = problem.data.Z
-
-  # algorithm parameters
-  R = problem.alg_param.R
-  N = problem.alg_param.N
-  burn_in = problem.alg_param.burn_in
-  pf_alg = problem.alg_param.pf_alg
-  nbr_x0  = problem.alg_param.nbr_x0
-  nbr_x = problem.alg_param.nbr_x
-  subsample_interval = problem.alg_param.subsample_int
-  dt = problem.alg_param.dt
-
-  # model parameters
-  theta_true = problem.model_param.theta_true
-  theta_known = problem.model_param.theta_known
-  theta_0 = problem.model_param.theta_0
-
-
-  # pre-allocate matrix for storing computed loglik values
-  loglik_matrix = zeros(nbr_iterations,2) # pf apf
-
-
-  @printf "Starting compare_pf_apf\n"
-
-
-  # add processors and set nbr_pf_proc if using parallel pf
-  if length(workers()) == 1
-    nbr_of_proc = problem.alg_param.nbr_of_cores # set nbr of workers to use
-    addprocs(nbr_of_proc)
-    #@everywhere include("run_pf_paralell.jl")
-    #@everywhere include("run_apf_paralell.jl")
-  else
-    nbr_of_proc = length(workers())
-  end
-
-  ploton = false
-
-  # run pf
-  @printf "Runnig pf %d times\n" nbr_iterations
-  @everywhere include("run_pf_paralell.jl")
-  for j = 1:nbr_iterations
-    if ploton
-      @printf "Running pf, iteration: %d\n" j
-    end
-    loglik_matrix[j,1] = pf_paralell(Z, theta_compute,theta_known,N,dt,nbr_x0, nbr_x,subsample_interval,true,false, nbr_of_proc)
-  end
-
-  # run apf
-  @printf "Runnig apf %d times\n" nbr_iterations
-  @everywhere include("run_apf_paralell.jl")
-  for j = 1:nbr_iterations
-    if ploton
-      @printf "Running apf, iteration: %d\n" j
-    end
-    loglik_matrix[j,2] = apf_paralell(Z, theta_compute,theta_known,N,dt,nbr_x0, nbr_x,subsample_interval,true,false, nbr_of_proc)
-  end
-
-  return loglik_matrix
-
-end
 
 
 doc"""
@@ -1761,12 +1567,9 @@ function pf_diagnostics(problem::Problem, nbr_iterations::Int64, theta_compute::
     (loglik, weigths, particels) = pf_paralell(Z, theta_compute,theta_known,N,dt,nbr_x0, nbr_x,subsample_interval,true,true, nbr_of_proc)
 
   elseif pf_alg == "parallel_apf"
-    for j = 1:nbr_iterations
-      loglik_vec[j] = apf_paralell(Z, theta_compute,theta_known,N,dt,nbr_x0, nbr_x,subsample_interval,false,false, nbr_of_proc)
-    end
 
-    # run nbr_of_proc parallel estimations
-    (loglik, weigths, particels) = apf_paralell(Z, theta_compute,theta_known,N,dt,nbr_x0, nbr_x,subsample_interval,true,true, nbr_of_proc)
+    error("The auxiliary particle filter is not implemented")
+
   end
 
   return loglik_vec, weigths, particels

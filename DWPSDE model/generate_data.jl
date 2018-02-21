@@ -1,7 +1,7 @@
 # function for generating data from the DWP-SDE model with the V_{extended} potential function
 
 doc"""
-    generate_data(theta, theta_known)
+    generate_data(theta, theta_known, scale_grid)
 
 Generates data from the model Z_t = X_t + U_t where
 dX_t = -V_extended'(X_t)dt + dWt and U_t follows an UO-process.
@@ -9,6 +9,7 @@ dX_t = -V_extended'(X_t)dt + dWt and U_t follows an UO-process.
 # Inputs
 * `theta`:true values for the unknown parameters.
 * `theta_known`: known parameters.
+* `scale_grid`: scaling of data set.
 
 # Outputs
 * `Z_sim`: simualted Z process.
@@ -16,27 +17,6 @@ dX_t = -V_extended'(X_t)dt + dWt and U_t follows an UO-process.
 * `diff_dt`: differeance between dt for X and U process.
 """
 function generate_data(theta, theta_known, scale_grid)
-
-  #=
-  if length(theta) == 2
-    (c,d) = exp(theta)
-    (Κ, Γ, A, B, f, g, power1, power2, sigma) = theta_known
-  elseif length(theta) == 4
-    (A, c, d, g) = exp(theta)
-    (Κ, Γ, B, f, power1, power2, sigma) = theta_known
-  elseif length(theta) == 3
-    (A, c, d) = exp(theta)
-    (Κ, Γ, B, f, g, power1, power2, sigma) = theta_known
-  elseif length(theta) == 6
-    (A,c,d,power1,power2,sigma) = exp(theta)
-    (Κ, Γ, B, f, g) = theta_known
-  else
-    # estiamte all i.e 7 parameters kappa, gamma, A,c,d,g and sigma
-    (B,f) = theta_known
-
-    (Κ, Γ, A,B,f,g,power1,power2,sigma) = exp(theta)
-  end
-  =#
 
   # set parameters, use this to move between difference parameter combinations easily
   (Κ, Γ, A,A_sign,B,c,d,g,f,power1,power2,sigma) = set_parameters(theta, theta_known, length(theta))
@@ -108,27 +88,6 @@ dX_t = -V_extended'(X_t)dt + dWt and U_t follows an UO-process.
 * `diff_dt`: differeance between dt for X and U process.
 """
 function generate_data(theta, theta_known)
-
-  #=
-  if length(theta) == 2
-    (c,d) = exp(theta)
-    (Κ, Γ, A, B, f, g, power1, power2, sigma) = theta_known
-  elseif length(theta) == 4
-    (A, c, d, g) = exp(theta)
-    (Κ, Γ, B, f, power1, power2, sigma) = theta_known
-  elseif length(theta) == 3
-    (A, c, d) = exp(theta)
-    (Κ, Γ, B, f, g, power1, power2, sigma) = theta_known
-  elseif length(theta) == 6
-    (A,c,d,power1,power2,sigma) = exp(theta)
-    (Κ, Γ, B, f, g) = theta_known
-  else
-    # estiamte all i.e 7 parameters kappa, gamma, A,c,d,g and sigma
-    (B,f) = theta_known
-
-    (Κ, Γ, A,B,f,g,power1,power2,sigma) = exp(theta)
-  end
-  =#
 
   # set parameters, use this to move between difference parameter combinations easily
   (Κ, Γ, A,A_sign,B,c,d,g,f,power1,power2,sigma) = set_parameters(theta, theta_known, length(theta))

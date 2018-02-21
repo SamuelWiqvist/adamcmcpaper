@@ -1,14 +1,15 @@
 # functions for I/O operations of data and results
 
 doc"""
-    export_data(problem::Problem, results::Result)
+    export_data(problem::Problem, results::Result, jobname::String)
 
 Exportes the resultes into three cvs files
 
 # Files
-* `output_param.csv`: contines theta_0 and burn_in.
 * `output_res.csv`: contines the estimations of Theta, loglik and the accept vec
-* `output_param.csv`: contines the parameters for the (unifrom) prior distribution.
+* `output_prior_dist.csv`: contines parameters for the prior distributions.
+* `output_prior_dist_type.csv`: contines information reg. the prior distribution.
+* `data_used.csv`: contins the data set.
 """
 function export_data(problem::Problem, results::Result, jobname::String)
 
@@ -45,7 +46,17 @@ function export_data(problem::Problem, results::Result, jobname::String)
 
 end
 
+doc"""
+    export_data(problem::gpProblem, results::Result, jobname::String)
 
+Exportes the resultes into three cvs files
+
+# Files
+* `output_res.csv`: contines the estimations of Theta, loglik and the accept vec
+* `output_prior_dist.csv`: contines parameters for the prior distributions.
+* `output_prior_dist_type.csv`: contines information reg. the prior distribution.
+* `data_used.csv`: contins the data set.
+"""
 function export_data(problem::gpProblem, results::Result, jobname::String)
 
   # set parameters

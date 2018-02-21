@@ -11,15 +11,11 @@ using StatsFuns
 
 # load functions
 if Sys.CPU_CORES == 8
-  #include("/usr/maths/samuel/local/Dropbox/Phd Education/Julia/gpmodel/gp_model.jl")
-  #include("/usr/maths/samuel/local/Dropbox/Phd Education/Julia/adaptive updating algorithms/adaptiveupdate.jl")
-  include("C:\\Users\\samuel\\Dropbox\\Phd Education\\Julia\\gpmodel\\gp_model.jl")
-  include("C:\\Users\\samuel\\Dropbox\\Phd Education\\Julia\\adaptive updating algorithms\\adaptiveupdate.jl")
-
-
+  include("C:\\Users\\samuel\\Dropbox\\Phd Education\\Projects\\project 1 accelerated DA and DWP SDE\\code\\gpmodel\\gp_model.jl")
+  include("C:\\Users\\samuel\\Dropbox\\Phd Education\\Projects\\project 1 accelerated DA and DWP SDE\\code\\adaptive updating algorithms\\adaptiveupdate.jl")
 else
-  include("C:\\Users\\samue\\Dropbox\\Phd Education\\Julia\\gpmodel\\gp_model.jl")
-  include("C:\\Users\\samue\\Dropbox\\Phd Education\\Julia\\adaptive updating algorithms\\adaptiveupdate.jl")
+  include("C:\\Users\\samue\\OneDrive\\Documents\\GitHub\\adamcmcpaper\\gpmodel\\gp_model.jl")
+  include("C:\\Users\\samue\\OneDrive\\Documents\\GitHub\\adamcmcpaper\\adaptive updating algorithms\\adaptiveupdate.jl")
 end
 
 "Type for prior distribution"
@@ -132,10 +128,6 @@ type DAParameters
 end
 
 
-"Type for the parameters of the IS part of the ISMCMCM algorithm"
-type ISParameters
-  method::String
-end
 
 "Type for the results"
 type Result
@@ -296,6 +288,7 @@ function set_up_gp_problem(;use_sim_data::Bool=true,nbr_of_unknown_parameters::I
 
   # set data
   if use_sim_data
+    # use simulated data
     if data_set == "old"
       # load simulated data from "data.csv"
       #Z_df = readtable("data.csv")
@@ -307,11 +300,12 @@ function set_up_gp_problem(;use_sim_data::Bool=true,nbr_of_unknown_parameters::I
       Z = convert(Array, Z_df)
     end
   else
+    # use real data
     if data_set == "old"
-      Z = load_data()
+      Z = load_data() # load the old data set
     else
       # load data
-      file = open("new_data_set.txt")
+      file = open("new_data_set.txt") # load the new data set
       data = readlines(file)
       close(file)
 
