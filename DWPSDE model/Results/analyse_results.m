@@ -5,8 +5,8 @@ close all
 
 load_data_from_files = true; % load data from files or form some matlab workspace
 plot_prior_trace_plot = false; 
-ergp = '_ergp'; % set to _ergp to load ER-GP file  o.w. []
-jobname = 'est7_betamh_01ada_gp_mcmc'; % set to jobname string  
+ergp = ''; % set to _ergp to load ER-GP file  o.w. []
+jobname = 'test_new_calc_for_a'; % set to jobname string  
 
 
 % gp_training_7_par

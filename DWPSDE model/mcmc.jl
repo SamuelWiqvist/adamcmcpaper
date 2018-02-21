@@ -8,16 +8,9 @@
 # PMCMC/MCWM
 
 doc"""
-    MCMC(problem::Problem, store_data::Bool=false)
+    MCMC(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=false)
 
-Runs the MCWM algorithms with an adaptive gaussian random walk.
-
-# Inputs
-* `Problem`: type that discribes the problem
-* `store_data`: return proposals and corresponding loglik values
-
-# Outputs
-* `Results`: type with the results
+Runs PMCMC or MCWM with adaptive gaussian random walk.
 """
 function MCMC(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=false)
 
@@ -57,8 +50,6 @@ function MCMC(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=
     loglik_val = zeros(R-burn_in)
   end
 
-  # draw u's for checking if u < a
-  u_log = log.(rand(1,R))
 
   # parameters for adaptive update
   adaptive_update_params = set_adaptive_alg_params(problem.adaptive_update, length(theta_0),Theta[:,1], R)
@@ -92,7 +83,7 @@ function MCMC(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=
   Theta[:,1] = theta_0
 
   if pf_alg == "parallel_apf"
-    error("The auxiliary particle filter is not implemented")
+    error("The auxiliary particle filter is not implemented.")
   elseif pf_alg == "parallel_bootstrap"
     loglik[1] = pf_paralell(Z, Theta[:,1],theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,true,false, nbr_of_proc,loglik_vec)
   end
@@ -128,7 +119,7 @@ function MCMC(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=
 
     # calc loglik using proposed parameters
     if pf_alg == "parallel_apf"
-      error("The auxiliary particle filter is not implemented")
+      error("The auxiliary particle filter is not implemented.")
     elseif pf_alg == "parallel_bootstrap"
       loglik_star = pf_paralell(Z, theta_star,theta_known, N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,print_on,false, nbr_of_proc,loglik_vec)
     end
@@ -143,49 +134,25 @@ function MCMC(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=
       if pf_alg == "parallel_bootstrap"
         loglik_current =  pf_paralell(Z, Theta[:,r-1],theta_known, N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,print_on, false, nbr_of_proc,loglik_vec)
       elseif pf_alg == "parallel_apf"
-        error("The auxiliary particle filter is not implemented")
+        error("The auxiliary particle filter is not implemented.")
       end
     else
       loglik_current = loglik[r-1]
     end
 
-    # evaluate prior distribution
-    prior_log_star = evaluate_prior(theta_star,Theta_parameters,dist_type)
-    prior_log = evaluate_prior(Theta[:,r-1],Theta_parameters,dist_type)
+    prior_log_star = evaluate_prior(theta_star,Theta_parameters, dist_type)
+    prior_log_old = evaluate_prior(Theta[:,r-1],Theta_parameters, dist_type)
 
-    if dist_type == "Uniform" # uniform priors
+    jacobian_log_star = jacobian(theta_star)
+    jacobian_log_old = jacobian(Theta[:,r-1])
 
-      if prior_log_star == -Inf # reject if the proposed theta is outside the prior
-        prior_vec[r] = 1;
-        accept = false;
-      else
-        a_log = loglik_star  -  loglik_current
-        accept = u_log[r] < a_log # calc accept
-      end
+    a_log = loglik_star + prior_log_star +  jacobian_log_star - (loglik_current +  prior_log_old + jacobian_log_old)
 
-    elseif dist_type == "Normal"
+    # generate log(u)
+    u_log = log(rand())
 
-      a_log = (loglik_star + prior_log_star) -  (loglik_current + prior_log)
-      accept = u_log[r] < a_log # calc accept
+    accept = u_log < a_log # calc accaptace decision
 
-    elseif dist_type == "nonlog"
-
-      if prior_log_star == -Inf # reject if the proposed theta is outside the prior
-
-        prior_vec[r] = 1;
-        accept = false;
-
-      else
-
-        # add Jacobian contribution since we have the priors on non-log-scale
-        a_log = (loglik_star + prior_log_star + sum(theta_star) ) -  ( loglik_current + prior_log + sum(Theta[r-1,:]) )
-
-        accept = u_log[r] < a_log # calc accept
-      end
-
-    else
-      # add code for some other prior dist
-    end
 
     # update chain
     if accept # the proposal is accapted
@@ -227,14 +194,7 @@ end
 doc"""
     dagpMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov_matrix::Matrix)
 
-Runs the dagpMCMC algorithms with an adaptive gaussian random walk.
-
-# Inputs
-* `Problem`: type that discribes the problem
-* `store_data`: return proposals and corresponding loglik values
-
-# Outputs
-* `Results`: type with the results
+Runs the DA-GP-MCMC algorithm.
 """
 function dagpMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov_matrix::Matrix)
 
@@ -307,12 +267,8 @@ function dagpMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
   time_fit_gp = zero(Float64)
   time_er_part = zero(Float64)
 
-
-
   # draw u's for checking if u < a
   u_log = log(rand(1,R))
-
-
 
   # set start value
   #theta_0 = theta_training[:, end] # start at last value of the chain for the training part
@@ -365,7 +321,7 @@ function dagpMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
   Theta[:,1] = theta_0
 
   if pf_alg == "parallel_apf"
-    error("The auxiliary particle filter is not implemented")
+    error("The auxiliary particle filter is not implemented.")
   elseif pf_alg == "parallel_bootstrap"
     loglik[1] = pf_paralell(Z, Theta[:,1],theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,true,false, nbr_of_proc, loglik_vec)
   end
@@ -383,7 +339,6 @@ function dagpMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
     if mod(r-1,print_interval) == 0
       # print percentage done
       @printf "Percentage done: %.4f\n" r/R*100
-
       print_on = true # print ESS and Nbr resample each print_interval:th iteration
       # print accaptance rate
       @printf "Acceptance rate on iteration %d to %d is %.4f\n" r-print_interval r-1  sum(accept_vec[r-print_interval:r-1])/( r-1 - (r-print_interval) )
@@ -399,8 +354,6 @@ function dagpMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
 
     secound_stage_direct = rand() < beta_MH # we always run the early-rejection scheme
 
-
-
     if secound_stage_direct
 
       # secound stage direct
@@ -414,7 +367,7 @@ function dagpMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
 
       # calc loglik using proposed parameters
       if pf_alg == "parallel_apf"
-        error("The auxiliary particle filter is not implemented")
+        error("The auxiliary particle filter is not implemented.")
       elseif pf_alg == "parallel_bootstrap"
         #loglik_star = pf_paralell(Z, theta_star,theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,print_on,false, nbr_of_proc)
         loglik_star = pf_paralell(Z, theta_star,theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,print_on,false, nbr_of_proc,loglik_vec)
@@ -430,7 +383,7 @@ function dagpMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
         # compute accaptance probability
         if alg == "MCWM"
           if pf_alg == "parallel_apf"
-            error("The auxiliary particle filter is not implemented")
+            error("The auxiliary particle filter is not implemented.")
           elseif pf_alg == "parallel_bootstrap"
             #a_log = (loglik_star + prior_log_star) - (pf_paralell(Z, Theta[:,r-1],theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,false,false, nbr_of_proc) + prior_log)
             a_log = (loglik_star + prior_log_star) - (pf_paralell(Z, Theta[:,r-1],theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,false,false, nbr_of_proc,loglik_vec) + prior_log)
@@ -570,7 +523,7 @@ function dagpMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
         nbr_second_stage = nbr_second_stage+1
 
         if pf_alg == "parallel_apf"
-          error("The auxiliary particle filter is not implemented")
+          error("The auxiliary particle filter is not implemented.")
         elseif pf_alg == "parallel_bootstrap"
           #loglik_star = pf_paralell(Z, theta_star,theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,print_on,false, nbr_of_proc)
           loglik_star = pf_paralell(Z, theta_star,theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,print_on,false, nbr_of_proc,loglik_vec)
@@ -631,16 +584,9 @@ end
 # ADA-GP_MCMC
 
 doc"""
-    adagpMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov_matrix::Matrix)
+    adagpMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov_matrix::Matrix, prob_cases::Vector)
 
-Runs the dagpMCMC algorithms with an adaptive gaussian random walk.
-
-# Inputs
-* `Problem`: type that discribes the problem
-* `store_data`: return proposals and corresponding loglik values
-
-# Outputs
-* `Results`: type with the results
+Runs the ADA-GP-MCMC algorithm.
 """
 function adagpMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov_matrix::Matrix, prob_cases::Vector)
 
@@ -785,7 +731,7 @@ function adagpMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
   Theta[:,1] = theta_0
 
   if pf_alg == "parallel_apf"
-    error("The auxiliary particle filter is not implemented")
+    error("The auxiliary particle filter is not implemented.")
   elseif pf_alg == "parallel_bootstrap"
     loglik[1] = pf_paralell(Z, Theta[:,1],theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,true,false, nbr_of_proc,loglik_vec)
   end
@@ -832,7 +778,7 @@ function adagpMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
 
       # calc loglik using proposed parameters
       if pf_alg == "parallel_apf"
-        error("The auxiliary particle filter is not implemented")
+        error("The auxiliary particle filter is not implemented.")
       elseif pf_alg == "parallel_bootstrap"
         loglik_star = pf_paralell(Z, theta_star,theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,print_on,false, nbr_of_proc,loglik_vec)
       end
@@ -847,7 +793,7 @@ function adagpMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
         # compute accaptance probability
         if alg == "MCWM"
           if pf_alg == "parallel_apf"
-            error("The auxiliary particle filter is not implemented")
+            error("The auxiliary particle filter is not implemented.")
           elseif pf_alg == "parallel_bootstrap"
             a_log = (loglik_star + prior_log_star) - (pf_paralell(Z, Theta[:,r-1],theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,false,false, nbr_of_proc,loglik_vec) + prior_log)
           end
@@ -1007,7 +953,7 @@ function adagpMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
             else
 
               if pf_alg == "parallel_pf"
-                error("The auxiliary particle filter is not implemented")
+                error("The auxiliary particle filter is not implemented.")
               elseif pf_alg == "parallel_bootstrap"
                 loglik_star = pf_paralell(Z, theta_star,theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,print_on,false, nbr_of_proc,loglik_vec)
               end
@@ -1050,7 +996,7 @@ function adagpMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
           else
 
             if pf_alg == "parallel_pf"
-              error("The auxiliary particle filter is not implemented")
+              error("The auxiliary particle filter is not implemented.")
             elseif pf_alg == "parallel_bootstrap"
               loglik_star = pf_paralell(Z, theta_star,theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,print_on,false, nbr_of_proc,loglik_vec)
             end
@@ -1088,7 +1034,7 @@ function adagpMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
 
 
           if pf_alg == "parallel_pf"
-            error("The auxiliary particle filter is not implemented")
+            error("The auxiliary particle filter is not implemented.")
           elseif pf_alg == "parallel_bootstrap"
             loglik_star = pf_paralell(Z, theta_star,theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,print_on,false, nbr_of_proc,loglik_vec)
           end
@@ -1179,7 +1125,7 @@ end
 doc"""
     return_results(Theta,loglik,accept_vec,prior_vec, problem,adaptive_update_params)
 
-Constructs the return type of the resutls from the MCWH and PMCMC algorithm.
+Constructs the return type of the resutls from the PMCMC and MCWM algorithm.
 """
 function return_results(Theta,loglik,accept_vec,prior_vec, problem,adaptive_update_params)
   if typeof(problem.adaptive_update) == AMUpdate_gen
@@ -1194,7 +1140,7 @@ function return_results(Theta,loglik,accept_vec,prior_vec, problem,adaptive_upda
 end
 
 doc"""
-    return_gp_results(Theta,loglik,accept_vec,prior_vec, compare_GP_PF, data_gp_pf, problem, adaptive_update_params)
+    return_gp_results(gp, Theta,loglik,accept_vec,prior_vec, compare_GP_PF, data_gp_pf,nbr_early_rejections, problem, adaptive_update_params,accept_prob_log,times)
 
 Constructs the return type of the resutls from the gpPMCMC algorithm.
 """
@@ -1210,9 +1156,9 @@ end
 
 
 doc"""
-    set_nbr_cores(nbr_of_cores::Int64, pf_alg)
+    set_nbr_cores(nbr_of_cores::Int64, pf_alg::String)
 
-Sets the number of cores and particel algorithm to use.
+Sets the number of cores to use.
 """
 function set_nbr_cores(nbr_of_cores::Int64, pf_alg::String)
   if length(workers()) == 1
@@ -1221,7 +1167,7 @@ function set_nbr_cores(nbr_of_cores::Int64, pf_alg::String)
     if pf_alg == "parallel_bootstrap"
       @everywhere include("run_pf_paralell.jl")
     else
-      error("The auxiliary particle filter is not implemented")
+      error("The auxiliary particle filter is not implemented.")
     end
   else
     nbr_of_proc = length(workers())
@@ -1230,119 +1176,124 @@ function set_nbr_cores(nbr_of_cores::Int64, pf_alg::String)
 end
 
 doc"""
-    evaluate_prior(theta_star, Theta_bounds)
+    evaluate_prior(theta_star, Theta_parameters, dist_type)
 
-Calculates the `log-likelihood` for the prior distribution for the parameters `theta_star`.
-
-# Inputs
-* `theta_star`: the proposal for theta.
-* `Theta_bounds`: the bonds for the uniform distributions for the different model parameters.
-
-# Inputs
-* `log_likelihood`: log P(theta_star)
+Calculates the `log-prior` value for the prior distribution for the parameters `theta_star`.
 """
-function  evaluate_prior(theta_star, Theta_parameters, dist_type = "Unifrom")
+function  evaluate_prior(theta_star, Theta_parameters, dist_type)
 
   # set start value for loglik
-  log_likelihood = 0.
+  log_prior = 0.
 
   if dist_type == "Uniform"
     for i = 1:length(theta_star)
       # Update loglik, i.e. add the loglik for each model paramter in theta
-      log_likelihood = log_likelihood + log_unifpdf( theta_star[i], Theta_parameters[i,1], Theta_parameters[i,2] )
+      log_prior = log_prior + log_unifpdf( theta_star[i], Theta_parameters[i,1], Theta_parameters[i,2] )
     end
   elseif dist_type == "Normal"
     for i = 1:length(theta_star)
       # Update loglik, i.e. add the loglik for each model paramter in theta
-      log_likelihood = log_likelihood + log_normpdf(theta_star[i],Theta_parameters[i,1],Theta_parameters[i,2])
+      log_prior = log_prior + log_normpdf(theta_star[i],Theta_parameters[i,1],Theta_parameters[i,2])
     end
   elseif dist_type == "nonlog"
     # add code to handle priors on non-log-scale!
     if length(theta_star) == 2
       for i = 1:length(theta_star)
         # the unknown parameters c and d both have normal prior dists
-        log_likelihood = log_likelihood + log_normpdf( exp(theta_star[i]), Theta_parameters[i,1], Theta_parameters[i,2] )
+        log_prior = log_prior + log_normpdf( exp(theta_star[i]), Theta_parameters[i,1], Theta_parameters[i,2] )
       end
     elseif length(theta_star) == 3
       # the unknown parameter A has a inv-gamma prior dist
-      log_likelihood = log_likelihood + log_invgampdf(exp(theta_star[1]), Theta_parameters[1,1], Theta_parameters[1,2])
+      log_prior = log_prior + log_invgampdf(exp(theta_star[1]), Theta_parameters[1,1], Theta_parameters[1,2])
       for i = 2:3
         # The unknown parameters c and d both have normal prior dists
-        log_likelihood = log_likelihood + log_normpdf( exp(theta_star[i]), Theta_parameters[i,1], Theta_parameters[i,2] )
+        log_prior = log_prior + log_normpdf( exp(theta_star[i]), Theta_parameters[i,1], Theta_parameters[i,2] )
       end
     elseif length(theta_star) == 5
       for i in [1 2 5]
         # The unknown parameters Κ,Γ and sigma both have gamma prior dists
-        log_likelihood = log_likelihood + log_gampdf( exp(theta_star[i]), Theta_parameters[i,1], Theta_parameters[i,2] )
+        log_prior = log_prior + log_gampdf( exp(theta_star[i]), Theta_parameters[i,1], Theta_parameters[i,2] )
       end
       for i = 3:4
         # The unknown parameters c and d both have normal prior dists
-        log_likelihood = log_likelihood + log_normpdf( exp(theta_star[i]), Theta_parameters[i,1], Theta_parameters[i,2] )
+        log_prior = log_prior + log_normpdf( exp(theta_star[i]), Theta_parameters[i,1], Theta_parameters[i,2] )
       end
     elseif length(theta_star) == 6
       # The unknown parameter A has a gaminv prior dist
-      log_likelihood = log_likelihood + log_invgampdf(exp(theta_star[1]), Theta_parameters[1,1], Theta_parameters[1,2])
+      log_prior = log_prior + log_invgampdf(exp(theta_star[1]), Theta_parameters[1,1], Theta_parameters[1,2])
       for i = 2:3
         # The unknown parameters c and d both have normal prior dists
-        log_likelihood = log_likelihood + log_normpdf( exp(theta_star[i]), Theta_parameters[i,1], Theta_parameters[i,2] )
+        log_prior = log_prior + log_normpdf( exp(theta_star[i]), Theta_parameters[i,1], Theta_parameters[i,2] )
       end
       for i = 4:length(theta_star)
         # The unknown parameters p1, p2 and sigma both have gamma prior dists
-        log_likelihood = log_likelihood + log_gampdf( exp(theta_star[i]), Theta_parameters[i,1], Theta_parameters[i,2] )
+        log_prior = log_prior + log_gampdf( exp(theta_star[i]), Theta_parameters[i,1], Theta_parameters[i,2] )
       end
     elseif length(theta_star) == 7
       for i = [1,2,5,6,7]
         # The unknown parameters Κ,Γ,power1,power2 and sigma all have gamma prior dists
-        log_likelihood = log_likelihood + log_gampdf( exp(theta_star[i]), Theta_parameters[i,1], Theta_parameters[i,2] )
+        log_prior = log_prior + log_gampdf( exp(theta_star[i]), Theta_parameters[i,1], Theta_parameters[i,2] )
       end
       for i = [3,4]
         # The unknown parameters c and d have normal prior dists
-        log_likelihood = log_likelihood + log_normpdf( exp(theta_star[i]), Theta_parameters[i,1], Theta_parameters[i,2] )
+        log_prior = log_prior + log_normpdf( exp(theta_star[i]), Theta_parameters[i,1], Theta_parameters[i,2] )
       end
 
     elseif length(theta_star) == 8
       # the unknown parameter A has a inv-gamma prior dist
-      log_likelihood = log_likelihood + log_invgampdf(exp(theta_star[3]), Theta_parameters[3,1], Theta_parameters[3,2])
+      log_prior = log_prior + log_invgampdf(exp(theta_star[3]), Theta_parameters[3,1], Theta_parameters[3,2])
       for i = [1,2,5,6,7]
         # The unknown parameters Κ,Γ,power1,power2 and sigma all have gamma prior dists
-        log_likelihood = log_likelihood + log_gampdf( exp(theta_star[i]), Theta_parameters[i,1], Theta_parameters[i,2] )
+        log_prior = log_prior + log_gampdf( exp(theta_star[i]), Theta_parameters[i,1], Theta_parameters[i,2] )
       end
       for i = [3,4]
         # The unknown parameters c and d have normal prior dists
-        log_likelihood = log_likelihood + log_normpdf( exp(theta_star[i]), Theta_parameters[i,1], Theta_parameters[i,2] )
+        log_prior = log_prior + log_normpdf( exp(theta_star[i]), Theta_parameters[i,1], Theta_parameters[i,2] )
       end
     elseif length(theta_star) == 4
       for i = 1:2
         # The unknown parameters Κ and Γ both have gammma prior dists
-        log_likelihood = log_likelihood + log_invgampdf( exp(theta_star[i]), Theta_parameters[i,1], Theta_parameters[i,2] )
+        log_prior = log_prior + log_invgampdf( exp(theta_star[i]), Theta_parameters[i,1], Theta_parameters[i,2] )
       end
       for i = 3:4
         # The unknown parameters c and d both have normal prior dists
-        log_likelihood = log_likelihood + log_normpdf( exp(theta_star[i]), Theta_parameters[i,1], Theta_parameters[i,2] )
+        log_prior = log_prior + log_normpdf( exp(theta_star[i]), Theta_parameters[i,1], Theta_parameters[i,2] )
       end
 
     else
       for i in [3 6]
         # The unknown parameters A and g have a gaminv prior dist
-        log_likelihood = log_likelihood + log_invgampdf(exp(theta_star[i]), Theta_parameters[i,1], Theta_parameters[i,2])
+        log_prior = log_prior + log_invgampdf(exp(theta_star[i]), Theta_parameters[i,1], Theta_parameters[i,2])
       end
       for i in [4 5]
         # The unknown parameters c and d both have normal prior dists
-        log_likelihood = log_likelihood + log_normpdf( exp(theta_star[i]), Theta_parameters[i,1], Theta_parameters[i,2] )
+        log_prior = log_prior + log_normpdf( exp(theta_star[i]), Theta_parameters[i,1], Theta_parameters[i,2] )
       end
       for i in [1 2 7 8 9]
         # The unknown parameters Κ,Γ,power1,power2 and sigma all have gamma prior dists
-        log_likelihood = log_likelihood + log_gampdf( exp(theta_star[i]), Theta_parameters[i,1], Theta_parameters[i,2] )
+        log_prior = log_prior + log_gampdf( exp(theta_star[i]), Theta_parameters[i,1], Theta_parameters[i,2] )
       end
 
     end
 
   end
 
-  return log_likelihood # return log_lik
+  return log_prior # return log_lik
 
 end
 
+
+
+doc"""
+    jacobian(theta::Vector, parameter_transformation::String)
+
+Returnes log-Jacobian for transformation of proposal space.
+"""
+function jacobian(theta::Vector)
+
+  return sum(theta)
+
+end
 
 
 doc"""
@@ -1568,7 +1519,7 @@ function pf_diagnostics(problem::Problem, nbr_iterations::Int64, theta_compute::
 
   elseif pf_alg == "parallel_apf"
 
-    error("The auxiliary particle filter is not implemented")
+    error("The auxiliary particle filter is not implemented.")
 
   end
 

@@ -1084,30 +1084,30 @@ end
 doc"""
     evaluate_prior(theta_star, Theta_bounds)
 
-Calculates the `log-likelihood` for the prior distribution for the parameters `theta_star`.
+Calculates the `log-prior` value for the prior distribution for the parameters `theta_star`.
 
 # Inputs
 * `theta_star`: the proposal for theta.
 * `Theta_bounds`: the bonds for the uniform distributions for the different model parameters.
 
 # Inputs
-* `log_likelihood`: log P(theta_star)
+* `log_prior`: log P(theta_star)
 """
 function  evaluate_prior(theta_star, Theta_parameters, dist_type = "Uniform")
 
   # set start value for loglik
-  log_likelihood = 0.
+  log_prior = 0.
 
   if dist_type == "Uniform"
     for i = 1:length(theta_star)
       # Update loglik, i.e. add the loglik for each model paramter in theta
-      log_likelihood = log_likelihood + log_unifpdf( theta_star[i], Theta_parameters[i,1], Theta_parameters[i,2] )
+      log_prior = log_prior + log_unifpdf( theta_star[i], Theta_parameters[i,1], Theta_parameters[i,2] )
     end
   else
     # add other priors
   end
 
-  return log_likelihood # return log_lik
+  return log_prior # return log_lik
 
 end
 

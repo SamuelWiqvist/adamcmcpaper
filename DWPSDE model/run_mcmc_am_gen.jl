@@ -2,11 +2,17 @@
 
 # running the MCMC algorithm using the adaptive AM algorithm for the adaptation
 
+# set correct path
+try
+  cd("DWPSDE model")
+catch
+  warn("Already in the Ricker model folder")
+end
+
 # load files and functions
 include("set_up.jl")
 
-
-jobname = "test_new_pf_2"
+jobname = "test_new_calc_for_a"
 
 # set parameters
 nbr_iterations = 2000
@@ -20,7 +26,6 @@ mcmc_alg = "MCWM"  # set MCWM or PMCMC
 data_set = "old"
 dt = 0.035 # new = 0.35 old = 0.035
 dt_U = 1. # new = 1 old = 1
-
 
 ################################################################################
 ##                         set model parameters                               ##
@@ -50,22 +55,23 @@ problem_nonlog_prior_est_AM_gen.adaptive_update =  AMUpdate_gen(eye(set_nbr_para
 ###               Plot data                                                  ###
 ################################################################################
 
-using PyPlot
+#using PyPlot
 
-PyPlot.plot(problem_normal_prior_est_AM_gen.data.Z)
-
+#PyPlot.plot(problem_normal_prior_est_AM_gen.data.Z)
 
 ################################################################################
 ##                Run MCMC and export results                                 ##
 ################################################################################
 
 if !log_scale_prior
+  println("run Normal prior model")
   tic()
   res_problem_normal_prior_est_AM_gen = MCMC(problem_normal_prior_est_AM_gen)
   run_time = toc()
   export_data(problem_normal_prior_est_AM_gen, res_problem_normal_prior_est_AM_gen[1],jobname)
   #export_parameters(res_problem_normal_prior_est_AM_gen[2],jobname)
 else
+  println("run log-scale prior model")
   tic()
   res_problem_nonlog_prior_est_AM_gen  = @time MCMC(problem_nonlog_prior_est_AM_gen)
   run_time = toc()
