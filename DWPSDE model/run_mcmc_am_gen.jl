@@ -6,7 +6,7 @@
 try
   cd("DWPSDE model")
 catch
-  warn("Already in the Ricker model folder")
+  warn("Already in the DWP-SDE folder.")
 end
 
 # load files and functions
