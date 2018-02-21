@@ -4,6 +4,14 @@ using PyPlot
 using StatPlots
 using KernelDensity
 using Distributions
+using DataFrames
+
+try
+  cd("DWPSDE model\\Results")
+catch
+  warn("Already in the Ricker model folder")
+end
+
 
 # load functions to compute posterior inference
 if Sys.CPU_CORES == 8
@@ -22,29 +30,26 @@ plot_prior_trace_plot = false
 ergp = ""# % set to _ergp to load ER-GP file  o.w. []
 jobname = "test_new_calc_for_a" # set to jobname string
 
-
 if load_data_from_files
 
-    data_res = readtable("output_res"*ergp*jobname*".csv")
 
-    data_res = data_res.data
-    [ M , N ] = size(data_res)
+    data_res = convert(Array,readtable("output_res"*ergp*jobname*".csv"))
 
-    data_param = readtable("output_param"*ergp*jobname*".csv")
-    data_param = data_param.data
+    M, N = size(data_res)
+
+    data_param = convert(Array,readtable("output_param"*ergp*jobname*".csv"))
+
     theta_true = data_param[1:N-2]
     burn_in = data_param[N-2+1]
 
-    data_prior_dist = readtable("output_prior_dist"*ergp*jobname*".csv")
-    data_prior_dist = data_prior_dist.data;
+    data_prior_dist = convert(Array,readtable("output_prior_dist"*ergp*jobname*".csv"))
 
-    data_prior_dist_type = readtable("output_prior_dist_type"*ergp*jobname*".csv")
-    data_prior_dist_type = data_prior_dist_type{2,1};
-    data_prior_dist_type = data_prior_dist_type(6:end-1);
+    data_prior_dist_type = convert(Array,readtable("output_prior_dist_type"*ergp*jobname*".csv"))
+    data_prior_dist_type = data_prior_dist_type[2]
 
-    Z = readtable("data_used"*ergp*jobname*".csv");
-    Z = Z.data;
-    Z = Z(:,1);
+    Z = convert(Array,readtable("data_used"*ergp*jobname*".csv"))
+    Z = Z[:,1]
+
 
 else
 
@@ -65,25 +70,25 @@ acf = zeros(N-2,nbr_acf_lags+1)
 # use L"$\log r$"
 
 if N == 6
-    title_vec_log = [ 'log Kappa'; 'log Gamma'; 'log c    '; 'log d    '];
+    title_vec_log = [ L"$\log Kappa$"; L"$\log Gamma$"; L"$\log c$"; L"$\log d$"];
     title_vec = [ 'Kappa'; 'Gamma'; 'c    '; 'd    '];
 elseif N == 4
-    title_vec_log = [ 'log c'; 'log d' ];
+    title_vec_log = [ L"$\log c$"; L"$\log d$" ];
     title_vec = [ 'c'; 'd' ];
 elseif N == 5
-    title_vec_log = [ 'log A';'log c'; 'log d' ];
+    title_vec_log = [ L"$\log A$";L"$\log c$"; L"$\log d$" ];
     title_vec = [ 'A';'c'; 'd' ];
 elseif N == 8
-    title_vec_log = [ 'log A    '; 'log c    '; 'log d    '; 'log p_1  '; 'log p_2  '; 'log sigma'];
+    title_vec_log = [ L"$\log A$"; L"$\log c$"; L"$\log d$"; L"$\log p_1$"; L"$\log p_2$"; L"$\log sigma$"];
     title_vec = [  'A    '; 'c    '; 'd    '; 'p_1  '; 'p_1  '; 'sigma'];
 elseif N == 7
-    title_vec_log = [ 'log Kappa'; 'log Gamma'; 'log c    '; 'log d    '; 'log sigma'];
+    title_vec_log = [ L"$\log Kappa$"; L"$\log Gamma$"; L"$\log c$"; L"$\log d$"; L"$\log sigma$"];
     title_vec = [ 'Kappa'; 'Gamma'; 'c    '; 'd    '; 'sigma'];
 elseif N == 9
-    title_vec_log = [ 'log Kappa'; 'log Gamma'; 'log c    '; 'log d    '; 'log p_1  '; 'log p_2  '; 'log sigma'];
+    title_vec_log = [ L"$\log Kappa$"; L"$\log Gamma$"; L"$\log c$"; L"$\log d$"; L"$\log p_1$"; L"$\log p_2$"; L"$\log sigma$"];
     title_vec = [  'Kappa'; 'Gamma'; 'c    '; 'd    '; 'p_1  '; 'p_1  '; 'sigma'];
 else
-    title_vec_log = [ 'log Kappa'; 'log Gamma'; 'log A    '; 'log c    '; 'log d    '; 'log g    '; 'log p_1  '; 'log p_2  '; 'log sigma'];
+    title_vec_log = [ L"$\log Kappa$"; L"$\log Gamma$"; L"$\log A$"; L"$\log c$"    '; L"$\log d$"    '; L"$\log g$"; L"$\log p_1$"; L"$\log p_2$"; L"$\log sigma$"];
     title_vec = [ 'Kappa'; 'Gamma'; 'A    '; 'c    '; 'd    '; 'g    '; 'p_1  '; 'p_1  '; 'sigma'];
 end
 
@@ -237,7 +242,7 @@ end
 
 figure
 plot(loglik)
-ylabel('Log-likelhood')
+ylabel(L"$\log-likelhood')
 xlabel('Iteration')
 
 # plot acceptance rate for each K:th iteration
@@ -287,7 +292,7 @@ hist(Z,50)
 %title('Histogram')
 set(gca,'FontSize',14)
 
-# save results to jld file 
+# save results to jld file
 filename = 'ada_res';
 
 save(filename)
