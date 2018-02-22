@@ -1006,7 +1006,7 @@ function ADAGPMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
   time_da_part = toc()
   times = [time_pre_er time_fit_gp time_da_part]
 
-  @printf "Ending ergpMCMC with adaptive RW estimating %d parameters\n" length(theta_true)
+  @printf "Ending ADA-GP-MCMC with adaptive RW estimating %d parameters\n" length(theta_true)
   @printf "Algorithm: %s\n" alg
   @printf "Adaptation algorithm: %s\n" typeof(problem.adaptive_update)
   @printf "Prior distribution: %s\n" problem.prior_dist.dist

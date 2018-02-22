@@ -17,7 +17,7 @@ using HDF5
 ################################################################################
 
 # nbr of iterations
-nbr_iterations = 2000 # should be 10000
+nbr_iterations = 3000 # should be 10000
 
 # nbr parameters
 set_nbr_params = 2  # should be 7
@@ -36,7 +36,7 @@ sim_data = true
 log_scale_prior = false
 
 # beta_MH
-beta_MH = 0.1
+beta_MH = 0.1 # should be 0.1
 
 # algorithm
 mcmc_alg = "MCWM"  # set MCWM or PMCMC
@@ -53,7 +53,7 @@ length_training_data = 5000 # thid should ne 5000
 global_jobname = "est2_test_new_code"
 
 # load stored data
-load_tranining_data = false
+load_tranining_data = true
 
 
 ################################################################################
@@ -66,6 +66,7 @@ burn_in_tranining = 10000 # this should be 2000 when estimating 2 parameters
 
 if set_nbr_params == 2
 	burn_in_tranining = 1000 # this should be 2000
+	length_training_data = 2000
 end
 
 nbr_iterations_tranining = burn_in_tranining +length_training_data
@@ -109,7 +110,7 @@ if !load_tranining_data
 
 else
 
-	@load "gp_training_$(set_nbr_params)_par_training_and_test_data.jld"
+	@load "gp_training_$(set_nbr_params)_par_test_new_code.jld"
 
 	#=
 	if set_nbr_params == 7
@@ -151,9 +152,9 @@ PyPlot.plt[:hist](loglik_training,100)
 =#
 
 println("Mean:")
-show(mean(theta_training,2))
+println(mean(theta_training,2))
 println("Std:")
-show(std(theta_training,2))
+println(std(theta_training,2))
 
 
 ################################################################################
@@ -256,7 +257,8 @@ else
 end
 
 
-
+# analyse results
+include("./Results/analyse_results.jl")
 
 ################################################################################
 ##                         set A-DA problem                               ##
@@ -385,3 +387,7 @@ else
   export_data(problem_nonlog, mcmc_results,jobname)
   #export_parameters(mcmc_results[2],jobname)
 end
+
+
+# analyse results
+include("./Results/analyse_results.jl")

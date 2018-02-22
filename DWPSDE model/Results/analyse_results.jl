@@ -9,7 +9,7 @@ using DataFrames
 
 # set dir
 try
-    cd("DWPSDE model\\Results")
+    cd("Results")
 catch
     warn("Already in the Results folder for the DWP model.")
 end
@@ -27,8 +27,8 @@ label_size = 15
 
 
 load_data_from_files = true # load data from files or form some matlab workspace
-ergp = "" #  set to _ergp to load ER-GP file  o.w. []
-jobname = "test_new_calc_for_a" # set to jobname string
+ergp = "_dagp" #  set to _ergp to load ER-GP file  o.w. []
+jobname = "est2_test_new_codeada_gp_mcmc" # set to jobname string
 
 if load_data_from_files
 
@@ -98,6 +98,10 @@ acceptance_rate = sum(accept_vec[burn_in:end])/length(accept_vec[burn_in:end])
 # print info
 
 @printf "Accept rate: %.4f %% \n" acceptance_rate*100
+
+@printf "True parameter values:\n"
+Base.showarray(STDOUT,theta_true,false)
+@printf "\n"
 
 @printf "Posterior mean:\n"
 Base.showarray(STDOUT,mean(Theta[:,burn_in+1:end],2),false)
@@ -243,8 +247,6 @@ PyPlot.bar(1:length(accept_vec_k),accept_vec_k)
 PyPlot.ylabel("Acceptance rate")
 PyPlot.xlabel("Iteration")
 
-
-
 # plot data
 PyPlot.figure()
 PyPlot.plot(1:length(Z),Z)
@@ -252,6 +254,10 @@ PyPlot.xlabel("Index")
 
 PyPlot.figure()
 PyPlot.plt[:hist](Z,50)
+
+# leave results folder
+cd("..")
+
 
 # save results to jld file
 
