@@ -4,23 +4,29 @@ include("set_up.jl")
 
 using JLD
 using HDF5
+using StatPlots
 
-# load functions
-if Sys.CPU_CORES == 8
-  include("C:\\Users\\samuel\\Dropbox\\Phd Education\\\LUNARC\\normal probability plot\\normplot.jl")
-  #include("/usr/maths/samuel/local/Dropbox/Phd Education/LUNARC/normal probability plot/normplot.jl")
-else
-  include("C:\\Users\\samue\\Dropbox\\Phd Education\\LUNARC\\normal probability plot\\normplot.jl")
+# set correct path
+try
+  cd("DWPSDE model")
+catch
+  warn("Already in the Ricker model folder")
 end
 
+# load functions to compute posterior inference
+if Sys.CPU_CORES == 8
+    include("C:\\Users\\samuel\\Dropbox\\Phd Education\\Projects\\project 1 accelerated DA and DWP SDE\\code\\utilities\\posteriorinference.jl")
+else
+    include("C:\\Users\\samue\\OneDrive\\Documents\\GitHub\\adamcmcpaper\\utilities\\posteriorinference.jl")
+end
 
 # set parameters
 nbr_iterations = 2000
 nbr_particels = 25
-nbr_of_cores= 8
+nbr_of_cores= 4
 burn_in = 1
 sim_data = true
-set_nbr_params = 7 # should be 7
+set_nbr_params = 2 # should be 7
 log_scale_prior = false
 beta_MH = 0.1
 mcmc_alg = "MCWM"  # set MCWM or PMCMC
@@ -35,6 +41,16 @@ length_training_data = 5000
 accelerated_da = false
 
 load_tranining_data = true
+
+
+# set parameters
+burn_in = 10000 # this should be 2000 when estimating 2 parameters
+
+if set_nbr_params == 2
+	burn_in = 1000 # this should be 2000
+	length_training_data = 2000
+end
+
 
 ################################################################################
 ##                         set DA problem                               ##
@@ -112,9 +128,12 @@ if !load_tranining_data
 
 else
 
+  @load "gp_training_2_par_training_and_test_data_test_new_code.jld"
+
+
   #@load "gp_training_$(set_nbr_params)_par.jld"
   #@load "gp_training_$(set_nbr_params)_par.jld"
-  @load "gp_training_$(set_nbr_params)_par_training_and_test_data.jld"
+  #@load "gp_training_$(set_nbr_params)_par_training_and_test_data.jld"
 
   #=
   if set_nbr_params == 7
@@ -351,7 +370,7 @@ h1 = PyPlot.plt[:hist](residuals,100, normed=true)
 PyPlot.xlabel("Residual",fontsize=text_size)
 PyPlot.ylabel("Freq.",fontsize=text_size)
 
-normplot(residuals)
+StatPlots.qqplot(Normal, residuals)
 
 ################################################################################
 ##  Compare assumption                                                                            ##

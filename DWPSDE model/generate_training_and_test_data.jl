@@ -2,6 +2,13 @@
 
 include("set_up.jl")
 
+# set correct path
+try
+  cd("DWPSDE model")
+catch
+  warn("Already in the Ricker model folder")
+end
+
 using JLD
 using HDF5
 
@@ -10,16 +17,16 @@ using HDF5
 ################################################################################
 
 # set nbr parameters
-set_nbr_params = 7 # should be 7
+set_nbr_params = 2 # should be 7
 
 # nbr particles
-nbr_particels = 200 # should be 200
+nbr_particels = 25 # should be 200
 
 # set burn-in
-burn_in = 10000 # should be 10000
+burn_in = 1000 # should be 10000
 
 # set nbr of cores
-nbr_of_cores = 8 # should be > 8
+nbr_of_cores = 4 # should be > 8
 
 # set data to use
 sim_data = true
@@ -36,8 +43,8 @@ dt = 0.035 # new = 0.5 old = 0.035
 dt_U = 1. # new = 1 old = 1
 
 # set length for training and test data
-length_training_data = 5000 # should be 5000
-length_test_data = 5000 # should be 5000
+length_training_data = 2000 # should be 5000
+length_test_data = 2000 # should be 5000
 
 
 # set nbr of iterations
@@ -68,14 +75,17 @@ problem_training.adaptive_update =  AMUpdate_gen(eye(set_nbr_params), 1/sqrt(set
 
 
 if !log_scale_prior
+	println("run Normal prior model")
 	tic()
 	res_training, theta_training, loglik_training, cov_matrix = MCMC(problem_training, true, true)
 	time_pre_er = toc()
 	#export_parameters(res_problem_normal_prior_est_AM_gen[2],jobname)
 else
-	tic()
-	res_training, theta_training, loglik_training, cov_matrix  = @time MCMC(problem_training_nonlog, true, true)
-	time_pre_er = toc()
+	println("run log-scale prior model")
+	error("problem_training_nonlog is not defined.")
+	#tic()
+	#res_training, theta_training, loglik_training, cov_matrix  = @time MCMC(problem_training_nonlog, true, true)
+	#time_pre_er = toc()
 end
 
 ################################################################################
@@ -83,7 +93,7 @@ end
 ################################################################################
 
 # export generated data
-export_data(problem_training, res_training[1],"gp_training_$(set_nbr_params)_par")
+export_data(problem_training, res_training[1],"gp_training_$(set_nbr_params)_par_test_new_code")
 
 # split training and test data
 
@@ -96,4 +106,4 @@ loglik_training = loglik_training[1:length_training_data]
 
 
 # save training data, test data, and covaraince matrix to a Julia workspace file
-save("gp_training_$(set_nbr_params)_par_training_and_test_data.jld", "res_training", res_training, "theta_training", theta_training, "loglik_training", loglik_training, "theta_test", theta_test, "loglik_test", loglik_test,"cov_matrix",cov_matrix)
+save("gp_training_$(set_nbr_params)_par_training_and_test_data_test_new_code.jld", "res_training", res_training, "theta_training", theta_training, "loglik_training", loglik_training, "theta_test", theta_test, "loglik_test", loglik_test,"cov_matrix",cov_matrix)

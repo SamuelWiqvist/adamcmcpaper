@@ -113,6 +113,7 @@ else
 	@load "gp_training_$(set_nbr_params)_par_test_new_code.jld"
 
 	#=
+	gp_training_2_par_training_and_test_data_test_new_code.jld
 	if set_nbr_params == 7
 		@load "gp_training_7_par_training_and_test_data_multiple_cores_fix_logsumexp.jld"
 	else
@@ -180,7 +181,7 @@ if true #problem.alg_param.est_method == "ml"
   #perc_outlier = 0.1 # used when using PMCMC for trainig data 0.05
   #tail_rm = "left"
 
-  perc_outlier = 0.05 # should be 0.05
+  perc_outlier = 0.02 # should be 0.05
   tail_rm = "left"
   lasso = true # should be true
 
