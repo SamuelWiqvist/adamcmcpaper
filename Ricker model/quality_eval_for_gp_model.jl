@@ -344,13 +344,10 @@ PyPlot.ylabel("Freq.",fontsize=text_size)
 
 normplot(residuals)
 
+
 ################################################################################
-##  Compare assumption using biased coin model                                                                             ##
+##  Create features for classification models                                                                            ##
 ################################################################################
-
-
-# estimate probabilities for assumptions
-
 
 n = size(data_training,2)
 n_burn_in = problem_traning.alg_param.burn_in
@@ -366,6 +363,7 @@ idx_test_old = idx_test_start-1:idx_test_end-1
 
 loglik_training_old = res_training[1].loglik_est[idx_training_old]
 loglik_test_old = res_training[1].loglik_est[idx_test_old]
+
 
 dim = length(problem.model_param.theta_true)
 data_signs = zeros(4,n)
@@ -385,26 +383,199 @@ nbr_GP_star_geq_GP_old = zero(Int64)
 nbr_case_1 = zero(Int64)
 nbr_case_4 = zero(Int64)
 
+targets_case_1_and_3 = []
+data_case_1_and_3 = []
+
+targets_case_2_and_4 = []
+data_case_2_and_4 = []
+
 for i = 1:n
   if data_signs[1,i] > data_signs[2,i]
     nbr_GP_star_geq_GP_old += 1
+    data_case_1_and_3 = vcat(data_case_1_and_3, data_training[1:dim,i])
     if data_signs[3,i] > data_signs[4,i]
+      append!(targets_case_1_and_3, 1)
       nbr_case_1 += 1
+    else
+      append!(targets_case_1_and_3, 0)
     end
   elseif data_signs[3,i] > data_signs[4,i]
+    data_case_2_and_4 = vcat(data_case_2_and_4, data_training[1:dim,i])
+    append!(targets_case_2_and_4, 0)
     nbr_case_4 += 1
+  else
+    data_case_2_and_4 = vcat(data_case_2_and_4, data_training[1:dim,i])
+    append!(targets_case_2_and_4, 1)
   end
 end
 
+data_case_1_and_3 = reshape(data_case_1_and_3, (dim, length(targets_case_1_and_3)))
+data_case_2_and_4 = reshape(data_case_2_and_4, (dim, length(targets_case_2_and_4)))
+
+# Plot features
+
+PyPlot.figure()
+PyPlot.plot(data_case_1_and_3[1,:], targets_case_1_and_3, "*")
+
+PyPlot.figure()
+PyPlot.plot(data_case_1_and_3[2,:], targets_case_1_and_3, "*")
+
+
+PyPlot.figure()
+PyPlot.plot(data_case_1_and_3[3,:], targets_case_1_and_3, "*")
+
+
+PyPlot.figure()
+PyPlot.plot3D(data_case_1_and_3[1,find(x -> x==0, targets_case_1_and_3)],
+              data_case_1_and_3[2,find(x -> x==0, targets_case_1_and_3)],
+              data_case_1_and_3[3,find(x -> x==0, targets_case_1_and_3)],
+              "*r")
+PyPlot.plot3D(data_case_1_and_3[1,find(x -> x==1, targets_case_1_and_3)],
+              data_case_1_and_3[2,find(x -> x==1, targets_case_1_and_3)],
+              data_case_1_and_3[3,find(x -> x==1, targets_case_1_and_3)],
+              "*g")
+PyPlot.xlabel(L"\log r")
+PyPlot.ylabel(L"\log \phi")
+PyPlot.zlabel(L"log \sigma")
+
+#=
+PyPlot.figure()
+PyPlot.plt[:hist](data_case_1_and_3[1,find(x -> x==1, targets_case_1_and_3)],50, color = "g",alpha=0.3)
+PyPlot.plt[:hist](data_case_1_and_3[1,find(x -> x==0, targets_case_1_and_3)],50, color = "r",alpha=0.3)
+
+PyPlot.figure()
+PyPlot.plt[:hist](data_case_1_and_3[2,find(x -> x==1, targets_case_1_and_3)],50, color = "g",alpha=0.3)
+PyPlot.plt[:hist](data_case_1_and_3[2,find(x -> x==0, targets_case_1_and_3)],50, color = "r",alpha=0.3)
+
+PyPlot.figure()
+PyPlot.plt[:hist](data_case_1_and_3[2,find(x -> x==1, targets_case_1_and_3)],50, color = "g",alpha=0.3)
+PyPlot.plt[:hist](data_case_1_and_3[2,find(x -> x==0, targets_case_1_and_3)],50, color = "r",alpha=0.3)
+
+=#
+
+PyPlot.figure()
+PyPlot.plot(data_case_2_and_4[1,:], targets_case_2_and_4, "*")
+
+PyPlot.figure()
+PyPlot.plot(data_case_2_and_4[2,:], targets_case_2_and_4, "*")
+
+
+PyPlot.figure()
+PyPlot.plot(data_case_2_and_4[3,:], targets_case_2_and_4, "*")
+
+
+
+PyPlot.figure()
+PyPlot.plot3D(data_case_2_and_4[1,find(x -> x==0, targets_case_2_and_4)],
+              data_case_2_and_4[2,find(x -> x==0, targets_case_2_and_4)],
+              data_case_2_and_4[3,find(x -> x==0, targets_case_2_and_4)],
+              "*r")
+PyPlot.plot3D(data_case_2_and_4[1,find(x -> x==1, targets_case_2_and_4)],
+              data_case_2_and_4[2,find(x -> x==1, targets_case_2_and_4)],
+              data_case_2_and_4[3,find(x -> x==1, targets_case_2_and_4)],
+              "*g")
+PyPlot.xlabel(L"\log r")
+PyPlot.ylabel(L"\log \phi")
+PyPlot.zlabel(L"log \sigma")
+
+#=
+
+PyPlot.figure()
+PyPlot.plt[:hist](data_case_2_and_4[1,find(x -> x==1, targets_case_1_and_3)],50, color = "g",alpha=0.3)
+PyPlot.plt[:hist](data_case_2_and_4[1,find(x -> x==0, targets_case_1_and_3)],50, color = "r",alpha=0.3)
+
+PyPlot.figure()
+PyPlot.plt[:hist](data_case_2_and_4[2,find(x -> x==1, targets_case_1_and_3)],50, color = "g",alpha=0.3)
+PyPlot.plt[:hist](data_case_2_and_4[2,find(x -> x==0, targets_case_1_and_3)],50, color = "r",alpha=0.3)
+
+PyPlot.figure()
+PyPlot.plt[:hist](data_case_2_and_4[2,find(x -> x==1, targets_case_1_and_3)],50, color = "g",alpha=0.3)
+PyPlot.plt[:hist](data_case_2_and_4[2,find(x -> x==0, targets_case_1_and_3)],50, color = "r",alpha=0.3)
+
+=#
+
+# use untransformed features
+
+input_data_case_1_and_3 = zeros(length(targets_case_1_and_3), dim+1)
+
+input_data_case_1_and_3[:,1] =  data_case_1_and_3[1,:]
+input_data_case_1_and_3[:,2] =  data_case_1_and_3[2,:]
+input_data_case_1_and_3[:,3] =  data_case_1_and_3[3,:]
+input_data_case_1_and_3[:,end] = targets_case_1_and_3
+
+input_data_case_2_and_4 = zeros(length(targets_case_2_and_4), dim+1)
+
+input_data_case_2_and_4[:,1] =  data_case_2_and_4[1,:]
+input_data_case_2_and_4[:,2] =  data_case_2_and_4[2,:]
+input_data_case_2_and_4[:,3] =  data_case_2_and_4[3,:]
+input_data_case_2_and_4[:,end] = targets_case_2_and_4
+
+
+# use tranformed data
+
+mean_posterior = mean(theta_training,2)
+
+input_data_case_1_and_3 = zeros(length(targets_case_1_and_3), dim+2)
+
+input_data_case_1_and_3[:,1] = sqrt((mean_posterior[1] - data_case_1_and_3[1,:]).^2)
+input_data_case_1_and_3[:,2] = sqrt((mean_posterior[2] - data_case_1_and_3[2,:]).^2)
+input_data_case_1_and_3[:,3] = sqrt((mean_posterior[3] - data_case_1_and_3[3,:]).^2)
+input_data_case_1_and_3[:,dim+1] = sqrt(sum((repmat(mean_posterior', size(data_case_1_and_3,2))'-data_case_1_and_3).^2,1))
+input_data_case_1_and_3[:,end] = targets_case_1_and_3
+
+
+input_data_case_2_and_4 = zeros(length(targets_case_2_and_4), dim+2)
+
+input_data_case_2_and_4[:,1] = sqrt((mean_posterior[1] - data_case_2_and_4[1,:]).^2)
+input_data_case_2_and_4[:,2] = sqrt((mean_posterior[2] - data_case_2_and_4[2,:]).^2)
+input_data_case_2_and_4[:,3] = sqrt((mean_posterior[3] - data_case_2_and_4[3,:]).^2)
+input_data_case_2_and_4[:,dim+1] = sqrt(sum((repmat(mean_posterior', size(data_case_2_and_4,2))'-data_case_2_and_4).^2,1))
+input_data_case_2_and_4[:,end] = targets_case_2_and_4
+
+# plot features
+
+PyPlot.figure()
+PyPlot.plot3D(input_data_case_1_and_3[find(x -> x==0, targets_case_1_and_3),1],
+              input_data_case_1_and_3[find(x -> x==0, targets_case_1_and_3),2],
+              input_data_case_1_and_3[find(x -> x==0, targets_case_1_and_3),3],
+              "*r")
+PyPlot.plot3D(input_data_case_1_and_3[find(x -> x==1, targets_case_1_and_3),1],
+              input_data_case_1_and_3[find(x -> x==1, targets_case_1_and_3),2],
+              input_data_case_1_and_3[find(x -> x==1, targets_case_1_and_3),3],
+              "*g")
+PyPlot.xlabel(L"\log r")
+PyPlot.ylabel(L"\log \phi")
+PyPlot.zlabel(L"log \sigma")
+
+
+PyPlot.figure()
+PyPlot.plot3D(input_data_case_2_and_4[find(x -> x==0, targets_case_2_and_4),1],
+              input_data_case_2_and_4[find(x -> x==0, targets_case_2_and_4),2],
+              input_data_case_2_and_4[find(x -> x==0, targets_case_2_and_4),3],
+              "*r")
+PyPlot.plot3D(input_data_case_2_and_4[find(x -> x==1, targets_case_2_and_4),1],
+              input_data_case_2_and_4[find(x -> x==1, targets_case_2_and_4),2],
+              input_data_case_2_and_4[find(x -> x==1, targets_case_2_and_4),3],
+              "*g")
+PyPlot.xlabel(L"\log r")
+PyPlot.ylabel(L"\log \phi")
+PyPlot.zlabel(L"log \sigma")
+
+################################################################################
+##  Biased coin model                                                                          ##
+################################################################################
+
+# fit model, i.e. est probabilities
 nbr_GP_star_led_GP_old = n-nbr_GP_star_geq_GP_old
 
 prob_case_1 = nbr_case_1/nbr_GP_star_geq_GP_old
 prob_case_2 = (nbr_GP_star_led_GP_old-nbr_case_4)/nbr_GP_star_led_GP_old
 prob_case_3 = 1-prob_case_1
 prob_case_4 = nbr_case_4/nbr_GP_star_led_GP_old
-
 prob_cases = [prob_case_1;prob_case_2;prob_case_3;prob_case_4]
 
+
+# test biased coin model
 n = size(data_test,2)
 
 nbr_case_1_selceted = 0
@@ -579,199 +750,13 @@ PyPlot.zlabel(L"log \sigma")
 
 
 ################################################################################
-##  Compare assumption using logistic regression model                                                                             ##
+##  Logistic regression model                                                                             ##
 ################################################################################
-
-
-
-# fit logistic regression model
-
-
-n = size(data_training,2)
-n_burn_in = problem_traning.alg_param.burn_in
-
-idx_training_start = n_burn_in+1
-idx_training_end = idx_training_start+n-1
-
-idx_test_start = idx_training_end+1
-idx_test_end = idx_test_start+n-1
-
-idx_training_old = idx_training_start-1:idx_training_end-1
-idx_test_old = idx_test_start-1:idx_test_end-1
-
-loglik_training_old = res_training[1].loglik_est[idx_training_old]
-loglik_test_old = res_training[1].loglik_est[idx_test_old]
-
-
-dim = length(problem.model_param.theta_true)
-data_signs = zeros(4,n)
-data_signs[3,:] = data_training[dim+1,:]
-data_signs[4,:] = loglik_training_old
-
-noisy_pred = problem.alg_param.noisy_est
-
-
-for i = 1:n
-  (loglik_est_star, var_pred_ml, prediction_sample_ml_star) = predict(data_training[1:dim,i],gp,noisy_pred)
-  (loglik_est_old, var_pred_ml, prediction_sample_ml_old) = predict(res_training[1].Theta_est[:,idx_training_old[i]],gp,noisy_pred)
-  data_signs[1,i] = prediction_sample_ml_star[1]
-  data_signs[2,i] = prediction_sample_ml_old[1]
-end
-
-nbr_GP_star_geq_GP_old = zero(Int64)
-nbr_case_1 = zero(Int64)
-nbr_case_4 = zero(Int64)
-
-targets_case_1_and_3 = []
-data_case_1_and_3 = []
-
-targets_case_2_and_4 = []
-data_case_2_and_4 = []
-
-for i = 1:n
-  if data_signs[1,i] > data_signs[2,i]
-    nbr_GP_star_geq_GP_old += 1
-    data_case_1_and_3 = vcat(data_case_1_and_3, data_training[1:dim,i])
-    if data_signs[3,i] > data_signs[4,i]
-      append!(targets_case_1_and_3, 1)
-      nbr_case_1 += 1
-    else
-      append!(targets_case_1_and_3, 0)
-    end
-  elseif data_signs[3,i] > data_signs[4,i]
-    data_case_2_and_4 = vcat(data_case_2_and_4, data_training[1:dim,i])
-    append!(targets_case_2_and_4, 0)
-    nbr_case_4 += 1
-  else
-    data_case_2_and_4 = vcat(data_case_2_and_4, data_training[1:dim,i])
-    append!(targets_case_2_and_4, 1)
-  end
-end
-
-data_case_1_and_3 = reshape(data_case_1_and_3, (dim, length(targets_case_1_and_3)))
-data_case_2_and_4 = reshape(data_case_2_and_4, (dim, length(targets_case_2_and_4)))
-
-nbr_GP_star_led_GP_old = n-nbr_GP_star_geq_GP_old
-
-prob_case_1 = nbr_case_1/nbr_GP_star_geq_GP_old
-prob_case_2 = (nbr_GP_star_led_GP_old-nbr_case_4)/nbr_GP_star_led_GP_old
-prob_case_3 = 1-prob_case_1
-prob_case_4 = nbr_case_4/nbr_GP_star_led_GP_old
-
-prob_cases = [prob_case_1;prob_case_2;prob_case_3;prob_case_4]
-
-
-# finding structure for logistic regression model
-
-PyPlot.figure()
-PyPlot.plot(data_case_1_and_3[1,:], targets_case_1_and_3, "*")
-
-PyPlot.figure()
-PyPlot.plot(data_case_1_and_3[2,:], targets_case_1_and_3, "*")
-
-
-PyPlot.figure()
-PyPlot.plot(data_case_1_and_3[3,:], targets_case_1_and_3, "*")
-
-
-PyPlot.figure()
-PyPlot.plot3D(data_case_1_and_3[1,find(x -> x==0, targets_case_1_and_3)],
-              data_case_1_and_3[2,find(x -> x==0, targets_case_1_and_3)],
-              data_case_1_and_3[3,find(x -> x==0, targets_case_1_and_3)],
-              "*r")
-PyPlot.plot3D(data_case_1_and_3[1,find(x -> x==1, targets_case_1_and_3)],
-              data_case_1_and_3[2,find(x -> x==1, targets_case_1_and_3)],
-              data_case_1_and_3[3,find(x -> x==1, targets_case_1_and_3)],
-              "*g")
-PyPlot.xlabel(L"\log r")
-PyPlot.ylabel(L"\log \phi")
-PyPlot.zlabel(L"log \sigma")
-
-
-PyPlot.figure()
-PyPlot.plt[:hist](data_case_1_and_3[1,find(x -> x==1, targets_case_1_and_3)],50, color = "g",alpha=0.3)
-PyPlot.plt[:hist](data_case_1_and_3[1,find(x -> x==0, targets_case_1_and_3)],50, color = "r",alpha=0.3)
-
-PyPlot.figure()
-PyPlot.plt[:hist](data_case_1_and_3[2,find(x -> x==1, targets_case_1_and_3)],50, color = "g",alpha=0.3)
-PyPlot.plt[:hist](data_case_1_and_3[2,find(x -> x==0, targets_case_1_and_3)],50, color = "r",alpha=0.3)
-
-PyPlot.figure()
-PyPlot.plt[:hist](data_case_1_and_3[2,find(x -> x==1, targets_case_1_and_3)],50, color = "g",alpha=0.3)
-PyPlot.plt[:hist](data_case_1_and_3[2,find(x -> x==0, targets_case_1_and_3)],50, color = "r",alpha=0.3)
-
-
-
-PyPlot.figure()
-PyPlot.plot(data_case_2_and_4[1,:], targets_case_2_and_4, "*")
-
-PyPlot.figure()
-PyPlot.plot(data_case_2_and_4[2,:], targets_case_2_and_4, "*")
-
-
-PyPlot.figure()
-PyPlot.plot(data_case_2_and_4[3,:], targets_case_2_and_4, "*")
-
-
-
-PyPlot.figure()
-PyPlot.plot3D(data_case_2_and_4[1,find(x -> x==0, targets_case_2_and_4)],
-              data_case_2_and_4[2,find(x -> x==0, targets_case_2_and_4)],
-              data_case_2_and_4[3,find(x -> x==0, targets_case_2_and_4)],
-              "*r")
-PyPlot.plot3D(data_case_2_and_4[1,find(x -> x==1, targets_case_2_and_4)],
-              data_case_2_and_4[2,find(x -> x==1, targets_case_2_and_4)],
-              data_case_2_and_4[3,find(x -> x==1, targets_case_2_and_4)],
-              "*g")
-PyPlot.xlabel(L"\log r")
-PyPlot.ylabel(L"\log \phi")
-PyPlot.zlabel(L"log \sigma")
-
-
-PyPlot.figure()
-PyPlot.plt[:hist](data_case_2_and_4[1,find(x -> x==1, targets_case_1_and_3)],50, color = "g",alpha=0.3)
-PyPlot.plt[:hist](data_case_2_and_4[1,find(x -> x==0, targets_case_1_and_3)],50, color = "r",alpha=0.3)
-
-PyPlot.figure()
-PyPlot.plt[:hist](data_case_2_and_4[2,find(x -> x==1, targets_case_1_and_3)],50, color = "g",alpha=0.3)
-PyPlot.plt[:hist](data_case_2_and_4[2,find(x -> x==0, targets_case_1_and_3)],50, color = "r",alpha=0.3)
-
-PyPlot.figure()
-PyPlot.plt[:hist](data_case_2_and_4[2,find(x -> x==1, targets_case_1_and_3)],50, color = "g",alpha=0.3)
-PyPlot.plt[:hist](data_case_2_and_4[2,find(x -> x==0, targets_case_1_and_3)],50, color = "r",alpha=0.3)
-
-
 
 
 using GLM
 
-
-mean_posterior = mean(theta_training,2)
-
-input_data_case_1_and_3 = zeros(length(targets_case_1_and_3), dim+2)
-
-input_data_case_1_and_3[:,1] = sqrt((mean_posterior[1] - data_case_1_and_3[1,:]).^2)
-input_data_case_1_and_3[:,2] = sqrt((mean_posterior[2] - data_case_1_and_3[2,:]).^2)
-input_data_case_1_and_3[:,3] = sqrt((mean_posterior[3] - data_case_1_and_3[3,:]).^2)
-input_data_case_1_and_3[:,dim+1] = sqrt(sum((repmat(mean_posterior', size(data_case_1_and_3,2))'-data_case_1_and_3).^2,1))
-
-input_data_case_1_and_3[:,end] = targets_case_1_and_3
-
-
-
-PyPlot.figure()
-PyPlot.plot3D(input_data_case_1_and_3[find(x -> x==0, targets_case_1_and_3),1],
-              input_data_case_1_and_3[find(x -> x==0, targets_case_1_and_3),2],
-              input_data_case_1_and_3[find(x -> x==0, targets_case_1_and_3),3],
-              "*r")
-PyPlot.plot3D(input_data_case_1_and_3[find(x -> x==1, targets_case_1_and_3),1],
-              input_data_case_1_and_3[find(x -> x==1, targets_case_1_and_3),2],
-              input_data_case_1_and_3[find(x -> x==1, targets_case_1_and_3),3],
-              "*g")
-PyPlot.xlabel(L"\log r")
-PyPlot.ylabel(L"\log \phi")
-PyPlot.zlabel(L"log \sigma")
-
+# fit model for cases 2 and 4
 
 input_data_case_1_and_3 = DataFrame(input_data_case_1_and_3)
 
@@ -793,32 +778,6 @@ log_reg_model_case_1_and_3_test = glm(@formula(x3 ~ x1 + x2), input_data_case_1_
 
 
 # fit model for cases 2 and 4
-
-
-mean_posterior = mean(theta_training,2)
-
-input_data_case_2_and_4 = zeros(length(targets_case_2_and_4), dim+2)
-
-input_data_case_2_and_4[:,1] = sqrt((mean_posterior[1] - data_case_2_and_4[1,:]).^2)
-input_data_case_2_and_4[:,2] = sqrt((mean_posterior[2] - data_case_2_and_4[2,:]).^2)
-input_data_case_2_and_4[:,3] = sqrt((mean_posterior[3] - data_case_2_and_4[3,:]).^2)
-input_data_case_2_and_4[:,dim+1] = sqrt(sum((repmat(mean_posterior', size(data_case_2_and_4,2))'-data_case_2_and_4).^2,1))
-
-input_data_case_2_and_4[:,end] = targets_case_2_and_4
-
-
-PyPlot.figure()
-PyPlot.plot3D(input_data_case_2_and_4[find(x -> x==0, targets_case_2_and_4),1],
-              input_data_case_2_and_4[find(x -> x==0, targets_case_2_and_4),2],
-              input_data_case_2_and_4[find(x -> x==0, targets_case_2_and_4),3],
-              "*r")
-PyPlot.plot3D(input_data_case_2_and_4[find(x -> x==1, targets_case_2_and_4),1],
-              input_data_case_2_and_4[find(x -> x==1, targets_case_2_and_4),2],
-              input_data_case_2_and_4[find(x -> x==1, targets_case_2_and_4),3],
-              "*g")
-PyPlot.xlabel(L"\log r")
-PyPlot.ylabel(L"\log \phi")
-PyPlot.zlabel(L"log \sigma")
 
 
 input_data_case_2_and_4 = DataFrame(input_data_case_2_and_4)
@@ -876,8 +835,6 @@ PyPlot.plot3D(data_case_1_and_3[2,:],data_case_1_and_3[3,:], pred_training_data_
 
 
 pred_training_data_case_2_and_4 = GLM.predict(log_reg_model_case_2_and_4)#, #DataFrame(data_case_2_and_4'))
-
-
 
 
 PyPlot.figure()
@@ -1001,6 +958,156 @@ for i = 1:n
     go_to_case_2 = rand(Bernoulli(prob_case_2)) == 1
 
     if go_to_case_2
+
+      nbr_case_2_selceted = nbr_case_2_selceted+1
+
+      if loglik_pf_new < loglik_pf_old
+        nbr_case_2_correct = nbr_case_2_correct+1
+      end
+
+    else
+      nbr_case_4_selceted = nbr_case_4_selceted+1
+
+      if loglik_pf_new > loglik_pf_old
+        nbr_case_4_correct = nbr_case_4_correct+1
+      end
+
+    end
+  end
+end
+
+nbr_case_selceted = [nbr_case_1_selceted nbr_case_2_selceted nbr_case_3_selceted nbr_case_4_selceted]
+
+nbr_case_correct = [nbr_case_1_correct nbr_case_2_correct nbr_case_3_correct nbr_case_4_correct]
+
+prob_correct_given_selected = nbr_case_correct./nbr_case_selceted
+
+
+
+################################################################################
+##  Classification tree                                                                              ##
+################################################################################
+
+# Classification tree
+
+using DecisionTree
+
+# tree based model for case 1 and 3
+
+features_1_and_3 = convert(Array, input_data_case_1_and_3[:, 1:dim+1])
+labels_1_and_3 = convert(Array, input_data_case_1_and_3[:, end])
+
+labels_1_and_3 = Array{String}(size(features_1_and_3,1))
+
+for i = 1:length(labels_1_and_3)
+  if input_data_case_1_and_3[i,end] == 0
+    labels_1_and_3[i] = "case 3"
+  else
+    labels_1_and_3[i] = "case 1"
+  end
+end
+
+model_1_and_3 = build_tree(labels_1_and_3, features_1_and_3)
+
+model_1_and_3 = prune_tree(model_1_and_3, 0.9)
+
+
+print_tree(model_1_and_3, 3)
+
+apply_tree(model_1_and_3, features_1_and_3[1,:])
+
+accuracy = nfoldCV_tree(labels_1_and_3, features_1_and_3, 0.9, 3)
+
+# tree based model for case 2 and 4
+
+features_case_2_and_4 = convert(Array, input_data_case_2_and_4[:, 1:dim+1])
+
+labels_case_2_and_4 = Array{String}(size(features_case_2_and_4,1))
+
+for i = 1:length(labels_case_2_and_4)
+  if input_data_case_2_and_4[i,end] == 0
+    labels_case_2_and_4[i] = "case 4"
+  else
+    labels_case_2_and_4[i] = "case 2"
+  end
+end
+
+# train full-tree classifier
+model_2_and_4 = build_tree(labels_case_2_and_4, features_case_2_and_4)
+
+model_2_and_4 = prune_tree(model_2_and_4, 0.9)
+
+print_tree(model_2_and_4, 3)
+
+apply_tree(model_2_and_4, features_case_2_and_4[1,:])
+
+accuracy = nfoldCV_tree(labels_case_2_and_4, features_case_2_and_4, 0.9, 3)
+
+# test model on test data
+
+n = size(data_test,2)
+
+nbr_case_1_selceted = 0
+nbr_case_2_selceted = 0
+nbr_case_3_selceted = 0
+nbr_case_4_selceted = 0
+
+nbr_case_1_correct = 0
+nbr_case_2_correct = 0
+nbr_case_3_correct = 0
+nbr_case_4_correct = 0
+
+include("pf.jl")
+N = 1000
+y = problem_traning.data.y
+
+for i = 1:n
+
+  (loglik_est_star, var_pred_ml, prediction_sample_ml_star) = predict(data_test[1:dim,i],gp,noisy_pred)
+  (loglik_est_old, var_pred_ml, prediction_sample_ml_old) = predict(res_training[1].Theta_est[:,idx_test_old[i]],gp,noisy_pred)
+
+  theta_old = res_training[1].Theta_est[:,idx_test_old[i]]
+  loglik_pf_old = pf(y, theta_old,problem_traning.model_param.theta_known,N,false)
+
+  theta_new = data_test[1:dim,i] #res_training[1].Theta_est[:,i+n_burn_in+size(data_training,2)]
+  loglik_pf_new = pf(y, theta_new,problem_traning.model_param.theta_known,N,false)
+
+  # tansformation of theta_new
+  # transform theta_new to euclidian distance space
+  theta_new_log_reg_mod = zeros(dim+1)
+
+  theta_new_log_reg_mod[1] = sqrt((mean_posterior[1] - theta_new[1]).^2)
+  theta_new_log_reg_mod[2] = sqrt((mean_posterior[2] - theta_new[2]).^2)
+  theta_new_log_reg_mod[3] = sqrt((mean_posterior[3] - theta_new[3]).^2)
+  theta_new_log_reg_mod[4] = sqrt(sum(mean_posterior-theta_new).^2)
+
+  if prediction_sample_ml_star[1] > prediction_sample_ml_old[1]
+    #prob_case_1 = predict(beta_case_1_and_3, [1;data_test[1:dim,i]])
+    case = apply_tree(model_1_and_3, theta_new_log_reg_mod)
+
+    if case ==  "case 1"
+
+      nbr_case_1_selceted = nbr_case_1_selceted+1
+
+
+      if loglik_pf_new > loglik_pf_old
+        nbr_case_1_correct = nbr_case_1_correct+1
+      end
+
+    else
+      nbr_case_3_selceted = nbr_case_3_selceted+1
+
+      if loglik_pf_new < loglik_pf_old
+        nbr_case_3_correct = nbr_case_3_correct+1
+      end
+
+    end
+
+  else
+
+    case = apply_tree(model_2_and_4, theta_new_log_reg_mod)
+
+    if case == "case 2"
 
       nbr_case_2_selceted = nbr_case_2_selceted+1
 

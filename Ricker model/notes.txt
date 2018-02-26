@@ -1,0 +1,22 @@
+prob_correct_given_selected:
+
+Biased coin
+1×4 Array{Float64,2}:
+ 0.788557  0.892063  0.17316  0.102804
+
+Logistic regression
+1×4 Array{Float64,2}:
+1×4 Array{Float64,2}:
+ 0.802956  0.897764  0.181818  0.2
+
+Tree
+
+accuracy case 1 and 3 (CV)
+0.5067437379576107
+
+
+ accuracy case 2 and 4 (CV)
+0.8559837728194726
+
+1×4 Array{Float64,2}:
+ 0.77931  0.897391  0.182222  0.142105
