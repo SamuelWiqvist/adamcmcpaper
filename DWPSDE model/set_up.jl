@@ -10,6 +10,8 @@ using StatsFuns
 # paths for desktop
 
 # load functions
+
+
 if Sys.CPU_CORES == 8
   include("C:\\Users\\samuel\\Dropbox\\Phd Education\\Projects\\project 1 accelerated DA and DWP SDE\\code\\gpmodel\\gp_model.jl")
   include("C:\\Users\\samuel\\Dropbox\\Phd Education\\Projects\\project 1 accelerated DA and DWP SDE\\code\\adaptive updating algorithms\\adaptiveupdate.jl")

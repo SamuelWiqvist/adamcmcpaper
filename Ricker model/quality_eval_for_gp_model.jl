@@ -12,6 +12,13 @@ include("rickermodel.jl")
 using JLD
 using HDF5
 
+
+# fix these include statments using following method
+#cd("..")
+#include(pwd()*"\\ABC algorithms\\abcalgorithms.jl")
+#cd("g-and-k distribution") # cd to correct folder
+
+
 # load functions
 if Sys.CPU_CORES == 8
   include("C:\\Users\\samuel\\Dropbox\\Phd Education\\Projects\\project 1 accelerated DA and DWP SDE\\code\\utilities\\normplot.jl")
