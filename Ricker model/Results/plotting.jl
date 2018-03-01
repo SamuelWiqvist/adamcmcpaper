@@ -168,4 +168,44 @@ PyPlot.figure()
 PyPlot.plot(loglik)
 PyPlot.ylabel("Loglik")
 
+
+posterior_samples = Theta[:,burn_in:end]
+
+PyPlot.figure()
+counter = 1
+for i = 1:3
+  for j = 1:3
+    PyPlot.subplot(3,3,counter) # set subplot
+    if i == j
+      # plot hist on diag. elements
+      h = PyPlot.plt[:hist](posterior_samples[i,:],50)
+      PyPlot.plot((theta_true[i], theta_true[i]), (0, maximum(h[1])), "k")
+    else
+      # plot scatters on non-diagonal elements
+      PyPlot.scatter(posterior_samples[j,:], posterior_samples[i,:])
+    end
+    counter += 1
+
+    if i == 1 && j == 1
+      PyPlot.ylabel(L"log $r$")
+    elseif i == 4 && j == 1
+      PyPlot.xlabel(L"log $r$")
+    end
+
+    if j == 1 && i == 2
+      PyPlot.ylabel(L"log $\phi$")
+    elseif i == 4 && j == 2
+      PyPlot.xlabel(L"log $\phi$")
+    end
+
+    if j == 1 && i == 3
+      PyPlot.ylabel(L"log $\sigma$")
+    elseif i == 4 && j == 3
+      PyPlot.xlabel(L"log $\sigma$")
+    end
+
+  end
+end
+
+
 end

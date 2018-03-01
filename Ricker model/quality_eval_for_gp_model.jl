@@ -436,6 +436,8 @@ targets_case_2_and_4 = convert(Array{Float64,1}, targets_case_2_and_4)
 
 # use untransformed features (biased coin model)
 
+# is is not nessesary to construct input_data_case_1_and_3 and input_data_case_2_and_4 to run the biased coin model
+
 input_data_case_1_and_3 = zeros(length(targets_case_1_and_3), dim+1)
 
 input_data_case_1_and_3[:,1] =  data_case_1_and_3[1,:]
@@ -451,7 +453,138 @@ input_data_case_2_and_4[:,3] =  data_case_2_and_4[3,:]
 input_data_case_2_and_4[:,end] = targets_case_2_and_4
 
 
+
+# use tranformed data + standardization (logistic regression model)
+
+# tansformed data for simple logistic model
+mean_posterior = mean(theta_training,2)
+
+input_data_case_1_and_3 = zeros(length(targets_case_1_and_3), dim+2)
+input_data_case_1_and_3[:,1] = sqrt((mean_posterior[1] - data_case_1_and_3[1,:]).^2)
+input_data_case_1_and_3[:,2] = sqrt((mean_posterior[2] - data_case_1_and_3[2,:]).^2)
+input_data_case_1_and_3[:,3] = sqrt((mean_posterior[3] - data_case_1_and_3[3,:]).^2)
+input_data_case_1_and_3[:,4] = sqrt(sum((repmat(mean_posterior', size(data_case_1_and_3,2))'-data_case_1_and_3[1:3,:]).^2,1))
+input_data_case_1_and_3[:,end] = targets_case_1_and_3
+
+input_data_case_2_and_4 = zeros(length(targets_case_2_and_4), dim+2)
+input_data_case_2_and_4[:,1] = sqrt((mean_posterior[1] - data_case_2_and_4[1,:]).^2)
+input_data_case_2_and_4[:,2] = sqrt((mean_posterior[2] - data_case_2_and_4[2,:]).^2)
+input_data_case_2_and_4[:,3] = sqrt((mean_posterior[3] - data_case_2_and_4[3,:]).^2)
+input_data_case_2_and_4[:,4] = data_case_1_and_3[4,:]
+input_data_case_2_and_4[:,end] = targets_case_2_and_4
+
+# tansformed data for logistic model with the ratio of gp ests are included
+
+input_data_case_1_and_3 = zeros(length(targets_case_1_and_3), dim+3)
+input_data_case_1_and_3[:,1] = sqrt((mean_posterior[1] - data_case_1_and_3[1,:]).^2)
+input_data_case_1_and_3[:,2] = sqrt((mean_posterior[2] - data_case_1_and_3[2,:]).^2)
+input_data_case_1_and_3[:,3] = sqrt((mean_posterior[3] - data_case_1_and_3[3,:]).^2)
+input_data_case_1_and_3[:,4] = sqrt(sum((repmat(mean_posterior', size(data_case_1_and_3,2))'-data_case_1_and_3[1:3,:]).^2,1))
+input_data_case_1_and_3[:,5] = data_case_1_and_3[4,:]
+input_data_case_1_and_3[:,end] = targets_case_1_and_3
+
+input_data_case_2_and_4 = zeros(length(targets_case_2_and_4), dim+3)
+input_data_case_2_and_4[:,1] = sqrt((mean_posterior[1] - data_case_2_and_4[1,:]).^2)
+input_data_case_2_and_4[:,2] = sqrt((mean_posterior[2] - data_case_2_and_4[2,:]).^2)
+input_data_case_2_and_4[:,3] = sqrt((mean_posterior[3] - data_case_2_and_4[3,:]).^2)
+input_data_case_2_and_4[:,4] = sqrt(sum((repmat(mean_posterior', size(data_case_2_and_4,2))'-data_case_2_and_4[1:3,:]).^2,1))
+input_data_case_2_and_4[:,5] = data_case_2_and_4[4,:]
+input_data_case_2_and_4[:,end] = targets_case_2_and_4
+
+
+# plot features in input data
+
+
+PyPlot.figure()
+PyPlot.plot3D(input_data_case_1_and_3[find(x -> x==0, targets_case_1_and_3),1],
+              input_data_case_1_and_3[find(x -> x==0, targets_case_1_and_3),2],
+              input_data_case_1_and_3[find(x -> x==0, targets_case_1_and_3),3],
+              "*r")
+PyPlot.plot3D(input_data_case_1_and_3[find(x -> x==1, targets_case_1_and_3),1],
+              input_data_case_1_and_3[find(x -> x==1, targets_case_1_and_3),2],
+              input_data_case_1_and_3[find(x -> x==1, targets_case_1_and_3),3],
+              "*g")
+PyPlot.xlabel(L"dist \log r dim")
+PyPlot.ylabel(L"dist \log \phi dim")
+PyPlot.zlabel(L"dist  \sigma dim")
+
+PyPlot.figure()
+PyPlot.plot3D(input_data_case_1_and_3[find(x -> x==0, targets_case_1_and_3),2],
+              input_data_case_1_and_3[find(x -> x==0, targets_case_1_and_3),3],
+              input_data_case_1_and_3[find(x -> x==0, targets_case_1_and_3),4],
+              "*r")
+PyPlot.plot3D(input_data_case_1_and_3[find(x -> x==1, targets_case_1_and_3),2],
+              input_data_case_1_and_3[find(x -> x==1, targets_case_1_and_3),3],
+              input_data_case_1_and_3[find(x -> x==1, targets_case_1_and_3),4],
+              "*g")
+PyPlot.xlabel(L"dist \log \phi dim")
+PyPlot.ylabel(L"dist  \sigma dim")
+PyPlot.zlabel(L"joint dist")
+
+
+# for the model with ratio
+PyPlot.figure()
+PyPlot.plot3D(input_data_case_1_and_3[find(x -> x==0, targets_case_1_and_3),3],
+              input_data_case_1_and_3[find(x -> x==0, targets_case_1_and_3),4],
+              input_data_case_1_and_3[find(x -> x==0, targets_case_1_and_3),5],
+              "*r")
+PyPlot.plot3D(input_data_case_1_and_3[find(x -> x==1, targets_case_1_and_3),3],
+              input_data_case_1_and_3[find(x -> x==1, targets_case_1_and_3),4],
+              input_data_case_1_and_3[find(x -> x==1, targets_case_1_and_3),5],
+              "*g")
+PyPlot.xlabel(L"dist  \sigma dim")
+PyPlot.ylabel(L"joint dist")
+PyPlot.zlabel(L"ratio gp ests")
+
+
+
+PyPlot.figure()
+PyPlot.plot3D(input_data_case_2_and_4[find(x -> x==0, targets_case_2_and_4),1],
+              input_data_case_2_and_4[find(x -> x==0, targets_case_2_and_4),2],
+              input_data_case_2_and_4[find(x -> x==0, targets_case_2_and_4),3],
+              "*r")
+PyPlot.plot3D(input_data_case_2_and_4[find(x -> x==1, targets_case_2_and_4),1],
+              input_data_case_2_and_4[find(x -> x==1, targets_case_2_and_4),2],
+              input_data_case_2_and_4[find(x -> x==1, targets_case_2_and_4),3],
+              "*g")
+PyPlot.xlabel(L"dist \log r dim")
+PyPlot.ylabel(L"dist \log \phi dim")
+PyPlot.zlabel(L"dist  \sigma dim")
+
+PyPlot.figure()
+PyPlot.plot3D(input_data_case_2_and_4[find(x -> x==0, targets_case_2_and_4),2],
+              input_data_case_2_and_4[find(x -> x==0, targets_case_2_and_4),3],
+              input_data_case_2_and_4[find(x -> x==0, targets_case_2_and_4),4],
+              "*r")
+PyPlot.plot3D(input_data_case_2_and_4[find(x -> x==1, targets_case_2_and_4),2],
+              input_data_case_2_and_4[find(x -> x==1, targets_case_2_and_4),3],
+              input_data_case_2_and_4[find(x -> x==1, targets_case_2_and_4),4],
+              "*g")
+PyPlot.xlabel(L"dist \log \phi dim")
+PyPlot.ylabel(L"dist  \sigma dim")
+PyPlot.zlabel(L"joint dist")
+
+
+
+# for the model with ratio
+PyPlot.figure()
+PyPlot.plot3D(input_data_case_2_and_4[find(x -> x==0, targets_case_2_and_4),3],
+              input_data_case_2_and_4[find(x -> x==0, targets_case_2_and_4),4],
+              input_data_case_2_and_4[find(x -> x==0, targets_case_2_and_4),5],
+              "*r")
+PyPlot.plot3D(input_data_case_2_and_4[find(x -> x==1, targets_case_2_and_4),3],
+              input_data_case_2_and_4[find(x -> x==1, targets_case_2_and_4),4],
+              input_data_case_2_and_4[find(x -> x==1, targets_case_2_and_4),5],
+              "*g")
+PyPlot.xlabel(L"dist  \sigma dim")
+PyPlot.ylabel(L"joint dist")
+PyPlot.zlabel(L"ratio gp ests")
+
+
+
 # use standadized features (features for decision tree model)
+
+# 5 features model
 
 standardization!(data_case_1_and_3)
 
@@ -476,38 +609,114 @@ input_data_case_2_and_4[:,4] =  data_case_2_and_4[4,:]
 input_data_case_2_and_4[:,5] =  data_case_2_and_4[5,:]
 input_data_case_2_and_4[:,end] = targets_case_2_and_4
 
+# 4 features model
 
-# use tranformed data + standardization (logistic regression model)
 
-mean_posterior = mean(theta_training,2)
+standardization!(data_case_1_and_3)
 
-data_case_1_and_3[1:3,:]  = sqrt((data_case_1_and_3[1:3,:] .- mean_posterior).^2)
-
-input_data_case_1_and_3 = zeros(length(targets_case_1_and_3), dim+3)
+input_data_case_1_and_3 = zeros(length(targets_case_1_and_3), dim+2)
 
 input_data_case_1_and_3[:,1] =  data_case_1_and_3[1,:]
 input_data_case_1_and_3[:,2] =  data_case_1_and_3[2,:]
 input_data_case_1_and_3[:,3] =  data_case_1_and_3[3,:]
-#input_data_case_1_and_3[:,4] = sqrt(sum((repmat(mean_posterior', size(data_case_1_and_3,2))'-data_case_1_and_3).^2,1))
 input_data_case_1_and_3[:,4] =  data_case_1_and_3[4,:]
-input_data_case_1_and_3[:,5] =  data_case_1_and_3[5,:]
 input_data_case_1_and_3[:,end] = targets_case_1_and_3
 
+standardization!(data_case_2_and_4)
 
-input_data_case_2_and_4 = zeros(length(targets_case_2_and_4), dim+3)
 
-data_case_2_and_4[1:3,:]  = sqrt((data_case_2_and_4[1:3,:] .- mean_posterior).^2)
-
+input_data_case_2_and_4 = zeros(length(targets_case_2_and_4), dim+2)
 
 input_data_case_2_and_4[:,1] =  data_case_2_and_4[1,:]
 input_data_case_2_and_4[:,2] =  data_case_2_and_4[2,:]
 input_data_case_2_and_4[:,3] =  data_case_2_and_4[3,:]
-#input_data_case_2_and_4[:,dim+1] = sqrt(sum((repmat(mean_posterior', size(data_case_2_and_4,2))'-data_case_2_and_4).^2,1))
 input_data_case_2_and_4[:,4] =  data_case_2_and_4[4,:]
-input_data_case_2_and_4[:,5] =  data_case_2_and_4[5,:]
 input_data_case_2_and_4[:,end] = targets_case_2_and_4
 
 
+# plot features in input data
+
+
+PyPlot.figure()
+PyPlot.plot3D(input_data_case_1_and_3[find(x -> x==0, targets_case_1_and_3),1],
+              input_data_case_1_and_3[find(x -> x==0, targets_case_1_and_3),2],
+              input_data_case_1_and_3[find(x -> x==0, targets_case_1_and_3),3],
+              "*r")
+PyPlot.plot3D(input_data_case_1_and_3[find(x -> x==1, targets_case_1_and_3),1],
+              input_data_case_1_and_3[find(x -> x==1, targets_case_1_and_3),2],
+              input_data_case_1_and_3[find(x -> x==1, targets_case_1_and_3),3],
+              "*g")
+PyPlot.xlabel(L"\log r")
+PyPlot.ylabel(L"\log \phi")
+PyPlot.zlabel(L"\sigma")
+
+PyPlot.figure()
+PyPlot.plot3D(input_data_case_1_and_3[find(x -> x==0, targets_case_1_and_3),2],
+              input_data_case_1_and_3[find(x -> x==0, targets_case_1_and_3),3],
+              input_data_case_1_and_3[find(x -> x==0, targets_case_1_and_3),4],
+              "*r")
+PyPlot.plot3D(input_data_case_1_and_3[find(x -> x==1, targets_case_1_and_3),2],
+              input_data_case_1_and_3[find(x -> x==1, targets_case_1_and_3),3],
+              input_data_case_1_and_3[find(x -> x==1, targets_case_1_and_3),4],
+              "*g")
+PyPlot.xlabel(L"\log \phi")
+PyPlot.ylabel(L"\sigma")
+PyPlot.zlabel(L"ratio gp loglik est")
+
+
+PyPlot.figure()
+PyPlot.plot3D(input_data_case_1_and_3[find(x -> x==0, targets_case_1_and_3),2],
+              input_data_case_1_and_3[find(x -> x==0, targets_case_1_and_3),3],
+              input_data_case_1_and_3[find(x -> x==0, targets_case_1_and_3),5],
+              "*r")
+PyPlot.plot3D(input_data_case_1_and_3[find(x -> x==1, targets_case_1_and_3),2],
+              input_data_case_1_and_3[find(x -> x==1, targets_case_1_and_3),3],
+              input_data_case_1_and_3[find(x -> x==1, targets_case_1_and_3),5],
+              "*g")
+PyPlot.xlabel(L"\sigma")
+PyPlot.ylabel(L"ratio gp loglik est")
+PyPlot.zlabel(L"std gp est")
+
+
+PyPlot.figure()
+PyPlot.plot3D(input_data_case_2_and_4[find(x -> x==0, targets_case_2_and_4),1],
+              input_data_case_2_and_4[find(x -> x==0, targets_case_2_and_4),2],
+              input_data_case_2_and_4[find(x -> x==0, targets_case_2_and_4),3],
+              "*r")
+PyPlot.plot3D(input_data_case_2_and_4[find(x -> x==1, targets_case_2_and_4),1],
+              input_data_case_2_and_4[find(x -> x==1, targets_case_2_and_4),2],
+              input_data_case_2_and_4[find(x -> x==1, targets_case_2_and_4),3],
+              "*g")
+PyPlot.xlabel(L"\log r")
+PyPlot.ylabel(L"\log \phi")
+PyPlot.zlabel(L"\sigma")
+
+PyPlot.figure()
+PyPlot.plot3D(input_data_case_2_and_4[find(x -> x==0, targets_case_2_and_4),2],
+              input_data_case_2_and_4[find(x -> x==0, targets_case_2_and_4),3],
+              input_data_case_2_and_4[find(x -> x==0, targets_case_2_and_4),4],
+              "*r")
+PyPlot.plot3D(input_data_case_2_and_4[find(x -> x==1, targets_case_2_and_4),2],
+              input_data_case_2_and_4[find(x -> x==1, targets_case_2_and_4),3],
+              input_data_case_2_and_4[find(x -> x==1, targets_case_2_and_4),4],
+              "*g")
+PyPlot.xlabel(L"\log \phi")
+PyPlot.ylabel(L"\sigma")
+PyPlot.zlabel(L"ratio gp loglik est")
+
+
+PyPlot.figure()
+PyPlot.plot3D(input_data_case_2_and_4[find(x -> x==0, targets_case_2_and_4),2],
+              input_data_case_2_and_4[find(x -> x==0, targets_case_2_and_4),3],
+              input_data_case_2_and_4[find(x -> x==0, targets_case_2_and_4),5],
+              "*r")
+PyPlot.plot3D(input_data_case_2_and_4[find(x -> x==1, targets_case_2_and_4),2],
+              input_data_case_2_and_4[find(x -> x==1, targets_case_2_and_4),3],
+              input_data_case_2_and_4[find(x -> x==1, targets_case_2_and_4),5],
+              "*g")
+PyPlot.xlabel(L"\sigma")
+PyPlot.ylabel(L"ratio gp loglik est")
+PyPlot.zlabel(L"std gp est")
 
 # Plot features
 
@@ -839,21 +1048,10 @@ using GLM
 
 input_data_case_1_and_3 = DataFrame(input_data_case_1_and_3)
 
+log_reg_model_case_1_and_3 = glm(@formula(x5 ~ x1 + x2 + x3 + x4), input_data_case_1_and_3, Binomial(), LogitLink())
+
+# extened model
 log_reg_model_case_1_and_3 = glm(@formula(x6 ~ x1 + x2 + x3 + x4 + x5), input_data_case_1_and_3, Binomial(), LogitLink())
-
-# without transform
-input_data_case_1_and_3 = zeros(length(targets_case_1_and_3), dim+2)
-input_data_case_1_and_3[:,1:dim] = data_case_1_and_3'
-input_data_case_1_and_3[:,end] = targets_case_1_and_3
-input_data_case_1_and_3 = DataFrame(input_data_case_1_and_3)
-
-log_reg_model_case_1_and_3 = glm(@formula(x4 ~ x1 + x2 + x3), input_data_case_1_and_3, Binomial(), LogitLink())
-
-
-input_data_case_1_and_3 = DataFrame(input_data_case_1_and_3[:,2:4])
-
-
-log_reg_model_case_1_and_3_test = glm(@formula(x3 ~ x1 + x2), input_data_case_1_and_3, Binomial(), LogitLink())
 
 
 # fit model for cases 2 and 4
@@ -861,17 +1059,10 @@ log_reg_model_case_1_and_3_test = glm(@formula(x3 ~ x1 + x2), input_data_case_1_
 
 input_data_case_2_and_4 = DataFrame(input_data_case_2_and_4)
 
+log_reg_model_case_2_and_4 = glm(@formula(x5 ~ x1 + x2 + x3 + x4), input_data_case_2_and_4, Binomial(), LogitLink())
+
+# extened model
 log_reg_model_case_2_and_4 = glm(@formula(x6 ~ x1 + x2 + x3 + x4 + x5), input_data_case_2_and_4, Binomial(), LogitLink())
-
-# without transform
-input_data_case_2_and_4 = zeros(length(targets_case_2_and_4), dim+1)
-input_data_case_2_and_4[:,1:dim] = data_case_2_and_4'
-input_data_case_2_and_4[:,end] = targets_case_2_and_4
-input_data_case_2_and_4 = DataFrame(input_data_case_2_and_4)
-
-log_reg_model_case_2_and_4 = glm(@formula(x4 ~ x1 + x2 + x3), input_data_case_2_and_4, Binomial(), LogitLink())
-
-
 
 # test on training data
 
@@ -999,19 +1190,33 @@ for i = 1:n
 
   # tansformation of theta_new
   # transform theta_new to euclidian distance space
+  #=
+  # old model
+  theta_new_log_reg_mod = zeros(dim+1)
+
+  theta_new_log_reg_mod[1] = sqrt((mean_posterior[1] - theta_new[1]).^2)
+  theta_new_log_reg_mod[2] = sqrt((mean_posterior[2] - theta_new[2]).^2)
+  theta_new_log_reg_mod[3] = sqrt((mean_posterior[3] - theta_new[3]).^2)
+  theta_new_log_reg_mod[4] = sqrt(sum((mean_posterior - theta_new).^2))
+
+  =#
+
+  # for extened model
   theta_new_log_reg_mod = zeros(dim+2)
 
   theta_new_log_reg_mod[1] = sqrt((mean_posterior[1] - theta_new[1]).^2)
   theta_new_log_reg_mod[2] = sqrt((mean_posterior[2] - theta_new[2]).^2)
   theta_new_log_reg_mod[3] = sqrt((mean_posterior[3] - theta_new[3]).^2)
+  theta_new_log_reg_mod[4] = sqrt(sum((mean_posterior - theta_new).^2))
+  theta_new_log_reg_mod[5] = prediction_sample_ml_star[1]/prediction_sample_ml_old[1]
 
-  theta_new_log_reg_mod = [theta_new_log_reg_mod[1:3]; prediction_sample_ml_star[1]/prediction_sample_ml_old[1]; sqrt(var_pred_gp_star[1])]
 
   if prediction_sample_ml_star[1] > prediction_sample_ml_old[1]
     #prob_case_1 = predict(beta_case_1_and_3, [1;data_test[1:dim,i]])
     prob_case_1 = predict(beta_case_1_and_3, [1;theta_new_log_reg_mod])
 
     go_to_case_1 = rand(Bernoulli(prob_case_1)) == 1
+
     if go_to_case_1
 
       nbr_case_1_selceted = nbr_case_1_selceted+1
@@ -1073,7 +1278,13 @@ using DecisionTree
 
 # tree based model for case 1 and 3
 
+# 5 feature model
 features_1_and_3 = convert(Array, input_data_case_1_and_3[:, 1:dim+2])
+
+# 4 features model
+features_1_and_3 = convert(Array, input_data_case_1_and_3[:, 1:dim+1])
+
+
 labels_1_and_3 = convert(Array, input_data_case_1_and_3[:, end])
 
 labels_1_and_3 = Array{String}(size(features_1_and_3,1))
@@ -1099,7 +1310,11 @@ accuracy = nfoldCV_tree(labels_1_and_3, features_1_and_3, 0.9, 3)
 
 # tree based model for case 2 and 4
 
+# 5 features model
 features_case_2_and_4 = convert(Array, input_data_case_2_and_4[:, 1:dim+2])
+
+# 4 features model
+features_case_2_and_4 = convert(Array, input_data_case_2_and_4[:, 1:dim+1])
 
 labels_case_2_and_4 = Array{String}(size(features_case_2_and_4,1))
 
@@ -1153,8 +1368,15 @@ for i = 1:n
 
   # tansformation of theta_new
   # transform theta_new to euclidian distance space
-  theta_new_tree_model = zeros(dim+2)
-  theta_new_tree_model = [theta_new; prediction_sample_ml_star[1]/prediction_sample_ml_old[1]; sqrt(var_pred_gp_star[1])]
+
+  # 5 features model
+  #theta_new_tree_model = zeros(dim+2)
+  #theta_new_tree_model = [theta_new; prediction_sample_ml_star[1]/prediction_sample_ml_old[1]; sqrt(var_pred_gp_star[1])]
+
+  # 4 features model
+  theta_new_tree_model = zeros(dim+1)
+  theta_new_tree_model = [theta_new; prediction_sample_ml_star[1]/prediction_sample_ml_old[1]]
+
 
   if prediction_sample_ml_star[1] > prediction_sample_ml_old[1]
     #prob_case_1 = predict(beta_case_1_and_3, [1;data_test[1:dim,i]])
