@@ -11,14 +11,12 @@ using StatsFuns
 
 # load functions
 
+# load functions
+cd("..")
+include(pwd()*"\\gpmodel\\gp_model.jl")
+include(pwd()*"\\adaptive updating algorithms\\adaptiveupdate.jl")
+cd("DWPSDE model") # cd to correct folder
 
-if Sys.CPU_CORES == 8
-  include("C:\\Users\\samuel\\Dropbox\\Phd Education\\Projects\\project 1 accelerated DA and DWP SDE\\code\\gpmodel\\gp_model.jl")
-  include("C:\\Users\\samuel\\Dropbox\\Phd Education\\Projects\\project 1 accelerated DA and DWP SDE\\code\\adaptive updating algorithms\\adaptiveupdate.jl")
-else
-  include("C:\\Users\\samue\\OneDrive\\Documents\\GitHub\\adamcmcpaper\\gpmodel\\gp_model.jl")
-  include("C:\\Users\\samue\\OneDrive\\Documents\\GitHub\\adamcmcpaper\\adaptive updating algorithms\\adaptiveupdate.jl")
-end
 
 "Type for prior distribution"
 type PriorDistribution
