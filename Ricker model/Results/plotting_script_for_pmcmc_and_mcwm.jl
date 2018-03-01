@@ -18,11 +18,16 @@ jobname = "_training"
 jobname = "_dagpmcmc"
 jobname = "_adagpmcmc"
 
-Theta = Array(readtable("./Results/Theta"*jobname*".csv"))
-loklik_avec_priorv = Array(readtable("./Results/loglik_avec_priorvec"*jobname*".csv"))
-algorithm_parameters = Array(readtable("./Results/algorithm_parameters"*jobname*".csv"))
+jobname = "lunarc_pmcmc_test"
+
+savepath = "C:\\Users\\samuel\\Dropbox\\Phd Education\\Projects\\project 1 accelerated DA and DWP SDE\\results\\ricker model\\"
+
+Theta = Array(readtable(savepath*"Theta"*jobname*".csv"))
+loklik_avec_priorv = Array(readtable(savepath*"loglik_avec_priorvec"*jobname*".csv"))
+algorithm_parameters = Array(readtable(savepath*"algorithm_parameters"*jobname*".csv"))
 
 # set values:
+
 loglik = loklik_avec_priorv[1,:]
 accept_vec = loklik_avec_priorv[2,:]
 prior_vec = loklik_avec_priorv[3,:]
