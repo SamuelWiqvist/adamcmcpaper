@@ -8,11 +8,11 @@
 # PMCMC/MCWM
 
 doc"""
-    MCMC(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=false)
+    mcmc(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=false)
 
 Runs PMCMC or MCWM with adaptive gaussian random walk.
 """
-function MCMC(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=false)
+function mcmc(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=false)
 
   # data
   Z = problem.data.Z
@@ -192,11 +192,11 @@ end
 # DA-GP-MCMC
 
 doc"""
-    dagpMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov_matrix::Matrix)
+    dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov_matrix::Matrix)
 
 Runs the DA-GP-MCMC algorithm.
 """
-function dagpMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov_matrix::Matrix)
+function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov_matrix::Matrix)
 
   # data
   Z = problem.data.Z
@@ -583,11 +583,11 @@ end
 # ADA-GP_MCMC
 
 doc"""
-    adagpMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov_matrix::Matrix, prob_cases::Vector)
+    adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov_matrix::Matrix, prob_cases::Vector)
 
 Runs the ADA-GP-MCMC algorithm.
 """
-function adagpMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov_matrix::Matrix, prob_cases::Vector)
+function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov_matrix::Matrix, prob_cases::Vector)
 
   # data
   Z = problem.data.Z

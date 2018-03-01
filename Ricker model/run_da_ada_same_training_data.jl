@@ -1,7 +1,7 @@
 # Script for running DA and ADA using the same traninig data
 
 # go to Ricker model folder
-try 
+try
   cd("Ricker model")
 catch
  warn("Already in the Ricker model folder")
@@ -90,7 +90,7 @@ if !load_training_data
   # generate training data
   tic()
   # collect data
-  res_training, theta_training, loglik_training, cov_matrix = MCMC(problem_traning, true, true)
+  res_training, theta_training, loglik_training, cov_matrix = mcmc(problem_traning, true, true)
 
   time_pre_er = toc()
 
@@ -183,7 +183,7 @@ accelerated_da = false
 
 problem.model_param.theta_0 = theta_training[:, end]
 
-res, res_traning, theta_training, loglik_training, assumption_list, loglik_list = DAGPMCMC(problem_traning, problem, gp, cov_matrix)
+res, res_traning, theta_training, loglik_training, assumption_list, loglik_list = dagpmcmc(problem_traning, problem, gp, cov_matrix)
 
 
 mcmc_results = Result(res[1].Theta_est, res[1].loglik_est, res[1].accept_vec, res[1].prior_vec)
@@ -287,7 +287,7 @@ accelerated_da = true
 
 problem.model_param.theta_0 = theta_training[:, end]
 
-res, res_traning, theta_training, loglik_training, assumption_list, loglik_list = ADAGPMCMC(problem_traning, problem, gp, cov_matrix, prob_cases)
+res, res_traning, theta_training, loglik_training, assumption_list, loglik_list = adagpmcmc(problem_traning, problem, gp, cov_matrix, prob_cases)
 
 
 mcmc_results = Result(res[1].Theta_est, res[1].loglik_est, res[1].accept_vec, res[1].prior_vec)

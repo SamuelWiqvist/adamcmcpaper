@@ -1,7 +1,7 @@
 # Script for running PMCMC/MCWM
 
 # go to Ricker model folder
-try 
+try
   cd("Ricker model")
 catch
   warn("Already in the Ricker model folder")
@@ -51,7 +51,7 @@ problem.adaptive_update = AMUpdate_gen(eye(3), 2.4/sqrt(3), 0.2, 1., 0.8, 25)
 
 # run adaptive PMCMC
 tic()
-res_MCMC = MCMC(problem)
+res_MCMC = mcmc(problem)
 time_MCMC = toc()
 @printf "Run time (s): %.4f \n" time_MCMC
 
