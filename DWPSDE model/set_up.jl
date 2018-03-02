@@ -21,7 +21,7 @@ cd("DWPSDE model") # cd to correct folder
 "Type for prior distribution"
 type PriorDistribution
   dist::String
-  Theta_parameters::Array{Float64}
+  prior_parameters::Array{Float64}
 end
 
 "Type for the data"
@@ -171,7 +171,7 @@ function set_up_problem(;use_sim_data::Bool=true,nbr_of_unknown_parameters::Int6
 
 
   # set algorithm parameters
-  (theta_true,theta_known,theta_0,Theta_parameters) = set_parameters(nbr_of_unknown_parameters,prior_dist, data_set)
+  (theta_true,theta_known,theta_0,prior_parameters) = set_parameters(nbr_of_unknown_parameters,prior_dist, data_set)
 
 
 
@@ -242,7 +242,7 @@ function set_up_problem(;use_sim_data::Bool=true,nbr_of_unknown_parameters::Int6
  end
 
   # create instance of PriorDistribution
-  prior = PriorDistribution(prior_dist, Theta_parameters)
+  prior = PriorDistribution(prior_dist, prior_parameters)
 
   # create instance of AdaptiveUpdate
   adaptive_update = AMUpdate(eye(length(theta_0)), 2.38/sqrt(length(theta_0)), 1, 0.7, 25)
@@ -276,7 +276,7 @@ function set_up_gp_problem(;use_sim_data::Bool=true,nbr_of_unknown_parameters::I
 
 
   # set algorithm parameters
-  (theta_true,theta_known,theta_0,Theta_parameters) = set_parameters(nbr_of_unknown_parameters,prior_dist,data_set)
+  (theta_true,theta_known,theta_0,prior_parameters) = set_parameters(nbr_of_unknown_parameters,prior_dist,data_set)
 
   # create instance of AlgorithmParametersgpPMCMC (set parameters to default values)
   alg_param = AlgorithmParametersgpPMCMC(10000,25,5000,alg, pf_algorithm,nbr_of_cores,
@@ -343,7 +343,7 @@ function set_up_gp_problem(;use_sim_data::Bool=true,nbr_of_unknown_parameters::I
  end
 
   # create instance of PriorDistribution
-  prior = PriorDistribution(prior_dist, Theta_parameters)
+  prior = PriorDistribution(prior_dist, prior_parameters)
 
   # create instance of AdaptiveUpdate
   adaptive_update = AMUpdate(eye(length(theta_0)), 2.38/sqrt(length(theta_0)), 1, 0.7, 25)
@@ -384,13 +384,13 @@ Sets the parameters for the prior dist. and the model parameters theta.
       theta_known = [Κ  Γ A A_sign B f g power1 power2 sigma] # set vector with known parameters
       if prior_dist == "Uniform"
         # uniform prior dist
-        Theta_parameters =  [log(20) log(40); 0 log(10)]
+        prior_parameters =  [log(20) log(40); 0 log(10)]
       elseif prior_dist == "Normal"
         # normal prior dist
-        Theta_parameters = [3.34 0.173; 1.15 0.2]
+        prior_parameters = [3.34 0.173; 1.15 0.2]
       elseif prior_dist == "nonlog"
         # prior distribution on non-log scale
-        Theta_parameters = [28 2; 4 1]
+        prior_parameters = [28 2; 4 1]
       end
 
 
@@ -405,13 +405,13 @@ Sets the parameters for the prior dist. and the model parameters theta.
         theta_known = [Κ  Γ A_sign B f g power1 power2 sigma] # set vector with known parameters
         if prior_dist == "Uniform"
           # uniform prior dist
-          Theta_parameters =  [-10 0; log(20) log(40); 0 log(10)] # uniform prior distribution
+          prior_parameters =  [-10 0; log(20) log(40); 0 log(10)] # uniform prior distribution
         elseif prior_dist == "Normal"
           # normal prior dist
-          Theta_parameters = [-5 1;  3.34 0.173; 1.15 0.2]
+          prior_parameters = [-5 1;  3.34 0.173; 1.15 0.2]
         elseif prior_dist == "nonlog"
           # prior distribution on non-log scale
-          Theta_parameters = [3 0.05; 28 2; 4 1]
+          prior_parameters = [3 0.05; 28 2; 4 1]
         end
 
         #theta_0 = [log(100) log(40) log(0.01)] # old start values
@@ -426,13 +426,13 @@ Sets the parameters for the prior dist. and the model parameters theta.
 
       if prior_dist == "Uniform"
         # uniform prior dist
-        Theta_parameters =  [-10 2; -10 2;-10 0;0 log(10);log(1) log(4)]
+        prior_parameters =  [-10 2; -10 2;-10 0;0 log(10);log(1) log(4)]
       elseif prior_dist == "Normal"
         # normal prior dist
-        Theta_parameters = [-0.7 0.5;-0.7 0.5;3.34 0.173; 1.15 0.2]
+        prior_parameters = [-0.7 0.5;-0.7 0.5;3.34 0.173; 1.15 0.2]
       elseif prior_dist == "nonlog"
         # prior distribution on non-log scale
-        Theta_parameters = [3 1.5; 3 1.5; 28 2; 4 1]
+        prior_parameters = [3 1.5; 3 1.5; 28 2; 4 1]
       end
 
       theta_0 = [log(10) log(10) log(100) log(40)] #theta_true #[log(10) log(10) log(100) log(40)] #theta_true #[log(10) log(10) log(100) log(40)] # start values
@@ -446,13 +446,13 @@ Sets the parameters for the prior dist. and the model parameters theta.
 
       if prior_dist == "Uniform"
         # uniform prior dist
-        Theta_parameters =  [-10 2; -10 2;log(20) log(40);0 log(10);log(1) log(4)]
+        prior_parameters =  [-10 2; -10 2;log(20) log(40);0 log(10);log(1) log(4)]
       elseif prior_dist == "Normal"
         # normal prior dist
-        Theta_parameters = [-0.7 0.5;-0.7 0.5;3.34 0.173; 1.15 0.2; log(2) 0.5]
+        prior_parameters = [-0.7 0.5;-0.7 0.5;3.34 0.173; 1.15 0.2; log(2) 0.5]
       elseif prior_dist == "nonlog"
         # prior distribution on non-log scale
-        Theta_parameters = [3 1.5; 3 1.5; 28 2; 4 1; 2 2]
+        prior_parameters = [3 1.5; 3 1.5; 28 2; 4 1; 2 2]
       end
 
       theta_0 = [log(10) log(10) log(100) log(40) log(10)] #theta_true #[log(1) log(1) log(30) log(5) log(1)] # theta_true #[log(1) log(1) log(1) log(30) log(5)]  #[log(10) log(10) log(10) log(100) log(40)]  # theta_true [log(10) log(10) log(10) log(100) log(40)] # start values
@@ -466,13 +466,13 @@ Sets the parameters for the prior dist. and the model parameters theta.
 
       if prior_dist == "Uniform"
         # uniform prior dist
-        Theta_parameters =  [-10 0; log(20) log(40);  0 log(10); -10 0.7; -10 0.7; log(1) log(4)]
+        prior_parameters =  [-10 0; log(20) log(40);  0 log(10); -10 0.7; -10 0.7; log(1) log(4)]
       elseif prior_dist == "Normal"
         # normal prior dist
-        Theta_parameters = [-5 1;  log(20)+(log(40)-log(20))/2 (log(40)-log(20))/4 ;(log(10))/2 (log(10))/4;0 0.5;0 0.5;log(2) 0.5]
+        prior_parameters = [-5 1;  log(20)+(log(40)-log(20))/2 (log(40)-log(20))/4 ;(log(10))/2 (log(10))/4;0 0.5;0 0.5;log(2) 0.5]
       elseif prior_dist == "nonlog"
         # prior distribution on non-log scale
-        Theta_parameters = [3 0.05; 28 2; 4 1; 2 2; 2 2; 2 2]
+        prior_parameters = [3 0.05; 28 2; 4 1; 2 2; 2 2; 2 2]
       end
 
       theta_0 =  [log(1) log(30) log(10) log(2) log(2) log(2)]  #log([0.0001, 1, 1, 0.0001, 0.0001, 0.01]) # start values
@@ -486,13 +486,13 @@ Sets the parameters for the prior dist. and the model parameters theta.
 
       if prior_dist == "Uniform"
         # uniform prior dist
-        Theta_parameters =  [-10 2; -10 2;log(20) log(40);  0 log(10); -10 0.7; -10 0.7; log(1) log(4)]
+        prior_parameters =  [-10 2; -10 2;log(20) log(40);  0 log(10); -10 0.7; -10 0.7; log(1) log(4)]
       elseif prior_dist == "Normal"
         # normal prior dist
-        Theta_parameters = [-0.7 0.5;-0.7 0.5;3.34 0.173; 1.15 0.2;0 0.5;0 0.5;log(2) 0.5]
+        prior_parameters = [-0.7 0.5;-0.7 0.5;3.34 0.173; 1.15 0.2;0 0.5;0 0.5;log(2) 0.5]
       elseif prior_dist == "nonlog"
         # prior distribution on non-log scale
-        Theta_parameters = [3 1.5; 3 1.5; 28 2; 4 1; 2 2; 2 2; 2 2]
+        prior_parameters = [3 1.5; 3 1.5; 28 2; 4 1; 2 2; 2 2; 2 2]
       end
 
       theta_0 = [log(2) log(2) log(30) log(10) log(2) log(2) log(2)] #[log(1) log(1) log(30) log(5) log(2) log(2) log(1)] #theta_true #[log(1) log(30) log(4) log(2) log(2) log(2)]  #log([0.0001, 1, 1, 0.0001, 0.0001, 0.01]) # start values
@@ -507,13 +507,13 @@ Sets the parameters for the prior dist. and the model parameters theta.
 
       if prior_dist == "Uniform"
         # uniform prior dist
-        Theta_parameters =  [-10 2; -10 2; -10 0; log(20) log(40);  0 log(10);-10 0.7; -10 0.7; log(1) log(4)]
+        prior_parameters =  [-10 2; -10 2; -10 0; log(20) log(40);  0 log(10);-10 0.7; -10 0.7; log(1) log(4)]
       elseif prior_dist == "Normal"
         # normal prior dist
-        Theta_parameters = [-0.7 0.5;-0.7 0.5;-5 1;  log(20)+(log(40)-log(20))/2 (log(40)-log(20))/4 ;(log(10))/2 (log(10))/4;0 0.5;0 0.5;log(2) 0.5]
+        prior_parameters = [-0.7 0.5;-0.7 0.5;-5 1;  log(20)+(log(40)-log(20))/2 (log(40)-log(20))/4 ;(log(10))/2 (log(10))/4;0 0.5;0 0.5;log(2) 0.5]
       elseif prior_dist == "nonlog"
         # prior distribution on non-log scale
-        Theta_parameters = [3 1.5; 3 1.5; 3 0.05; 28 2; 4 1; 2 2; 2 2; 2 2]
+        prior_parameters = [3 1.5; 3 1.5; 3 0.05; 28 2; 4 1; 2 2; 2 2; 2 2]
       end
 
       theta_0 = [log(2) log(2) log(1) log(30) log(10) log(2) log(2) log(2)] #log([0.0001, 0.0001, 0.0001, 1, 1, 0.0001, 0.0001, 0.0001, 0.01]) # start values
@@ -526,13 +526,13 @@ Sets the parameters for the prior dist. and the model parameters theta.
 
       if prior_dist == "Uniform"
         # uniform prior dist
-        Theta_parameters =  [-10 2; -10 2; -10 0; log(20) log(40);  0 log(10); -10 0; -10 0.7; -10 0.7; log(1) log(4)]
+        prior_parameters =  [-10 2; -10 2; -10 0; log(20) log(40);  0 log(10); -10 0; -10 0.7; -10 0.7; log(1) log(4)]
       elseif prior_dist == "Normal"
         # normal prior dist
-        Theta_parameters = [-0.7 0.5;-0.7 0.5;-5 1;  log(20)+(log(40)-log(20))/2 (log(40)-log(20))/4 ;(log(10))/2 (log(10))/4;-5 1;0 0.5;0 0.5;log(2) 0.5]
+        prior_parameters = [-0.7 0.5;-0.7 0.5;-5 1;  log(20)+(log(40)-log(20))/2 (log(40)-log(20))/4 ;(log(10))/2 (log(10))/4;-5 1;0 0.5;0 0.5;log(2) 0.5]
       elseif prior_dist == "nonlog"
         # prior distribution on non-log scale
-        Theta_parameters = [3 1.5; 3 1.5; 3 0.05; 28 2; 4 1; 3 0.05; 2 2; 2 2; 2 2]
+        prior_parameters = [3 1.5; 3 1.5; 3 0.05; 28 2; 4 1; 3 0.05; 2 2; 2 2; 2 2]
       end
 
       theta_0 = [log(2) log(2) log(1) log(30) log(10) log(2) log(2) log(2) log(2)] #log([0.0001, 0.0001, 0.0001, 1, 1, 0.0001, 0.0001, 0.0001, 0.01]) # start values
@@ -540,7 +540,7 @@ Sets the parameters for the prior dist. and the model parameters theta.
     end
 
     # return parameters
-    return theta_true,theta_known,theta_0,Theta_parameters
+    return theta_true,theta_known,theta_0,prior_parameters
 
   else
 
@@ -583,13 +583,13 @@ Sets the parameters for the prior dist. and the model parameters theta.
 
       if prior_dist == "Uniform"
         # uniform prior dist
-        Theta_parameters =  [log(10) log(40); 0 log(20)]
+        prior_parameters =  [log(10) log(40); 0 log(20)]
       elseif prior_dist == "Normal"
         # normal prior dist
-        Theta_parameters = [3.34 0.173; 2 0.4]
+        prior_parameters = [3.34 0.173; 2 0.4]
       elseif prior_dist == "nonlog"
         # prior distribution on non-log scale
-        Theta_parameters = [28 2; 4 1]
+        prior_parameters = [28 2; 4 1]
       end
 
 
@@ -606,13 +606,13 @@ Sets the parameters for the prior dist. and the model parameters theta.
 
         if prior_dist == "Uniform"
           # uniform prior dist
-          Theta_parameters =  [-10 0; log(20) log(40); 0 log(10)] # uniform prior distribution
+          prior_parameters =  [-10 0; log(20) log(40); 0 log(10)] # uniform prior distribution
         elseif prior_dist == "Normal"
           # normal prior dist
-          Theta_parameters = [-5 1;  3.34 0.173; 1.15 0.2]
+          prior_parameters = [-5 1;  3.34 0.173; 1.15 0.2]
         elseif prior_dist == "nonlog"
           # prior distribution on non-log scale
-          Theta_parameters = [3 0.05; 28 2; 4 1]
+          prior_parameters = [3 0.05; 28 2; 4 1]
         end
 
         #theta_0 = [log(0.1) log(100) log(40)] [log(100) log(40) log(0.01)] # old start values
@@ -628,13 +628,13 @@ Sets the parameters for the prior dist. and the model parameters theta.
 
       if prior_dist == "Uniform"
         # uniform prior dist
-        Theta_parameters =  [-10 2; -10 2;-10 0;0 log(10);log(1) log(4)]
+        prior_parameters =  [-10 2; -10 2;-10 0;0 log(10);log(1) log(4)]
       elseif prior_dist == "Normal"
         # normal prior dist
-        Theta_parameters = [-0.7 0.5;-0.7 0.5;3.34 0.173; 1.15 0.2]
+        prior_parameters = [-0.7 0.5;-0.7 0.5;3.34 0.173; 1.15 0.2]
       elseif prior_dist == "nonlog"
         # prior distribution on non-log scale
-        Theta_parameters = [3 1.5; 3 1.5; 28 2; 4 1]
+        prior_parameters = [3 1.5; 3 1.5; 28 2; 4 1]
       end
 
       theta_0 = [log(10) log(10) log(100) log(40)] #theta_true #[log(10) log(10) log(100) log(40)] #theta_true #[log(10) log(10) log(100) log(40)] # start values
@@ -648,13 +648,13 @@ Sets the parameters for the prior dist. and the model parameters theta.
 
       if prior_dist == "Uniform"
         # uniform prior dist
-        Theta_parameters =  [-10 2; -10 2;log(20) log(40);0 log(10);log(1) log(4)]
+        prior_parameters =  [-10 2; -10 2;log(20) log(40);0 log(10);log(1) log(4)]
       elseif prior_dist == "Normal"
         # normal prior dist
-        Theta_parameters = [-0.7 0.5;-0.7 0.5;3.34 0.173; 2 0.4; log(2) 0.5]
+        prior_parameters = [-0.7 0.5;-0.7 0.5;3.34 0.173; 2 0.4; log(2) 0.5]
       elseif prior_dist == "nonlog"
         # prior distribution on non-log scale
-        Theta_parameters = [3 1.5; 3 1.5; 28 2; 4 1; 2 2]
+        prior_parameters = [3 1.5; 3 1.5; 28 2; 4 1; 2 2]
       end
 
       theta_0 = theta_true #[log(10) log(10) log(100) log(40) log(10)] #theta_true #[log(1) log(1) log(30) log(5) log(1)] # theta_true #[log(1) log(1) log(1) log(30) log(5)]  #[log(10) log(10) log(10) log(100) log(40)]  # theta_true [log(10) log(10) log(10) log(100) log(40)] # start values
@@ -668,13 +668,13 @@ Sets the parameters for the prior dist. and the model parameters theta.
 
       if prior_dist == "Uniform"
         # uniform prior dist
-        Theta_parameters =  [-10 0; log(20) log(40);  0 log(10); -10 0.7; -10 0.7; log(1) log(4)]
+        prior_parameters =  [-10 0; log(20) log(40);  0 log(10); -10 0.7; -10 0.7; log(1) log(4)]
       elseif prior_dist == "Normal"
         # normal prior dist
-        Theta_parameters = [-5 1;  log(20)+(log(40)-log(20))/2 (log(40)-log(20))/4 ;(log(10))/2 (log(10))/4;0 0.5;0 0.5;log(2) 0.5]
+        prior_parameters = [-5 1;  log(20)+(log(40)-log(20))/2 (log(40)-log(20))/4 ;(log(10))/2 (log(10))/4;0 0.5;0 0.5;log(2) 0.5]
       elseif prior_dist == "nonlog"
         # prior distribution on non-log scale
-        Theta_parameters = [3 0.05; 28 2; 4 1; 2 2; 2 2; 2 2]
+        prior_parameters = [3 0.05; 28 2; 4 1; 2 2; 2 2; 2 2]
       end
 
       theta_0 =  [log(1) log(30) log(10) log(2) log(2) log(2)]  #log([0.0001, 1, 1, 0.0001, 0.0001, 0.01]) # start values
@@ -688,13 +688,13 @@ Sets the parameters for the prior dist. and the model parameters theta.
 
       if prior_dist == "Uniform"
         # uniform prior dist
-        Theta_parameters =  [-10 2; -10 2;log(20) log(40);  0 log(10); -10 0.7; -10 0.7; log(1) log(4)]
+        prior_parameters =  [-10 2; -10 2;log(20) log(40);  0 log(10); -10 0.7; -10 0.7; log(1) log(4)]
       elseif prior_dist == "Normal"
         # normal prior dist
-        Theta_parameters = [-0.7 0.5;-0.7 0.5;3.34 0.173; 2 0.4;;0 0.5;0 0.5;log(2) 0.5]
+        prior_parameters = [-0.7 0.5;-0.7 0.5;3.34 0.173; 2 0.4;;0 0.5;0 0.5;log(2) 0.5]
       elseif prior_dist == "nonlog"
         # prior distribution on non-log scale
-        Theta_parameters = [3 1.5; 3 1.5; 28 2; 4 1; 2 2; 2 2; 2 2]
+        prior_parameters = [3 1.5; 3 1.5; 28 2; 4 1; 2 2; 2 2; 2 2]
       end
 
       theta_0 = theta_true# [log(2) log(2) log(30) log(10) log(2) log(2) log(2)] #[log(1) log(1) log(30) log(5) log(2) log(2) log(1)] #theta_true #[log(1) log(30) log(4) log(2) log(2) log(2)]  #log([0.0001, 1, 1, 0.0001, 0.0001, 0.01]) # start values
@@ -709,13 +709,13 @@ Sets the parameters for the prior dist. and the model parameters theta.
 
       if prior_dist == "Uniform"
         # uniform prior dist
-        Theta_parameters =  [-10 2; -10 2; -10 0; log(20) log(40);  0 log(10);-10 0.7; -10 0.7; log(1) log(4)]
+        prior_parameters =  [-10 2; -10 2; -10 0; log(20) log(40);  0 log(10);-10 0.7; -10 0.7; log(1) log(4)]
       elseif prior_dist == "Normal"
         # normal prior dist
-        Theta_parameters = [-0.7 0.5;-0.7 0.5;-5 1;  log(20)+(log(40)-log(20))/2 (log(40)-log(20))/4 ;(log(10))/2 (log(10))/4;0 0.5;0 0.5;log(2) 0.5]
+        prior_parameters = [-0.7 0.5;-0.7 0.5;-5 1;  log(20)+(log(40)-log(20))/2 (log(40)-log(20))/4 ;(log(10))/2 (log(10))/4;0 0.5;0 0.5;log(2) 0.5]
       elseif prior_dist == "nonlog"
         # prior distribution on non-log scale
-        Theta_parameters = [3 1.5; 3 1.5; 3 0.05; 28 2; 4 1; 2 2; 2 2; 2 2]
+        prior_parameters = [3 1.5; 3 1.5; 3 0.05; 28 2; 4 1; 2 2; 2 2; 2 2]
       end
 
       theta_0 = [log(2) log(2) log(1) log(30) log(10) log(2) log(2) log(2)] #log([0.0001, 0.0001, 0.0001, 1, 1, 0.0001, 0.0001, 0.0001, 0.01]) # start values
@@ -727,13 +727,13 @@ Sets the parameters for the prior dist. and the model parameters theta.
 
       if prior_dist == "Uniform"
         # uniform prior dist
-        Theta_parameters =  [-10 2; -10 2; -10 0; log(20) log(40);  0 log(10); -10 0; -10 0.7; -10 0.7; log(1) log(4)]
+        prior_parameters =  [-10 2; -10 2; -10 0; log(20) log(40);  0 log(10); -10 0; -10 0.7; -10 0.7; log(1) log(4)]
       elseif prior_dist == "Normal"
         # normal prior dist
-        Theta_parameters = [-0.7 0.5;-0.7 0.5;-5 1;3.34 0.173; 2 0.4;-5 1;0 0.5;0 0.5;log(2) 0.5]
+        prior_parameters = [-0.7 0.5;-0.7 0.5;-5 1;3.34 0.173; 2 0.4;-5 1;0 0.5;0 0.5;log(2) 0.5]
       elseif prior_dist == "nonlog"
         # prior distribution on non-log scale
-        Theta_parameters = [3 1.5; 3 1.5; 3 0.05; 28 2; 4 1; 3 0.05; 2 2; 2 2; 2 2]
+        prior_parameters = [3 1.5; 3 1.5; 3 0.05; 28 2; 4 1; 3 0.05; 2 2; 2 2; 2 2]
       end
 
       theta_0 = theta_true # [log(2) log(2) log(1) log(30) log(10) log(2) log(2) log(2) log(2)] #log([0.0001, 0.0001, 0.0001, 1, 1, 0.0001, 0.0001, 0.0001, 0.01]) # start values
@@ -741,7 +741,7 @@ Sets the parameters for the prior dist. and the model parameters theta.
     end
 
     # return parameters
-    return theta_true,theta_known,theta_0,Theta_parameters
+    return theta_true,theta_known,theta_0,prior_parameters
 
 
   end

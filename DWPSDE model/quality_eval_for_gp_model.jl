@@ -1,10 +1,4 @@
-# Script for running the PMCMC algorithm
-
-include("set_up.jl")
-
-using JLD
-using HDF5
-using StatPlots
+# Script for evaluating the GP model
 
 # set correct path
 try
@@ -13,12 +7,19 @@ catch
   warn("Already in the Ricker model folder")
 end
 
+include("set_up.jl")
+
+using JLD
+using HDF5
+using StatPlots
+
 # load functions to compute posterior inference
-if Sys.CPU_CORES == 8
-    include("C:\\Users\\samuel\\Dropbox\\Phd Education\\Projects\\project 1 accelerated DA and DWP SDE\\code\\utilities\\posteriorinference.jl")
-else
-    include("C:\\Users\\samue\\OneDrive\\Documents\\GitHub\\adamcmcpaper\\utilities\\posteriorinference.jl")
-end
+
+cd("..")
+include(pwd()*"\\utilities\\posteriorinference.jl")
+include(pwd()*"\\utilities\\normplot.jl")
+cd("DWPSDE model")
+
 
 # set parameters
 nbr_iterations = 2000
@@ -26,7 +27,7 @@ nbr_particels = 25
 nbr_of_cores= 4
 burn_in = 1
 sim_data = true
-set_nbr_params = 2 # should be 7
+set_nbr_params = 7 # should be 7
 log_scale_prior = false
 beta_MH = 0.1
 mcmc_alg = "MCWM"  # set MCWM or PMCMC
@@ -128,8 +129,9 @@ if !load_tranining_data
 
 else
 
-  @load "gp_training_2_par_training_and_test_data_test_new_code.jld"
+  #@load "gp_training_2_par_training_and_test_data_test_new_code.jld"
 
+  @load "gp_training_7_par_training_and_test_data_multiple_cores.jld"
 
   #@load "gp_training_$(set_nbr_params)_par.jld"
   #@load "gp_training_$(set_nbr_params)_par.jld"
@@ -269,6 +271,7 @@ time_fit_gp = toc()
 ################################################################################
 ##  Compare loglik predictions                                                                           ##
 ################################################################################
+
 text_size = 15
 loglik_pf = data_test[end,:]
 
@@ -370,7 +373,349 @@ h1 = PyPlot.plt[:hist](residuals,100, normed=true)
 PyPlot.xlabel("Residual",fontsize=text_size)
 PyPlot.ylabel("Freq.",fontsize=text_size)
 
-StatPlots.qqplot(Normal, residuals)
+normplot(residuals)
+
+################################################################################
+##  Plot marginal functions pf as function of parameter value                                                                          ##
+################################################################################
+
+Z = problem.data.Z
+theta_true = problem.model_param.theta_true
+theta_known = problem.model_param.theta_known
+N = 200  #problem.alg_param.N
+prior_parameters = problem.prior_dist.prior_parameters
+
+include("run_pf_paralell.jl")
+
+
+theta = theta_true
+(Κ, Γ, A, A_sign, B,c,d,g,f,power1,power2,sigma) = set_parameters(theta, problem.model_param.theta_known,length(theta))
+A = A*A_sign
+# set value for constant b function
+b_const = sqrt(2.*sigma^2 / 2.)
+(subsample_interval_calc, nbr_x0_calc, nbr_x_calc,N_calc) = map(Float64, (problem_training.alg_param.subsample_int, problem_training.alg_param.nbr_x0, problem_training.alg_param.nbr_x,N))
+(loglik_pf_old, 	~,  ~) = @time run_pf_paralell(Z,theta,problem.model_param.theta_known, N, N_calc, problem_training.alg_param.dt, problem_training.alg_param.dt_U, problem_training.alg_param.nbr_x0, nbr_x0_calc, problem_training.alg_param.nbr_x, nbr_x_calc, problem_training.alg_param.subsample_int, subsample_interval_calc, false, true, Κ, Γ, A, B, c, d, f, g, power1, power2, b_const)
+(loglik_mean,loglik_std,loglik_sample) = @time predict(theta, gp, problem.alg_param.noisy_est)
+
+# kappa non-fixed
+
+kappa_vec = -1.6:0.01:-0.3
+
+loglik_kappa_non_fixes = zeros(2,length(kappa_vec))
+
+for i = 1:length(kappa_vec)
+
+  theta = [kappa_vec[i];theta_true[2:end]]
+  (Κ, Γ, A, A_sign, B,c,d,g,f,power1,power2,sigma) = set_parameters(theta, problem.model_param.theta_known,length(theta))
+  A = A*A_sign
+  # set value for constant b function
+  b_const = sqrt(2.*sigma^2 / 2.)
+  (subsample_interval_calc, nbr_x0_calc, nbr_x_calc,N_calc) = map(Float64, (problem_training.alg_param.subsample_int, problem_training.alg_param.nbr_x0, problem_training.alg_param.nbr_x,N))
+  (loglik_kappa_non_fixes[1,i], 	~,  ~) = run_pf_paralell(Z,theta,problem.model_param.theta_known, N, N_calc, problem_training.alg_param.dt, problem_training.alg_param.dt_U, problem_training.alg_param.nbr_x0, nbr_x0_calc, problem_training.alg_param.nbr_x, nbr_x_calc, problem_training.alg_param.subsample_int, subsample_interval_calc, false, true, Κ, Γ, A, B, c, d, f, g, power1, power2, b_const)
+  (loglik_mean,loglik_std,loglik_sample) = predict(theta, gp, problem.alg_param.noisy_est)
+  loglik_kappa_non_fixes[2,i] = loglik_sample[1]
+
+end
+
+
+PyPlot.figure()
+PyPlot.plot(kappa_vec, loglik_kappa_non_fixes[1,:], "b")
+PyPlot.plot(kappa_vec, loglik_kappa_non_fixes[2,:], "r")
+PyPlot.plot((theta_true[1], theta_true[1]), (minimum(loglik_kappa_non_fixes[find(!isnan, loglik_kappa_non_fixes)]), maximum(loglik_kappa_non_fixes[find(!isnan, loglik_kappa_non_fixes)])), "k")
+
+# gamma non-fixed
+
+gamma_vec = -0.3:0.01:0.1
+
+loglik_gamma_non_fixes = zeros(2,length(gamma_vec))
+
+for i = 1:length(gamma_vec)
+
+  theta = [theta_true[1];gamma_vec[i];theta_true[3:end]]
+  (Κ, Γ, A, A_sign, B,c,d,g,f,power1,power2,sigma) = set_parameters(theta, problem.model_param.theta_known,length(theta))
+  A = A*A_sign
+  # set value for constant b function
+  b_const = sqrt(2.*sigma^2 / 2.)
+  (subsample_interval_calc, nbr_x0_calc, nbr_x_calc,N_calc) = map(Float64, (problem_training.alg_param.subsample_int, problem_training.alg_param.nbr_x0, problem_training.alg_param.nbr_x,N))
+  (loglik_gamma_non_fixes[1,i], 	~,  ~) = run_pf_paralell(Z,theta,problem.model_param.theta_known, N, N_calc, problem_training.alg_param.dt, problem_training.alg_param.dt_U, problem_training.alg_param.nbr_x0, nbr_x0_calc, problem_training.alg_param.nbr_x, nbr_x_calc, problem_training.alg_param.subsample_int, subsample_interval_calc, false, true, Κ, Γ, A, B, c, d, f, g, power1, power2, b_const)
+  (loglik_mean,loglik_std,loglik_sample) = predict(theta, gp, problem.alg_param.noisy_est)
+  loglik_gamma_non_fixes[2,i] = loglik_sample[1]
+
+end
+
+
+PyPlot.figure()
+PyPlot.plot(gamma_vec, loglik_gamma_non_fixes[1,:], "b")
+PyPlot.plot(gamma_vec, loglik_gamma_non_fixes[2,:], "r")
+PyPlot.plot((theta_true[2], theta_true[2]), (minimum(loglik_gamma_non_fixes[find(!isnan, loglik_gamma_non_fixes)]), maximum(loglik_gamma_non_fixes[find(!isnan, loglik_gamma_non_fixes)])), "k")
+
+# c non-fixed
+
+c_vec = 3:0.01:4
+
+loglik_c_non_fixes = zeros(2,length(c_vec))
+
+for i = 1:length(c_vec)
+
+  theta = [theta_true[1:2];c_vec[i];theta_true[4:end]]
+  (Κ, Γ, A, A_sign, B,c,d,g,f,power1,power2,sigma) = set_parameters(theta, problem.model_param.theta_known,length(theta))
+  A = A*A_sign
+  # set value for constant b function
+  b_const = sqrt(2.*sigma^2 / 2.)
+  (subsample_interval_calc, nbr_x0_calc, nbr_x_calc,N_calc) = map(Float64, (problem_training.alg_param.subsample_int, problem_training.alg_param.nbr_x0, problem_training.alg_param.nbr_x,N))
+  (loglik_c_non_fixes[1,i], 	~,  ~) = run_pf_paralell(Z,theta,problem.model_param.theta_known, N, N_calc, problem_training.alg_param.dt, problem_training.alg_param.dt_U, problem_training.alg_param.nbr_x0, nbr_x0_calc, problem_training.alg_param.nbr_x, nbr_x_calc, problem_training.alg_param.subsample_int, subsample_interval_calc, false, true, Κ, Γ, A, B, c, d, f, g, power1, power2, b_const)
+  (loglik_mean,loglik_std,loglik_sample) = predict(theta, gp, problem.alg_param.noisy_est)
+  loglik_c_non_fixes[2,i] = loglik_sample[1]
+
+end
+
+
+PyPlot.figure()
+PyPlot.plot(c_vec, loglik_c_non_fixes[1,:], "b")
+PyPlot.plot(c_vec, loglik_c_non_fixes[2,:], "r")
+PyPlot.plot((theta_true[3], theta_true[3]), (minimum(loglik_c_non_fixes[find(!isnan, loglik_c_non_fixes)]), maximum(loglik_c_non_fixes[find(!isnan, loglik_c_non_fixes)])), "k")
+
+# d non-fixed
+
+d_vec = 0.1:0.01:3
+
+loglik_d_non_fixes = zeros(2,length(d_vec))
+
+for i = 1:length(d_vec)
+
+  theta = [theta_true[1:3];d_vec[i];theta_true[5:end]]
+  (Κ, Γ, A, A_sign, B,c,d,g,f,power1,power2,sigma) = set_parameters(theta, problem.model_param.theta_known,length(theta))
+  A = A*A_sign
+  # set value for constant b function
+  b_const = sqrt(2.*sigma^2 / 2.)
+  (subsample_interval_calc, nbr_x0_calc, nbr_x_calc,N_calc) = map(Float64, (problem_training.alg_param.subsample_int, problem_training.alg_param.nbr_x0, problem_training.alg_param.nbr_x,N))
+  (loglik_d_non_fixes[1,i], 	~,  ~) = run_pf_paralell(Z,theta,problem.model_param.theta_known, N, N_calc, problem_training.alg_param.dt, problem_training.alg_param.dt_U, problem_training.alg_param.nbr_x0, nbr_x0_calc, problem_training.alg_param.nbr_x, nbr_x_calc, problem_training.alg_param.subsample_int, subsample_interval_calc, false, true, Κ, Γ, A, B, c, d, f, g, power1, power2, b_const)
+  (loglik_mean,loglik_std,loglik_sample) = predict(theta, gp, problem.alg_param.noisy_est)
+  loglik_d_non_fixes[2,i] = loglik_sample[1]
+
+end
+
+
+PyPlot.figure()
+PyPlot.plot(d_vec, loglik_d_non_fixes)
+PyPlot.plot((theta_true[4], theta_true[4]), (minimum(loglik_d_non_fixes[find(!isnan, loglik_d_non_fixes)]), maximum(loglik_d_non_fixes[find(!isnan, loglik_d_non_fixes)])), "k")
+
+# p1 non-fixed
+
+p1_vec = -0.5:0.01:2
+
+loglik_p1_non_fixes = zeros(2,length(p1_vec))
+
+for i = 1:length(p1_vec)
+
+  theta = [theta_true[1:4];p1_vec[i];theta_true[6:end]]
+  (Κ, Γ, A, A_sign, B,c,d,g,f,power1,power2,sigma) = set_parameters(theta, problem.model_param.theta_known,length(theta))
+  A = A*A_sign
+  # set value for constant b function
+  b_const = sqrt(2.*sigma^2 / 2.)
+  (subsample_interval_calc, nbr_x0_calc, nbr_x_calc,N_calc) = map(Float64, (problem_training.alg_param.subsample_int, problem_training.alg_param.nbr_x0, problem_training.alg_param.nbr_x,N))
+  (loglik_p1_non_fixes[1,i], 	~,  ~) = run_pf_paralell(Z,theta,problem.model_param.theta_known, N, N_calc, problem_training.alg_param.dt, problem_training.alg_param.dt_U, problem_training.alg_param.nbr_x0, nbr_x0_calc, problem_training.alg_param.nbr_x, nbr_x_calc, problem_training.alg_param.subsample_int, subsample_interval_calc, false, true, Κ, Γ, A, B, c, d, f, g, power1, power2, b_const)
+  (loglik_mean,loglik_std,loglik_sample) = predict(theta, gp, problem.alg_param.noisy_est)
+  loglik_p1_non_fixes[2,i] = loglik_sample[1]
+
+end
+
+
+PyPlot.figure()
+PyPlot.plot(p1_vec, loglik_p1_non_fixes[1,:], "b")
+PyPlot.plot(p1_vec, loglik_p1_non_fixes[2,:], "r")
+PyPlot.plot((theta_true[5], theta_true[5]), (minimum(loglik_p1_non_fixes[find(!isnan, loglik_p1_non_fixes)]), maximum(loglik_p1_non_fixes[find(!isnan, loglik_p1_non_fixes)])), "k")
+
+# p2 non-fixed
+
+p2_vec = -0.5:0.01:2
+
+loglik_p2_non_fixes = zeros(2,length(p1_vec))
+
+for i = 1:length(p1_vec)
+
+  theta = [theta_true[1:4];p1_vec[i];theta_true[6:end]]
+  (Κ, Γ, A, A_sign, B,c,d,g,f,power1,power2,sigma) = set_parameters(theta, problem.model_param.theta_known,length(theta))
+  A = A*A_sign
+  # set value for constant b function
+  b_const = sqrt(2.*sigma^2 / 2.)
+  (subsample_interval_calc, nbr_x0_calc, nbr_x_calc,N_calc) = map(Float64, (problem_training.alg_param.subsample_int, problem_training.alg_param.nbr_x0, problem_training.alg_param.nbr_x,N))
+  (loglik_p2_non_fixes[1,i], 	~,  ~) = run_pf_paralell(Z,theta,problem.model_param.theta_known, N, N_calc, problem_training.alg_param.dt, problem_training.alg_param.dt_U, problem_training.alg_param.nbr_x0, nbr_x0_calc, problem_training.alg_param.nbr_x, nbr_x_calc, problem_training.alg_param.subsample_int, subsample_interval_calc, false, true, Κ, Γ, A, B, c, d, f, g, power1, power2, b_const)
+  (loglik_mean,loglik_std,loglik_sample) = predict(theta, gp, problem.alg_param.noisy_est)
+  loglik_p2_non_fixes[2,i] = loglik_sample[1]
+
+end
+
+
+PyPlot.figure()
+PyPlot.plot(p2_vec, loglik_p2_non_fixes[1,:], "b")
+PyPlot.plot(p2_vec, loglik_p2_non_fixes[2,:], "r")
+PyPlot.plot((theta_true[5], theta_true[5]), (minimum(loglik_p1_non_fixes[find(!isnan, loglik_p1_non_fixes)]), maximum(loglik_p1_non_fixes[find(!isnan, loglik_p1_non_fixes)])), "k")
+
+# sigma non-fixed
+
+sigma_vec = 0:0.01:1
+
+loglik_sigma_non_fixes = zeros(length(sigma_vec))
+
+for i = 1:length(sigma_vec)
+
+  theta = [theta_true[1:6];sigma_vec[i]]
+  (Κ, Γ, A, A_sign, B,c,d,g,f,power1,power2,sigma) = set_parameters(theta, problem.model_param.theta_known,length(theta))
+  A = A*A_sign
+  # set value for constant b function
+  b_const = sqrt(2.*sigma^2 / 2.)
+  (subsample_interval_calc, nbr_x0_calc, nbr_x_calc,N_calc) = map(Float64, (problem_training.alg_param.subsample_int, problem_training.alg_param.nbr_x0, problem_training.alg_param.nbr_x,N))
+  (loglik_sigma_non_fixes[1,i], 	~,  ~) = run_pf_paralell(Z,theta,problem.model_param.theta_known, N, N_calc, problem_training.alg_param.dt, problem_training.alg_param.dt_U, problem_training.alg_param.nbr_x0, nbr_x0_calc, problem_training.alg_param.nbr_x, nbr_x_calc, problem_training.alg_param.subsample_int, subsample_interval_calc, false, true, Κ, Γ, A, B, c, d, f, g, power1, power2, b_const)
+  (loglik_mean,loglik_std,loglik_sample) = predict(theta, gp, problem.alg_param.noisy_est)
+  loglik_sigma_non_fixes[2,i] = loglik_sample[1]
+
+end
+
+
+PyPlot.figure()
+PyPlot.plot(sigma_vec, loglik_sigma_non_fixes[1,:], "b")
+PyPlot.plot(sigma_vec, loglik_sigma_non_fixes[2,:], "r")
+PyPlot.plot((theta_true[7], theta_true[7]), (minimum(loglik_sigma_non_fixes[find(!isnan, loglik_sigma_non_fixes)]), maximum(loglik_sigma_non_fixes[find(!isnan, loglik_sigma_non_fixes)])), "k")
+
+
+################################################################################
+##  Plot marginal functions gp est as function of parameter value                                                                          ##
+################################################################################
+
+
+# kappa non-fixed
+
+kappa_vec = -1.6:0.01:-0.3
+
+loglik_kappa_non_fixes = zeros(length(kappa_vec))
+
+for i = 1:length(kappa_vec)
+  theta = [kappa_vec[i];theta_true[2:end]]
+  (loglik_mean,loglik_std,loglik_sample) = predict(theta, gp, problem.alg_param.noisy_est)
+  loglik_kappa_non_fixes[i] = loglik_sample[1]
+
+end
+
+PyPlot.figure()
+PyPlot.plot(kappa_vec, loglik_kappa_non_fixes)
+PyPlot.plot((theta_true[1], theta_true[1]), (minimum(loglik_kappa_non_fixes[find(!isnan, loglik_kappa_non_fixes)]), maximum(loglik_kappa_non_fixes[find(!isnan, loglik_kappa_non_fixes)])), "k")
+
+# gamma non-fixed
+
+gamma_vec = -0.3:0.01:0.1
+
+loglik_gamma_non_fixes = zeros(length(gamma_vec))
+
+for i = 1:length(gamma_vec)
+
+  theta = [theta_true[1];gamma_vec[i];theta_true[3:end]]
+  (loglik_mean,loglik_std,loglik_sample) = predict(theta, gp, problem.alg_param.noisy_est)
+  loglik_gamma_non_fixes[i] = loglik_sample[1]
+
+end
+
+
+PyPlot.figure()
+PyPlot.plot(gamma_vec, loglik_gamma_non_fixes)
+PyPlot.plot((theta_true[2], theta_true[2]), (minimum(loglik_gamma_non_fixes[find(!isnan, loglik_gamma_non_fixes)]), maximum(loglik_gamma_non_fixes[find(!isnan, loglik_gamma_non_fixes)])), "k")
+
+# c non-fixed
+
+c_vec = 3:0.01:4
+
+loglik_c_non_fixes = zeros(length(c_vec))
+
+for i = 1:length(c_vec)
+
+  theta = [theta_true[1:2];c_vec[i];theta_true[4:end]]
+  (loglik_mean,loglik_std,loglik_sample) = predict(theta, gp, problem.alg_param.noisy_est)
+  loglik_c_non_fixes[i] = loglik_sample[1]
+
+end
+
+
+PyPlot.figure()
+PyPlot.plot(c_vec, loglik_c_non_fixes)
+PyPlot.plot((theta_true[3], theta_true[3]), (minimum(loglik_c_non_fixes[find(!isnan, loglik_c_non_fixes)]), maximum(loglik_c_non_fixes[find(!isnan, loglik_c_non_fixes)])), "k")
+
+# d non-fixed
+
+d_vec = 0.1:0.01:3
+
+loglik_d_non_fixes = zeros(length(d_vec))
+
+for i = 1:length(d_vec)
+
+  theta = [theta_true[1:3];d_vec[i];theta_true[5:end]]
+  (loglik_mean,loglik_std,loglik_sample) = predict(theta, gp, problem.alg_param.noisy_est)
+  loglik_d_non_fixes[i] = loglik_sample[1]
+
+end
+
+
+PyPlot.figure()
+PyPlot.plot(d_vec, loglik_d_non_fixes)
+PyPlot.plot((theta_true[4], theta_true[4]), (minimum(loglik_d_non_fixes[find(!isnan, loglik_d_non_fixes)]), maximum(loglik_d_non_fixes[find(!isnan, loglik_d_non_fixes)])), "k")
+
+# p1 non-fixed
+
+p1_vec = -0.5:0.01:2
+
+loglik_p1_non_fixes = zeros(length(p1_vec))
+
+for i = 1:length(p1_vec)
+
+  theta = [theta_true[1:4];p1_vec[i];theta_true[6:end]]
+  (loglik_mean,loglik_std,loglik_sample) = predict(theta, gp, problem.alg_param.noisy_est)
+  loglik_p1_non_fixes[i] = loglik_sample[1]
+
+end
+
+
+PyPlot.figure()
+PyPlot.plot(p1_vec, loglik_p1_non_fixes)
+PyPlot.plot((theta_true[5], theta_true[5]), (minimum(loglik_p1_non_fixes[find(!isnan, loglik_p1_non_fixes)]), maximum(loglik_p1_non_fixes[find(!isnan, loglik_p1_non_fixes)])), "k")
+
+# p2 non-fixed
+
+p2_vec = -0.5:0.01:2
+
+loglik_p2_non_fixes = zeros(length(p2_vec))
+
+for i = 1:length(p2_vec)
+
+  theta = [theta_true[1:5];p2_vec[i];theta_true[end]]
+  (loglik_mean,loglik_std,loglik_sample) = predict(theta, gp, problem.alg_param.noisy_est)
+  loglik_p2_non_fixes[i] = loglik_sample[1]
+
+end
+
+
+PyPlot.figure()
+PyPlot.plot(p2_vec, loglik_p2_non_fixes)
+PyPlot.plot((theta_true[6], theta_true[6]), (minimum(loglik_p2_non_fixes[find(!isnan, loglik_p2_non_fixes)]), maximum(loglik_p2_non_fixes[find(!isnan, loglik_p2_non_fixes)])), "k")
+
+# sigma non-fixed
+
+sigma_vec = 0:0.01:1
+
+loglik_sigma_non_fixes = zeros(length(sigma_vec))
+
+for i = 1:length(sigma_vec)
+
+  theta = [theta_true[1:6];sigma_vec[i]]
+  (loglik_mean,loglik_std,loglik_sample) = predict(theta, gp, problem.alg_param.noisy_est)
+  loglik_sigma_non_fixes[i] = loglik_sample[1]
+
+end
+
+
+PyPlot.figure()
+PyPlot.plot(sigma_vec, loglik_sigma_non_fixes)
+PyPlot.plot((theta_true[7], theta_true[7]), (minimum(loglik_sigma_non_fixes[find(!isnan, loglik_sigma_non_fixes)]), maximum(loglik_sigma_non_fixes[find(!isnan, loglik_sigma_non_fixes)])), "k")
+
+
 
 ################################################################################
 ##  Compare assumption                                                                            ##

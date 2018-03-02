@@ -24,7 +24,7 @@ cd("Ricker model") # cd to correct folder
 "Type for prior distribution"
 type PriorDistribution
   dist::String
-  Theta_parameters::Array{Float64}
+  prior_parameters::Array{Float64}
 end
 
 "Type for the data"
