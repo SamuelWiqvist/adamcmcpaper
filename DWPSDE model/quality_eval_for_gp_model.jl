@@ -550,7 +550,7 @@ end
 PyPlot.figure()
 PyPlot.plot(p2_vec, loglik_p2_non_fixes[1,:], "b")
 PyPlot.plot(p2_vec, loglik_p2_non_fixes[2,:], "r")
-PyPlot.plot((theta_true[5], theta_true[5]), (minimum(loglik_p1_non_fixes[find(!isnan, loglik_p1_non_fixes)]), maximum(loglik_p1_non_fixes[find(!isnan, loglik_p1_non_fixes)])), "k")
+PyPlot.plot((theta_true[6], theta_true[6]), (minimum(loglik_p1_non_fixes[find(!isnan, loglik_p1_non_fixes)]), maximum(loglik_p1_non_fixes[find(!isnan, loglik_p1_non_fixes)])), "k")
 
 # sigma non-fixed
 
