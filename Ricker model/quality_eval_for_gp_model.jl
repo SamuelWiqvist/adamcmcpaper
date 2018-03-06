@@ -13,21 +13,12 @@ using JLD
 using HDF5
 
 
-# fix these include statments using following method
-#cd("..")
-#include(pwd()*"\\ABC algorithms\\abcalgorithms.jl")
-#cd("g-and-k distribution") # cd to correct folder
+cd("..")
+include(pwd()*"\\utilities\\featurescaling.jl")
+include(pwd()*"\\utilities\\normplot.jl")
+include(pwd()*"\\utilities\\posteriorinference.jl")
+cd("Ricker model")
 
-
-# load functions
-if Sys.CPU_CORES == 8
-  include("C:\\Users\\samuel\\Dropbox\\Phd Education\\Projects\\project 1 accelerated DA and DWP SDE\\code\\utilities\\normplot.jl")
-  include("C:\\Users\\samuel\\Dropbox\\Phd Education\\Projects\\project 1 accelerated DA and DWP SDE\\code\\utilities\\featurescaling.jl")
-
-else
-  include("C:\\Users\\samuel\\Dropbox\\Phd Education\\Projects\\project 1 accelerated DA and DWP SDE\\code\\utilities\\normplot.jl")
-  include("C:\\Users\\samue\\Dropbox\\Phd Education\\Projects\\project 1 accelerated DA and DWP SDE\\code\\utilities\\featurescaling.jl")
-end
 
 ################################################################################
 ##     set up  problem                                                        ##
@@ -262,7 +253,7 @@ if true #problem.alg_param.est_method == "ml"
 
   perc_outlier = 0.05
   tail_rm = "left"
-  lasso = true
+  lasso = true # was true test fitting without lassa. No loss when using lasso!
 
   ml_est(gp, data_training,"SE", lasso,perc_outlier,tail_rm)
 else
@@ -369,102 +360,66 @@ prior_parameters = problem.prior_dist.prior_parameters
 
 include("pf.jl")
 N = 1000
- r non fixed
 
+PyPlot.figure()
 r_vec = prior_parameters[1,1]:0.01:prior_parameters[1,2]
 
-loglik_r_non_fixed = zeros(length(r_vec))
+loglik_r_non_fixed = zeros(2,length(r_vec))
 
 for i = 1:length(r_vec)
-  loglik_r_non_fixed[i] = pf(y, [r_vec[i]; theta_true[2:3]],theta_known,N,false)
-end
-
-
-PyPlot.figure()
-PyPlot.plot(r_vec, loglik_r_non_fixed)
-PyPlot.plot((theta_true[1], theta_true[1]), (minimum(loglik_r_non_fixed[find(!isnan, loglik_r_non_fixed)]), maximum(loglik_r_non_fixed[find(!isnan, loglik_r_non_fixed)])), "k")
-
-# keeping psi non fixed
-
-psi_vec = prior_parameters[2,1]:0.01:prior_parameters[2,2]
-
-loglik_psi_non_fixed = zeros(length(psi_vec))
-
-for i = 1:length(psi_vec)
-  loglik_psi_non_fixed[i] = pf(y, [theta_true[1];psi_vec[i]; theta_true[3]],theta_known,N,false)
-end
-
-
-PyPlot.figure()
-PyPlot.plot(psi_vec, loglik_psi_non_fixed)
-PyPlot.plot((theta_true[2], theta_true[2]), (minimum(loglik_psi_non_fixed[find(!isnan, loglik_psi_non_fixed)]), maximum(loglik_r_non_fixed[find(!isnan, loglik_psi_non_fixed)])), "k")
-
-# keeping psi non fixed
-
-sigma_vec = prior_parameters[3,1]:0.01:prior_parameters[3,2]
-
-loglik_sigma_non_fixed = zeros(length(sigma_vec))
-
-for i = 1:length(sigma_vec)
-  loglik_sigma_non_fixed[i] = pf(y,[theta_true[1:2];sigma_vec[i]],theta_known,N,false)
-end
-
-
-PyPlot.figure()
-PyPlot.plot(sigma_vec, loglik_sigma_non_fixed)
-PyPlot.plot((theta_true[3], theta_true[3]), (minimum(loglik_sigma_non_fixed[find(!isnan, loglik_sigma_non_fixed)]), maximum(loglik_sigma_non_fixed[find(!isnan, loglik_sigma_non_fixed)])), "k")
-
-
-
-################################################################################
-##  Plot marginal functions gp est as function of parameter value                                                                          ##
-################################################################################
-
-
-loglik_r_non_fixed = zeros(length(r_vec))
-
-for i = 1:length(r_vec)
+  loglik_r_non_fixed[1,i] = pf(y, [r_vec[i]; theta_true[2:3]],theta_known,N,false)
   (loglik_mean,loglik_std,loglik_sample) = predict([r_vec[i]; theta_true[2:3]], gp, problem.alg_param.noisy_est)
-  loglik_r_non_fixed[i]  = loglik_sample[1]
+  loglik_r_non_fixed[2,i]  = loglik_sample[1]
 end
 
-
-PyPlot.figure()
-PyPlot.plot(r_vec, loglik_r_non_fixed)
+PyPlot.subplot(131)
+PyPlot.plot(r_vec, loglik_r_non_fixed[1,:], "b")
+PyPlot.plot(r_vec, loglik_r_non_fixed[2,:], "r")
 PyPlot.plot((theta_true[1], theta_true[1]), (minimum(loglik_r_non_fixed[find(!isnan, loglik_r_non_fixed)]), maximum(loglik_r_non_fixed[find(!isnan, loglik_r_non_fixed)])), "k")
+PyPlot.plot((maximum(data_training[1,:]), maximum(data_training[1,:])), (minimum(loglik_r_non_fixed[find(!isnan, loglik_r_non_fixed)]), maximum(loglik_r_non_fixed[find(!isnan, loglik_r_non_fixed)])), "k--")
+PyPlot.plot((minimum(data_training[1,:]), minimum(data_training[1,:])), (minimum(loglik_r_non_fixed[find(!isnan, loglik_r_non_fixed)]), maximum(loglik_r_non_fixed[find(!isnan, loglik_r_non_fixed)])), "k--")
+PyPlot.xlabel(L"$\log r$")
+PyPlot.ylabel(L"$\ell$")
 
 # keeping psi non fixed
 
 psi_vec = prior_parameters[2,1]:0.01:prior_parameters[2,2]
 
-loglik_psi_non_fixed = zeros(length(psi_vec))
+loglik_psi_non_fixed = zeros(2,length(psi_vec))
 
 for i = 1:length(psi_vec)
+  loglik_psi_non_fixed[1,i] = pf(y, [theta_true[1];psi_vec[i]; theta_true[3]],theta_known,N,false)
   (loglik_mean,loglik_std,loglik_sample) = predict( [theta_true[1];psi_vec[i]; theta_true[3]], gp, problem.alg_param.noisy_est)
-  loglik_psi_non_fixed[i]  = loglik_sample[1]
+  loglik_psi_non_fixed[2,i]  = loglik_sample[1]
 end
 
-
-PyPlot.figure()
-PyPlot.plot(psi_vec, loglik_psi_non_fixed)
-PyPlot.plot((theta_true[2], theta_true[2]), (minimum(loglik_psi_non_fixed[find(!isnan, loglik_psi_non_fixed)]), maximum(loglik_psi_non_fixed[find(!isnan, loglik_psi_non_fixed)])), "k")
+PyPlot.subplot(132)
+PyPlot.plot(psi_vec, loglik_psi_non_fixed[1,:], "b")
+PyPlot.plot(psi_vec, loglik_psi_non_fixed[2,:], "r")
+PyPlot.plot((theta_true[2], theta_true[2]), (minimum(loglik_psi_non_fixed[find(!isnan, loglik_psi_non_fixed)]), maximum(loglik_r_non_fixed[find(!isnan, loglik_psi_non_fixed)])), "k")
+PyPlot.plot((maximum(data_training[2,:]), maximum(data_training[2,:])), (minimum(loglik_psi_non_fixed[find(!isnan, loglik_psi_non_fixed)]), maximum(loglik_psi_non_fixed[find(!isnan, loglik_psi_non_fixed)])), "k--")
+PyPlot.plot((minimum(data_training[2,:]), minimum(data_training[2,:])), (minimum(loglik_psi_non_fixed[find(!isnan, loglik_psi_non_fixed)]), maximum(loglik_psi_non_fixed[find(!isnan, loglik_psi_non_fixed)])), "k--")
+PyPlot.xlabel(L"$\log \phi$")
 
 # keeping psi non fixed
 
 sigma_vec = prior_parameters[3,1]:0.01:prior_parameters[3,2]
 
-loglik_sigma_non_fixed = zeros(length(sigma_vec))
+loglik_sigma_non_fixed = zeros(2,length(sigma_vec))
 
 for i = 1:length(sigma_vec)
+  loglik_sigma_non_fixed[1,i] = pf(y,[theta_true[1:2];sigma_vec[i]],theta_known,N,false)
   (loglik_mean,loglik_std,loglik_sample) = predict([theta_true[1:2];sigma_vec[i]], gp, problem.alg_param.noisy_est)
-  loglik_sigma_non_fixed[i]  = loglik_sample[1]
+  loglik_sigma_non_fixed[2,i]  = loglik_sample[1]
 end
 
-
-PyPlot.figure()
-PyPlot.plot(sigma_vec, loglik_sigma_non_fixed)
+PyPlot.subplot(133)
+PyPlot.plot(sigma_vec, loglik_sigma_non_fixed[1,:], "b")
+PyPlot.plot(sigma_vec, loglik_sigma_non_fixed[2,:], "r")
 PyPlot.plot((theta_true[3], theta_true[3]), (minimum(loglik_sigma_non_fixed[find(!isnan, loglik_sigma_non_fixed)]), maximum(loglik_sigma_non_fixed[find(!isnan, loglik_sigma_non_fixed)])), "k")
-
+PyPlot.plot((maximum(data_training[3,:]), maximum(data_training[3,:])), (minimum(loglik_sigma_non_fixed[find(!isnan, loglik_sigma_non_fixed)]), maximum(loglik_sigma_non_fixed[find(!isnan, loglik_sigma_non_fixed)])), "k--")
+PyPlot.plot((minimum(data_training[3,:]), minimum(data_training[3,:])), (minimum(loglik_sigma_non_fixed[find(!isnan, loglik_sigma_non_fixed)]), maximum(loglik_sigma_non_fixed[find(!isnan, loglik_sigma_non_fixed)])), "k--")
+PyPlot.xlabel(L"$\log \sigma$")
 
 
 ################################################################################

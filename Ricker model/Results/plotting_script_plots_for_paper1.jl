@@ -24,11 +24,6 @@ Theta_PMCMC = Array(readtable("./Results/Theta"*jobname_mcmc*".csv"))
 loklik_avec_priorv = Array(readtable("./Results/loglik_avec_priorvec"*jobname_mcmc*".csv"))
 algorithm_parameters = Array(readtable("./Results/algorithm_parameters"*jobname_mcmc*".csv"))
 
-
-# time_MCMC: 21.1
-# time DA-GP-MCMC: 28.6
-# early-rejections: 57502/(100000-10117)
-# number direct MH: 10117
 # set values:
 loglik = loklik_avec_priorv[1,:]
 accept_vec = loklik_avec_priorv[2,:]
@@ -42,66 +37,10 @@ Theta_ERGPMCMC = Array(readtable("./Results/Theta_ergp"*jobname_ergpmcmc*".csv")
 loklik_avec_priorv = Array(readtable("./Results/loglik_avec_priorvec_ergp"*jobname_ergpmcmc*".csv"))
 algorithm_parameters = Array(readtable("./Results/algorithm_parameters_ergp"*jobname_ergpmcmc*".csv"))
 
-
-
 start_early_rejection = Int64(algorithm_parameters[1,1])
-
-
 
 text_size = 20
 label_size = 15
-
-#=
-# Compute ESS_min / sec
-Theta_ess = Theta_ERGPMCMC # Theta_PMCMC or Theta_ERGPMCMC*
-burn_in_ess = start_early_rejection# burn_in or start_early_rejection
-time_sec = 28.6*100000 # pmcmc: 21.1*100000, dagpmcmc: 28.6*100000
-n = size(Theta_ess,2) - burn_in_ess;
-
-
-# simple version
-nbr_acf_lags =  1000
-
-acf = zeros(3,nbr_acf_lags)
-
-for i = 1:3
-    acf[i,:] = autocor(Theta_PMCMC[i,burn_in:end],1:nbr_acf_lags)
-end
-
-ESS = n./(1+2*sum(acf,2))
-
-ESS_min = minimum(ESS)
-
-ESS_min_pre_sec = ESS_min/time_sec
-
-ESS_min_pre_sec_pmcmc = ESS_min_pre_sec
-ESS_min_pre_sec_dagp = ESS_min_pre_sec
-
-# batch estimation
-# g is set to NULL
-Z = mean(Theta_ess,2)
-lambda2 = var(Theta_ess,2)
-tau = 1/2
-b_n = floor(n^tau)
-a_n = floor(n/b_n)
-sigma2 = zeros(size(lambda2));
-for j = 1:a_n
-    Y_j = zeros(size(lambda2))
-    for i = (j-1)*b_n:j*b_n-1
-        Y_j = Y_j + Theta_ess[:,Int64(i)+1]
-    end
-    Y_j = 1/b_n*Y_j;
-    sigma2 = sigma2 + (Y_j - Z).^2;
-end
-sigma2 = (b_n)/(a_n-1)*sigma2
-
-ESS = n*lambda2./sigma2
-
-
-ESS_min = minimum(ESS)
-
-ESS_min_per_sec = ESS_min/time_sec
-=#
 
 # plot chains
 

@@ -257,7 +257,7 @@ if true #problem.alg_param.est_method == "ml"
 
   perc_outlier = 0.02
   tail_rm = "left"
-  lasso = true
+  lasso = true # was true test fitting without lassa, The lassa has a large inpact on the fit of the model, we should use lasso!
 
   ml_est(gp, data_training,"SE", lasso,perc_outlier,tail_rm)
 else
@@ -397,7 +397,11 @@ b_const = sqrt(2.*sigma^2 / 2.)
 (loglik_pf_old, 	~,  ~) = @time run_pf_paralell(Z,theta,problem.model_param.theta_known, N, N_calc, problem_training.alg_param.dt, problem_training.alg_param.dt_U, problem_training.alg_param.nbr_x0, nbr_x0_calc, problem_training.alg_param.nbr_x, nbr_x_calc, problem_training.alg_param.subsample_int, subsample_interval_calc, false, true, Κ, Γ, A, B, c, d, f, g, power1, power2, b_const)
 (loglik_mean,loglik_std,loglik_sample) = @time predict(theta, gp, problem.alg_param.noisy_est)
 
+title_vec_log = [ L"$\log Kappa$"; L"$\log Gamma$"; L"$\log c$"; L"$\log d$"; L"$\log p_1$"; L"$\log p_2$"; L"$\log sigma$"]
+
+
 # kappa non-fixed
+PyPlot.figure()
 
 kappa_vec = -1.6:0.01:-0.3
 
@@ -418,10 +422,14 @@ for i = 1:length(kappa_vec)
 end
 
 
-PyPlot.figure()
+PyPlot.subplot(171)
 PyPlot.plot(kappa_vec, loglik_kappa_non_fixes[1,:], "b")
 PyPlot.plot(kappa_vec, loglik_kappa_non_fixes[2,:], "r")
 PyPlot.plot((theta_true[1], theta_true[1]), (minimum(loglik_kappa_non_fixes[find(!isnan, loglik_kappa_non_fixes)]), maximum(loglik_kappa_non_fixes[find(!isnan, loglik_kappa_non_fixes)])), "k")
+PyPlot.plot((maximum(data_training[1,:]), maximum(data_training[1,:])), (minimum(loglik_kappa_non_fixes[find(!isnan, loglik_kappa_non_fixes)]), maximum(loglik_kappa_non_fixes[find(!isnan, loglik_kappa_non_fixes)])), "k--")
+PyPlot.plot((minimum(data_training[1,:]), minimum(data_training[1,:])), (minimum(loglik_kappa_non_fixes[find(!isnan, loglik_kappa_non_fixes)]), maximum(loglik_kappa_non_fixes[find(!isnan, loglik_kappa_non_fixes)])), "k--")
+PyPlot.xlabel(title_vec_log[1])
+PyPlot.ylabel(L"$\ell$")
 
 # gamma non-fixed
 
@@ -444,10 +452,13 @@ for i = 1:length(gamma_vec)
 end
 
 
-PyPlot.figure()
+PyPlot.subplot(172)
 PyPlot.plot(gamma_vec, loglik_gamma_non_fixes[1,:], "b")
 PyPlot.plot(gamma_vec, loglik_gamma_non_fixes[2,:], "r")
 PyPlot.plot((theta_true[2], theta_true[2]), (minimum(loglik_gamma_non_fixes[find(!isnan, loglik_gamma_non_fixes)]), maximum(loglik_gamma_non_fixes[find(!isnan, loglik_gamma_non_fixes)])), "k")
+PyPlot.plot((maximum(data_training[2,:]), maximum(data_training[2,:])), (minimum(loglik_gamma_non_fixes[find(!isnan, loglik_gamma_non_fixes)]), maximum(loglik_gamma_non_fixes[find(!isnan, loglik_gamma_non_fixes)])), "k--")
+PyPlot.plot((minimum(data_training[2,:]), minimum(data_training[2,:])), (minimum(loglik_gamma_non_fixes[find(!isnan, loglik_gamma_non_fixes)]), maximum(loglik_gamma_non_fixes[find(!isnan, loglik_gamma_non_fixes)])), "k--")
+PyPlot.xlabel(title_vec_log[2])
 
 # c non-fixed
 
@@ -470,10 +481,13 @@ for i = 1:length(c_vec)
 end
 
 
-PyPlot.figure()
+PyPlot.subplot(173)
 PyPlot.plot(c_vec, loglik_c_non_fixes[1,:], "b")
 PyPlot.plot(c_vec, loglik_c_non_fixes[2,:], "r")
 PyPlot.plot((theta_true[3], theta_true[3]), (minimum(loglik_c_non_fixes[find(!isnan, loglik_c_non_fixes)]), maximum(loglik_c_non_fixes[find(!isnan, loglik_c_non_fixes)])), "k")
+PyPlot.plot((maximum(data_training[3,:]), maximum(data_training[3,:])), (minimum(loglik_c_non_fixes[find(!isnan, loglik_c_non_fixes)]), maximum(loglik_c_non_fixes[find(!isnan, loglik_c_non_fixes)])), "k--")
+PyPlot.plot((minimum(data_training[3,:]), minimum(data_training[3,:])), (minimum(loglik_c_non_fixes[find(!isnan, loglik_c_non_fixes)]), maximum(loglik_c_non_fixes[find(!isnan, loglik_c_non_fixes)])), "k--")
+PyPlot.xlabel(title_vec_log[3])
 
 # d non-fixed
 
@@ -496,9 +510,13 @@ for i = 1:length(d_vec)
 end
 
 
-PyPlot.figure()
-PyPlot.plot(d_vec, loglik_d_non_fixes)
+PyPlot.subplot(174)
+PyPlot.plot(d_vec, loglik_d_non_fixes[1,:], "b")
+PyPlot.plot(d_vec, loglik_d_non_fixes[2,:], "r")
 PyPlot.plot((theta_true[4], theta_true[4]), (minimum(loglik_d_non_fixes[find(!isnan, loglik_d_non_fixes)]), maximum(loglik_d_non_fixes[find(!isnan, loglik_d_non_fixes)])), "k")
+PyPlot.plot((maximum(data_training[4,:]), maximum(data_training[4,:])), (minimum(loglik_d_non_fixes[find(!isnan, loglik_d_non_fixes)]), maximum(loglik_d_non_fixes[find(!isnan, loglik_d_non_fixes)])), "k--")
+PyPlot.plot((minimum(data_training[4,:]), minimum(data_training[4,:])), (minimum(loglik_d_non_fixes[find(!isnan, loglik_d_non_fixes)]), maximum(loglik_d_non_fixes[find(!isnan, loglik_d_non_fixes)])), "k--")
+PyPlot.xlabel(title_vec_log[4])
 
 # p1 non-fixed
 
@@ -521,18 +539,21 @@ for i = 1:length(p1_vec)
 end
 
 
-PyPlot.figure()
+PyPlot.subplot(175)
 PyPlot.plot(p1_vec, loglik_p1_non_fixes[1,:], "b")
 PyPlot.plot(p1_vec, loglik_p1_non_fixes[2,:], "r")
 PyPlot.plot((theta_true[5], theta_true[5]), (minimum(loglik_p1_non_fixes[find(!isnan, loglik_p1_non_fixes)]), maximum(loglik_p1_non_fixes[find(!isnan, loglik_p1_non_fixes)])), "k")
+PyPlot.plot((maximum(data_training[5,:]), maximum(data_training[5,:])), (minimum(loglik_p1_non_fixes[find(!isnan, loglik_p1_non_fixes)]), maximum(loglik_p1_non_fixes[find(!isnan, loglik_p1_non_fixes)])), "k--")
+PyPlot.plot((minimum(data_training[5,:]), minimum(data_training[5,:])), (minimum(loglik_p1_non_fixes[find(!isnan, loglik_p1_non_fixes)]), maximum(loglik_p1_non_fixes[find(!isnan, loglik_p1_non_fixes)])), "k--")
+PyPlot.xlabel(title_vec_log[5])
 
 # p2 non-fixed
 
 p2_vec = -0.5:0.01:2
 
-loglik_p2_non_fixes = zeros(2,length(p1_vec))
+loglik_p2_non_fixes = zeros(2,length(p2_vec))
 
-for i = 1:length(p1_vec)
+for i = 1:length(p2_vec)
 
   theta = [theta_true[1:4];p1_vec[i];theta_true[6:end]]
   (Κ, Γ, A, A_sign, B,c,d,g,f,power1,power2,sigma) = set_parameters(theta, problem.model_param.theta_known,length(theta))
@@ -547,16 +568,19 @@ for i = 1:length(p1_vec)
 end
 
 
-PyPlot.figure()
+PyPlot.subplot(176)
 PyPlot.plot(p2_vec, loglik_p2_non_fixes[1,:], "b")
 PyPlot.plot(p2_vec, loglik_p2_non_fixes[2,:], "r")
 PyPlot.plot((theta_true[6], theta_true[6]), (minimum(loglik_p1_non_fixes[find(!isnan, loglik_p1_non_fixes)]), maximum(loglik_p1_non_fixes[find(!isnan, loglik_p1_non_fixes)])), "k")
+PyPlot.plot((maximum(data_training[6,:]), maximum(data_training[6,:])), (minimum(loglik_p2_non_fixes[find(!isnan, loglik_p2_non_fixes)]), maximum(loglik_p2_non_fixes[find(!isnan, loglik_p2_non_fixes)])), "k--")
+PyPlot.plot((minimum(data_training[6,:]), minimum(data_training[6,:])), (minimum(loglik_p2_non_fixes[find(!isnan, loglik_p2_non_fixes)]), maximum(loglik_p2_non_fixes[find(!isnan, loglik_p2_non_fixes)])), "k--")
+PyPlot.xlabel(title_vec_log[6])
 
 # sigma non-fixed
 
 sigma_vec = 0:0.01:1
 
-loglik_sigma_non_fixes = zeros(length(sigma_vec))
+loglik_sigma_non_fixes = zeros(2,length(sigma_vec))
 
 for i = 1:length(sigma_vec)
 
@@ -573,147 +597,13 @@ for i = 1:length(sigma_vec)
 end
 
 
-PyPlot.figure()
+PyPlot.subplot(177)
 PyPlot.plot(sigma_vec, loglik_sigma_non_fixes[1,:], "b")
 PyPlot.plot(sigma_vec, loglik_sigma_non_fixes[2,:], "r")
 PyPlot.plot((theta_true[7], theta_true[7]), (minimum(loglik_sigma_non_fixes[find(!isnan, loglik_sigma_non_fixes)]), maximum(loglik_sigma_non_fixes[find(!isnan, loglik_sigma_non_fixes)])), "k")
-
-
-################################################################################
-##  Plot marginal functions gp est as function of parameter value                                                                          ##
-################################################################################
-
-
-# kappa non-fixed
-
-kappa_vec = -1.6:0.01:-0.3
-
-loglik_kappa_non_fixes = zeros(length(kappa_vec))
-
-for i = 1:length(kappa_vec)
-  theta = [kappa_vec[i];theta_true[2:end]]
-  (loglik_mean,loglik_std,loglik_sample) = predict(theta, gp, problem.alg_param.noisy_est)
-  loglik_kappa_non_fixes[i] = loglik_sample[1]
-
-end
-
-PyPlot.figure()
-PyPlot.plot(kappa_vec, loglik_kappa_non_fixes)
-PyPlot.plot((theta_true[1], theta_true[1]), (minimum(loglik_kappa_non_fixes[find(!isnan, loglik_kappa_non_fixes)]), maximum(loglik_kappa_non_fixes[find(!isnan, loglik_kappa_non_fixes)])), "k")
-
-# gamma non-fixed
-
-gamma_vec = -0.3:0.01:0.1
-
-loglik_gamma_non_fixes = zeros(length(gamma_vec))
-
-for i = 1:length(gamma_vec)
-
-  theta = [theta_true[1];gamma_vec[i];theta_true[3:end]]
-  (loglik_mean,loglik_std,loglik_sample) = predict(theta, gp, problem.alg_param.noisy_est)
-  loglik_gamma_non_fixes[i] = loglik_sample[1]
-
-end
-
-
-PyPlot.figure()
-PyPlot.plot(gamma_vec, loglik_gamma_non_fixes)
-PyPlot.plot((theta_true[2], theta_true[2]), (minimum(loglik_gamma_non_fixes[find(!isnan, loglik_gamma_non_fixes)]), maximum(loglik_gamma_non_fixes[find(!isnan, loglik_gamma_non_fixes)])), "k")
-
-# c non-fixed
-
-c_vec = 3:0.01:4
-
-loglik_c_non_fixes = zeros(length(c_vec))
-
-for i = 1:length(c_vec)
-
-  theta = [theta_true[1:2];c_vec[i];theta_true[4:end]]
-  (loglik_mean,loglik_std,loglik_sample) = predict(theta, gp, problem.alg_param.noisy_est)
-  loglik_c_non_fixes[i] = loglik_sample[1]
-
-end
-
-
-PyPlot.figure()
-PyPlot.plot(c_vec, loglik_c_non_fixes)
-PyPlot.plot((theta_true[3], theta_true[3]), (minimum(loglik_c_non_fixes[find(!isnan, loglik_c_non_fixes)]), maximum(loglik_c_non_fixes[find(!isnan, loglik_c_non_fixes)])), "k")
-
-# d non-fixed
-
-d_vec = 0.1:0.01:3
-
-loglik_d_non_fixes = zeros(length(d_vec))
-
-for i = 1:length(d_vec)
-
-  theta = [theta_true[1:3];d_vec[i];theta_true[5:end]]
-  (loglik_mean,loglik_std,loglik_sample) = predict(theta, gp, problem.alg_param.noisy_est)
-  loglik_d_non_fixes[i] = loglik_sample[1]
-
-end
-
-
-PyPlot.figure()
-PyPlot.plot(d_vec, loglik_d_non_fixes)
-PyPlot.plot((theta_true[4], theta_true[4]), (minimum(loglik_d_non_fixes[find(!isnan, loglik_d_non_fixes)]), maximum(loglik_d_non_fixes[find(!isnan, loglik_d_non_fixes)])), "k")
-
-# p1 non-fixed
-
-p1_vec = -0.5:0.01:2
-
-loglik_p1_non_fixes = zeros(length(p1_vec))
-
-for i = 1:length(p1_vec)
-
-  theta = [theta_true[1:4];p1_vec[i];theta_true[6:end]]
-  (loglik_mean,loglik_std,loglik_sample) = predict(theta, gp, problem.alg_param.noisy_est)
-  loglik_p1_non_fixes[i] = loglik_sample[1]
-
-end
-
-
-PyPlot.figure()
-PyPlot.plot(p1_vec, loglik_p1_non_fixes)
-PyPlot.plot((theta_true[5], theta_true[5]), (minimum(loglik_p1_non_fixes[find(!isnan, loglik_p1_non_fixes)]), maximum(loglik_p1_non_fixes[find(!isnan, loglik_p1_non_fixes)])), "k")
-
-# p2 non-fixed
-
-p2_vec = -0.5:0.01:2
-
-loglik_p2_non_fixes = zeros(length(p2_vec))
-
-for i = 1:length(p2_vec)
-
-  theta = [theta_true[1:5];p2_vec[i];theta_true[end]]
-  (loglik_mean,loglik_std,loglik_sample) = predict(theta, gp, problem.alg_param.noisy_est)
-  loglik_p2_non_fixes[i] = loglik_sample[1]
-
-end
-
-
-PyPlot.figure()
-PyPlot.plot(p2_vec, loglik_p2_non_fixes)
-PyPlot.plot((theta_true[6], theta_true[6]), (minimum(loglik_p2_non_fixes[find(!isnan, loglik_p2_non_fixes)]), maximum(loglik_p2_non_fixes[find(!isnan, loglik_p2_non_fixes)])), "k")
-
-# sigma non-fixed
-
-sigma_vec = 0:0.01:1
-
-loglik_sigma_non_fixes = zeros(length(sigma_vec))
-
-for i = 1:length(sigma_vec)
-
-  theta = [theta_true[1:6];sigma_vec[i]]
-  (loglik_mean,loglik_std,loglik_sample) = predict(theta, gp, problem.alg_param.noisy_est)
-  loglik_sigma_non_fixes[i] = loglik_sample[1]
-
-end
-
-
-PyPlot.figure()
-PyPlot.plot(sigma_vec, loglik_sigma_non_fixes)
-PyPlot.plot((theta_true[7], theta_true[7]), (minimum(loglik_sigma_non_fixes[find(!isnan, loglik_sigma_non_fixes)]), maximum(loglik_sigma_non_fixes[find(!isnan, loglik_sigma_non_fixes)])), "k")
+PyPlot.plot((maximum(data_training[7,:]), maximum(data_training[7,:])), (minimum(loglik_sigma_non_fixes[find(!isnan, loglik_sigma_non_fixes)]), maximum(loglik_sigma_non_fixes[find(!isnan, loglik_sigma_non_fixes)])), "k--")
+PyPlot.plot((minimum(data_training[7,:]), minimum(data_training[7,:])), (minimum(loglik_sigma_non_fixes[find(!isnan, loglik_sigma_non_fixes)]), maximum(loglik_sigma_non_fixes[find(!isnan, loglik_sigma_non_fixes)])), "k--")
+PyPlot.xlabel(title_vec_log[7])
 
 
 
