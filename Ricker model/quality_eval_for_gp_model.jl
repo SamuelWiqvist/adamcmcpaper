@@ -253,7 +253,7 @@ if true #problem.alg_param.est_method == "ml"
 
   perc_outlier = 0.05
   tail_rm = "left"
-  lasso = true # was true test fitting without lassa. No loss when using lasso!
+  lasso = false # was true test fitting without lassa. No loss when using lasso!
 
   ml_est(gp, data_training,"SE", lasso,perc_outlier,tail_rm)
 else
@@ -372,7 +372,7 @@ for i = 1:length(r_vec)
   loglik_r_non_fixed[2,i]  = loglik_sample[1]
 end
 
-PyPlot.subplot(131)
+PyPlot.figure()
 PyPlot.plot(r_vec, loglik_r_non_fixed[1,:], "b")
 PyPlot.plot(r_vec, loglik_r_non_fixed[2,:], "r")
 PyPlot.plot((theta_true[1], theta_true[1]), (minimum(loglik_r_non_fixed[find(!isnan, loglik_r_non_fixed)]), maximum(loglik_r_non_fixed[find(!isnan, loglik_r_non_fixed)])), "k")
@@ -393,13 +393,14 @@ for i = 1:length(psi_vec)
   loglik_psi_non_fixed[2,i]  = loglik_sample[1]
 end
 
-PyPlot.subplot(132)
+PyPlot.figure()
 PyPlot.plot(psi_vec, loglik_psi_non_fixed[1,:], "b")
 PyPlot.plot(psi_vec, loglik_psi_non_fixed[2,:], "r")
 PyPlot.plot((theta_true[2], theta_true[2]), (minimum(loglik_psi_non_fixed[find(!isnan, loglik_psi_non_fixed)]), maximum(loglik_r_non_fixed[find(!isnan, loglik_psi_non_fixed)])), "k")
 PyPlot.plot((maximum(data_training[2,:]), maximum(data_training[2,:])), (minimum(loglik_psi_non_fixed[find(!isnan, loglik_psi_non_fixed)]), maximum(loglik_psi_non_fixed[find(!isnan, loglik_psi_non_fixed)])), "k--")
 PyPlot.plot((minimum(data_training[2,:]), minimum(data_training[2,:])), (minimum(loglik_psi_non_fixed[find(!isnan, loglik_psi_non_fixed)]), maximum(loglik_psi_non_fixed[find(!isnan, loglik_psi_non_fixed)])), "k--")
 PyPlot.xlabel(L"$\log \phi$")
+PyPlot.ylabel(L"$\ell$")
 
 # keeping psi non fixed
 
@@ -413,13 +414,14 @@ for i = 1:length(sigma_vec)
   loglik_sigma_non_fixed[2,i]  = loglik_sample[1]
 end
 
-PyPlot.subplot(133)
+PyPlot.figure()
 PyPlot.plot(sigma_vec, loglik_sigma_non_fixed[1,:], "b")
 PyPlot.plot(sigma_vec, loglik_sigma_non_fixed[2,:], "r")
 PyPlot.plot((theta_true[3], theta_true[3]), (minimum(loglik_sigma_non_fixed[find(!isnan, loglik_sigma_non_fixed)]), maximum(loglik_sigma_non_fixed[find(!isnan, loglik_sigma_non_fixed)])), "k")
 PyPlot.plot((maximum(data_training[3,:]), maximum(data_training[3,:])), (minimum(loglik_sigma_non_fixed[find(!isnan, loglik_sigma_non_fixed)]), maximum(loglik_sigma_non_fixed[find(!isnan, loglik_sigma_non_fixed)])), "k--")
 PyPlot.plot((minimum(data_training[3,:]), minimum(data_training[3,:])), (minimum(loglik_sigma_non_fixed[find(!isnan, loglik_sigma_non_fixed)]), maximum(loglik_sigma_non_fixed[find(!isnan, loglik_sigma_non_fixed)])), "k--")
 PyPlot.xlabel(L"$\log \sigma$")
+PyPlot.ylabel(L"$\ell$")
 
 
 ################################################################################

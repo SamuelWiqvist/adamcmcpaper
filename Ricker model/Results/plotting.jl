@@ -188,19 +188,19 @@ for i = 1:3
 
     if i == 1 && j == 1
       PyPlot.ylabel(L"log $r$")
-    elseif i == 4 && j == 1
+    elseif i == 3 && j == 1
       PyPlot.xlabel(L"log $r$")
     end
 
     if j == 1 && i == 2
       PyPlot.ylabel(L"log $\phi$")
-    elseif i == 4 && j == 2
+    elseif i == 3 && j == 2
       PyPlot.xlabel(L"log $\phi$")
     end
 
     if j == 1 && i == 3
       PyPlot.ylabel(L"log $\sigma$")
-    elseif i == 4 && j == 3
+    elseif i == 3 && j == 3
       PyPlot.xlabel(L"log $\sigma$")
     end
 
