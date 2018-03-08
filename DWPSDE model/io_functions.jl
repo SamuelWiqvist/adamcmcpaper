@@ -16,7 +16,7 @@ function export_data(problem::Problem, results::Result, jobname::String)
   # set parameters
   theta_true = problem.model_param.theta_true
   burn_in = problem.alg_param.burn_in
-  Theta_parameters = problem.prior_dist.Theta_parameters
+  prior_parameters = problem.prior_dist.prior_parameters
   dist_type = problem.prior_dist.dist
   Theta_est = results.Theta_est'
   loglik_est = results.loglik_est
@@ -38,7 +38,7 @@ function export_data(problem::Problem, results::Result, jobname::String)
   data_used[:,1] = problem.data.Z
   writetable("./Results/output_res"*jobname*".csv", convert(DataFrame, data_output))
 
-  writetable("./Results/output_prior_dist"*jobname*".csv", convert(DataFrame, Theta_parameters))
+  writetable("./Results/output_prior_dist"*jobname*".csv", convert(DataFrame, prior_parameters))
 
   writetable("./Results/output_prior_dist_type"*jobname*".csv", convert(DataFrame, [1 dist_type]))
 
@@ -63,7 +63,7 @@ function export_data(problem::gpProblem, results::Result, jobname::String)
   theta_true = problem.model_param.theta_true
   burn_in = problem.alg_param.burn_in
   length_training_data = problem.alg_param.length_training_data
-  Theta_parameters = problem.prior_dist.Theta_parameters
+  prior_parameters = problem.prior_dist.prior_parameters
   dist_type = problem.prior_dist.dist
   Theta_est = results.Theta_est'
   loglik_est = results.loglik_est
@@ -85,7 +85,7 @@ function export_data(problem::gpProblem, results::Result, jobname::String)
   data_used[:,1] = problem.data.Z
   writetable("./Results/output_res_dagp"*jobname*".csv", convert(DataFrame, data_output))
 
-  writetable("./Results/output_prior_dist_dagp"*jobname*".csv", convert(DataFrame, Theta_parameters))
+  writetable("./Results/output_prior_dist_dagp"*jobname*".csv", convert(DataFrame, prior_parameters))
 
   writetable("./Results/output_prior_dist_type_dagp"*jobname*".csv", convert(DataFrame, [1 dist_type]))
 

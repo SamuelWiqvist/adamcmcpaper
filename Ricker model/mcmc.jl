@@ -35,7 +35,7 @@ function mcmc(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=
 
   # parameters for prior dist
   dist_type = problem.prior_dist.dist
-  Theta_parameters = problem.prior_dist.Theta_parameters
+  prior_parameters = problem.prior_dist.prior_parameters
 
   # pre-allocate matricies and vectors and variables
   Theta = zeros(length(theta_0),R)
@@ -108,8 +108,8 @@ function mcmc(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=
       loglik_star = pf(y, theta_star,theta_known, N,print_on)
     end
 
-    prior_log_star = evaluate_prior(theta_star,Theta_parameters, problem.prior_dist.dist)
-    prior_log_old = evaluate_prior(Theta[:,r-1],Theta_parameters, problem.prior_dist.dist)
+    prior_log_star = evaluate_prior(theta_star,prior_parameters, problem.prior_dist.dist)
+    prior_log_old = evaluate_prior(Theta[:,r-1],prior_parameters, problem.prior_dist.dist)
 
     jacobian_log_star = jacobian(theta_star)
     jacobian_log_old = jacobian(Theta[:,r-1])
@@ -190,8 +190,6 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
   pf_alg = problem.alg_param.pf_alg # pf algorithm
   alg = problem.alg_param.alg # use PMCMC or MCWM
   print_interval = problem.alg_param.print_interval # print the accaptance rate every print_interval:th iteration
-  nbr_predictions = problem.alg_param.nbr_predictions # number of predictions to compute at each iteration
-  selection_method = problem.alg_param.selection_method # selection method
   lasso = problem.alg_param.lasso # use Lasso
   beta_MH = problem.alg_param.beta_MH
 
@@ -209,22 +207,19 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
   compare_GP_PF = zeros(2,R-length_training_data-burn_in)
   data_gp_pf = zeros(length(theta_0)+2,R-length_training_data-burn_in)
   data_training = zeros(1+length(theta_0), length_training_data)
-  theta_gp_predictions = zeros(length(theta_0), nbr_predictions)
   accept_prob_log = zeros(2, R) # [gp ; pf]
-  kernel_secound_stage_direct = problem.adaptive_update
+  kernel_MH_direct = problem.adaptive_update
 
 
   loglik_star = zero(Float64)
-  loglik_gp = zeros(nbr_predictions)
+  loglik_gp = zeros(Float64)
   loglik_gp_old = zero(Float64)
   loglik_gp_new = zero(Float64)
   index_keep_gp_er = zero(Int64)
   nbr_early_rejections = zero(Int64)
   accept_gp = true
   accept = true
-  pdf_indecies_selction = zeros(nbr_predictions)
-  secound_stage_direct_limit = zero(Float64)
-  secound_stage_direct = false
+  MH_direct = false
   nbr_ordinary_mh = 0
   nbr_split_accaptance_region = 0
   nbr_split_accaptance_region_early_accept = 0
@@ -241,7 +236,7 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
 
   # parameters for prior dist
   dist_type = problem.prior_dist.dist
-  Theta_parameters = problem.prior_dist.Theta_parameters
+  prior_parameters = problem.prior_dist.prior_parameters
 
   # da new
   std_limit = 0
@@ -262,12 +257,12 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
 
   # prop kernl for secound_stage_direct
   xi = 1.2
-  kernel_secound_stage_direct = noAdaptation(xi^2*cov_matrix)
-  adaptive_update_params_secound_stage_direct = set_adaptive_alg_params(kernel_secound_stage_direct, length(theta_0),Theta[:,1], R)
+  kernel_MH_direct = noAdaptation(xi^2*cov_matrix)
+  adaptive_update_params_MH_direct = set_adaptive_alg_params(kernel_MH_direct, length(theta_0),Theta[:,1], R)
 
   @printf "Starting DA-GP-MCMC with adaptive RW estimating %d parameters\n" length(theta_true)
-  @printf "Covariance - kernel_secound_stage_direct:\n"
-  print_covariance(kernel_secound_stage_direct,adaptive_update_params_secound_stage_direct, 1)
+  @printf "Covariance - kernel_MH_direct:\n"
+  print_covariance(kernel_MH_direct,adaptive_update_params_MH_direct, 1)
 
 
   # print information at start of algorithm
@@ -312,18 +307,16 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
       @printf "Loglik: %.4f \n" loglik[r-1]
     end
 
-    secound_stage_direct = rand() < beta_MH # we always run the early-rejection scheme
+    MH_direct = rand() < beta_MH # we always run the early-rejection scheme
 
-    if secound_stage_direct
+    if MH_direct
 
       # secound stage direct
 
       nbr_ordinary_mh +=  1
 
-
       # Gaussian random walk using secound stage direct kernel
-      (theta_star, ) = gaussian_random_walk(kernel_secound_stage_direct, adaptive_update_params_secound_stage_direct, Theta[:,r-1], r)
-
+      (theta_star, ) = gaussian_random_walk(kernel_MH_direct, adaptive_update_params_MH_direct, Theta[:,r-1], r)
 
       # calc loglik using proposed parameters
       if pf_alg == "apf"
@@ -332,9 +325,8 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
         loglik_star = pf(y, theta_star,theta_known,N,print_on)
       end
 
-
-      prior_log_star = evaluate_prior(theta_star,Theta_parameters, problem.prior_dist.dist)
-      prior_log_old = evaluate_prior(Theta[:,r-1],Theta_parameters, problem.prior_dist.dist)
+      prior_log_star = evaluate_prior(theta_star,prior_parameters, problem.prior_dist.dist)
+      prior_log_old = evaluate_prior(Theta[:,r-1],prior_parameters, problem.prior_dist.dist)
 
       jacobian_log_star = jacobian(theta_star)
       jacobian_log_old = jacobian(Theta[:,r-1])
@@ -362,91 +354,16 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
 
       # first stage
 
-      # Gaussian random walk using DA proposal kernel
-      for i = 1:size(theta_gp_predictions,2)
-        (theta_gp_predictions[:,i], ) = gaussian_random_walk(problem.adaptive_update, adaptive_update_params, Theta[:,r-1], r)
-      end
-
-      # compute theta_star
-      if selection_method == "max_loglik"
-
-        # calc estimation of loglik using the max_loglik selection method
-
-        (loglik_gp,std_loglik) = predict(theta_gp_predictions, gp, pred_method,est_method,noisy_est,true)
-        index_keep_gp_er = indmax(loglik_gp)
-        loglik_gp_new = loglik_gp[index_keep_gp_er]
-        loglik_gp_new_std = std_loglik[index_keep_gp_er]
-
-        #secound_stage_direct = std_loglik[index_keep_gp_er] >= secound_stage_direct_limit
-
-        if print_on
-          println("Predictions:")
-          println(theta_gp_predictions)
-          println("loglik values:")
-          println(loglik_gp)
-          println("best loglik value:")
-          println(loglik_gp_new)
-          println("index for  best loglik value:")
-          println(index_keep_gp_er)
-          println("std_loglik:")
-          println(std_loglik[index_keep_gp_er])
-          println("secound_stage_direct:")
-          println(secound_stage_direct)
-
-        end
-
-      elseif selection_method == "local_loglik_approx"
-
-        # calc estimation of loglik using the local_loglik_approx selection method
-
-        (mean_pred_ml, var_pred_ml, prediction_sample_ml) = predict(theta_gp_predictions,gp,noisy_est)
-
-        if est_method == "mean"
-
-          index_keep_gp_er = stratresample(mean_pred_ml/sum(mean_pred_ml),1)[1]
-          loglik_gp_new = mean_pred_ml[index_keep_gp_er]
-          loglik_gp_new_std = var_pred_ml[index_keep_gp_er]
-
-          #secound_stage_direct = var_pred_ml[index_keep_gp_er] >= secound_stage_direct_limit
-
-          if print_on
-            println("Predictions:")
-            println(theta_gp_predictions)
-            println("loglik values:")
-            println(mean_pred_ml)
-            println("best loglik value:")
-            println(loglik_gp_new)
-            println("index for  best loglik value:")
-            println(index_keep_gp_er)
-          end
-
-        else
-
-          index_keep_gp_er = stratresample(prediction_sample_ml/sum(prediction_sample_ml),1)[1]
-          loglik_gp_new = prediction_sample_ml[index_keep_gp_er]
-          loglik_gp_new_std = var_pred_ml[index_keep_gp_er]
-          #secound_stage_direct = var_pred_ml[index_keep_gp_er] >= secound_stage_direct_limit
-
-          if print_on
-            println("Predictions:")
-            println(theta_gp_predictions)
-            println("loglik values:")
-            println(prediction_sample_ml)
-            println("best loglik value:")
-            println(loglik_gp_new)
-            println("index for  best loglik value:")
-            println(index_keep_gp_er)
-          end
-
-        end
-
-      end
-
       # set proposal
-      theta_star = theta_gp_predictions[:,index_keep_gp_er]
+      (theta_star, ) = gaussian_random_walk(problem.adaptive_update, adaptive_update_params, Theta[:,r-1], r)
 
-      prior_log_star = evaluate_prior(theta_star,Theta_parameters, problem.prior_dist.dist)
-      prior_log_old = evaluate_prior(Theta[:,r-1],Theta_parameters, problem.prior_dist.dist)
+      (loglik_gp_pred,loglik_gp_new_std) = predict(theta_star, gp, pred_method,est_method,noisy_est,true)
+
+      loglik_gp_new = loglik_gp_pred[1]
+      loglik_gp_new_std = loglik_gp_new_std[1]
+
+      prior_log_star = evaluate_prior(theta_star,prior_parameters, problem.prior_dist.dist)
+      prior_log_old = evaluate_prior(Theta[:,r-1],prior_parameters, problem.prior_dist.dist)
 
       jacobian_log_star = jacobian(theta_star)
       jacobian_log_old = jacobian(Theta[:,r-1])
@@ -530,11 +447,11 @@ end
 # ADA-GP-MCMC
 
 doc"""
-    ADAGPMCMC(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov_matrix::Matrix, prob_cases::Vector)
+    adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, casemodel::CaseModel, cov_matrix::Matrix)
 
 Runs the ADA-GP-MCMC algorithm for the Ricker model.
 """
-function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov_matrix::Matrix, prob_cases::Vector)
+function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, casemodel::CaseModel, cov_matrix::Matrix)
 
   # data
   y = problem.data.y
@@ -552,8 +469,6 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
   pf_alg = problem.alg_param.pf_alg # pf algorithm
   alg = problem.alg_param.alg # use PMCMC or MCWM
   print_interval = problem.alg_param.print_interval # print the accaptance rate every print_interval:th iteration
-  nbr_predictions = problem.alg_param.nbr_predictions # number of predictions to compute at each iteration
-  selection_method = problem.alg_param.selection_method # selection method
   lasso = problem.alg_param.lasso # use Lasso
   beta_MH = problem.alg_param.beta_MH
 
@@ -571,22 +486,19 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
   compare_GP_PF = zeros(2,R-length_training_data-burn_in)
   data_gp_pf = zeros(length(theta_0)+2,R-length_training_data-burn_in)
   data_training = zeros(1+length(theta_0), length_training_data)
-  theta_gp_predictions = zeros(length(theta_0), nbr_predictions)
   accept_prob_log = zeros(2, R) # [gp ; pf]
-  kernel_secound_stage_direct = problem.adaptive_update
+  kernel_MH_direct = problem.adaptive_update
 
 
   loglik_star = zero(Float64)
-  loglik_gp = zeros(nbr_predictions)
+  loglik_gp = zeros(Float64)
   loglik_gp_old = zero(Float64)
   loglik_gp_new = zero(Float64)
   index_keep_gp_er = zero(Int64)
   nbr_early_rejections = zero(Int64)
   accept_gp = true
   accept = true
-  pdf_indecies_selction = zeros(nbr_predictions)
-  secound_stage_direct_limit = zero(Float64)
-  secound_stage_direct = false
+  MH_direct = false
   nbr_ordinary_mh = 0
   nbr_split_accaptance_region = 0
   nbr_split_accaptance_region_early_accept = 0
@@ -609,16 +521,7 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
 
   # parameters for prior dist
   dist_type = problem.prior_dist.dist
-  Theta_parameters = problem.prior_dist.Theta_parameters
-
-
-  # da new
-  std_limit = 0
-  loglik_gp_new_std = 0
-
-  #(~,std_loglik_traning) = predict(theta_training, gp, pred_method,est_method,noisy_est,true)
-  std_limit = problem.alg_param.std_limit# percentile(std_loglik_traning,50)
-  loglik_gp_new_std = 0
+  prior_parameters = problem.prior_dist.prior_parameters
 
   # set start value
   #theta_0 = theta_training[:, end] # start at last value of the chain for the training part
@@ -635,17 +538,18 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
 
   # prop kernl for secound_stage_direct
   xi = 1.2
-  kernel_secound_stage_direct = noAdaptation(xi^2*cov_matrix)
-  adaptive_update_params_secound_stage_direct = set_adaptive_alg_params(kernel_secound_stage_direct, length(theta_0),Theta[:,1], R)
+  kernel_MH_direct = noAdaptation(xi^2*cov_matrix)
+  adaptive_update_params_MH_direct = set_adaptive_alg_params(kernel_MH_direct, length(theta_0),Theta[:,1], R)
 
   @printf "Covariance - kernel_secound_stage_direct:\n"
-  print_covariance(kernel_secound_stage_direct,adaptive_update_params_secound_stage_direct, 1)
+  print_covariance(kernel_MH_direct,adaptive_update_params_MH_direct, 1)
 
 
   # print information at start of algorithm
   @printf "Starting DA-GP-MCMC with adaptive RW estimating %d parameters\n" length(theta_true)
   @printf "MCMC algorithm: %s\n" alg
   @printf "Adaptation algorithm: %s\n" typeof(problem.adaptive_update)
+  @printf "Select case model: %s\n" typeof(casemodel)
   @printf "Prior distribution: %s\n" problem.prior_dist.dist
   @printf "Particel filter: %s\n" pf_alg
 
@@ -685,16 +589,16 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
       @printf "Loglik: %.4f \n" loglik[r-1]
     end
 
-    secound_stage_direct = rand() < beta_MH # we always run the early-rejection scheme
+    MH_direct = rand() < beta_MH # we always run the early-rejection scheme
 
-    if secound_stage_direct
+    if MH_direct
 
       # secound stage direct
 
       nbr_ordinary_mh +=  1
 
       # Gaussian random walk using secound stage direct kernel
-      (theta_star, ) = gaussian_random_walk(kernel_secound_stage_direct, adaptive_update_params_secound_stage_direct, Theta[:,r-1], r)
+      (theta_star, ) = gaussian_random_walk(kernel_MH_direct, adaptive_update_params_MH_direct, Theta[:,r-1], r)
 
       # calc loglik using proposed parameters
       if pf_alg == "apf"
@@ -703,8 +607,8 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
         loglik_star = pf(y, theta_star,theta_known,N,print_on)
       end
 
-      prior_log_star = evaluate_prior(theta_star,Theta_parameters, problem.prior_dist.dist)
-      prior_log_old = evaluate_prior(Theta[:,r-1],Theta_parameters, problem.prior_dist.dist)
+      prior_log_star = evaluate_prior(theta_star,prior_parameters, problem.prior_dist.dist)
+      prior_log_old = evaluate_prior(Theta[:,r-1],prior_parameters, problem.prior_dist.dist)
 
       jacobian_log_star = jacobian(theta_star)
       jacobian_log_old = jacobian(Theta[:,r-1])
@@ -732,91 +636,17 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
 
       # stage 1
 
-      # Gaussian random walk using DA proposal kernel
-      for i = 1:size(theta_gp_predictions,2)
-        (theta_gp_predictions[:,i], ) = gaussian_random_walk(problem.adaptive_update, adaptive_update_params, Theta[:,r-1], r)
-      end
-
-      # compute theta_star
-      if selection_method == "max_loglik"
-
-        # calc estimation of loglik using the max_loglik selection method
-
-        (loglik_gp,std_loglik) = predict(theta_gp_predictions, gp, pred_method,est_method,noisy_est,true)
-        index_keep_gp_er = indmax(loglik_gp)
-        loglik_gp_new = loglik_gp[index_keep_gp_er]
-        loglik_gp_new_std = std_loglik[index_keep_gp_er]
-
-        #secound_stage_direct = std_loglik[index_keep_gp_er] >= secound_stage_direct_limit
-
-        if print_on
-          println("Predictions:")
-          println(theta_gp_predictions)
-          println("loglik values:")
-          println(loglik_gp)
-          println("best loglik value:")
-          println(loglik_gp_new)
-          println("index for  best loglik value:")
-          println(index_keep_gp_er)
-          println("std_loglik:")
-          println(std_loglik[index_keep_gp_er])
-          println("secound_stage_direct:")
-          println(secound_stage_direct)
-
-        end
-
-      elseif selection_method == "local_loglik_approx"
-
-        # calc estimation of loglik using the local_loglik_approx selection method
-
-        (mean_pred_ml, var_pred_ml, prediction_sample_ml) = predict(theta_gp_predictions,gp,noisy_est)
-
-        if est_method == "mean"
-
-          index_keep_gp_er = stratresample(mean_pred_ml/sum(mean_pred_ml),1)[1]
-          loglik_gp_new = mean_pred_ml[index_keep_gp_er]
-          loglik_gp_new_std = var_pred_ml[index_keep_gp_er]
-
-          #secound_stage_direct = var_pred_ml[index_keep_gp_er] >= secound_stage_direct_limit
-
-          if print_on
-            println("Predictions:")
-            println(theta_gp_predictions)
-            println("loglik values:")
-            println(mean_pred_ml)
-            println("best loglik value:")
-            println(loglik_gp_new)
-            println("index for  best loglik value:")
-            println(index_keep_gp_er)
-          end
-
-        else
-
-          index_keep_gp_er = stratresample(prediction_sample_ml/sum(prediction_sample_ml),1)[1]
-          loglik_gp_new = prediction_sample_ml[index_keep_gp_er]
-          loglik_gp_new_std = var_pred_ml[index_keep_gp_er]
-          #secound_stage_direct = var_pred_ml[index_keep_gp_er] >= secound_stage_direct_limit
-
-          if print_on
-            println("Predictions:")
-            println(theta_gp_predictions)
-            println("loglik values:")
-            println(prediction_sample_ml)
-            println("best loglik value:")
-            println(loglik_gp_new)
-            println("index for  best loglik value:")
-            println(index_keep_gp_er)
-          end
-
-        end
-
-      end
-
       # set proposal
-      theta_star = theta_gp_predictions[:,index_keep_gp_er]
+      (theta_star, ) = gaussian_random_walk(problem.adaptive_update, adaptive_update_params, Theta[:,r-1], r)
 
-      prior_log_star = evaluate_prior(theta_star,Theta_parameters, problem.prior_dist.dist)
-      prior_log_old = evaluate_prior(Theta[:,r-1],Theta_parameters, problem.prior_dist.dist)
+      (loglik_gp_pred,loglik_gp_new_std) = predict(theta_star, gp, pred_method,est_method,noisy_est,true)
+
+      loglik_gp_new = loglik_gp_pred[1]
+      loglik_gp_new_std = loglik_gp_new_std[1]
+
+
+      prior_log_star = evaluate_prior(theta_star,prior_parameters, problem.prior_dist.dist)
+      prior_log_old = evaluate_prior(Theta[:,r-1],prior_parameters, problem.prior_dist.dist)
 
       jacobian_log_star = jacobian(theta_star)
       jacobian_log_old = jacobian(Theta[:,r-1])
@@ -852,7 +682,7 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
         if loglik_gp_old < loglik_gp_new
 
           # select case 1 or 3
-          if rand(Bernoulli(prob_cases[1])) == 1
+          if selectcase1or3(casemodel, theta_star) == 1
 
             # case 1
 
@@ -950,7 +780,7 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
 
     # select case 2 or 4
 
-    if rand(Bernoulli(prob_cases[2])) == 1
+    if selectcase2or4(casemodel, theta_star) == 1
 
       # case 2
 
@@ -1093,7 +923,7 @@ Calculates the `log-prior` value for the prior distribution for the parameters `
 # Inputs
 * `log_prior`: log P(theta_star)
 """
-function  evaluate_prior(theta_star, Theta_parameters, dist_type = "Uniform")
+function  evaluate_prior(theta_star, prior_parameters, dist_type = "Uniform")
 
   # set start value for loglik
   log_prior = 0.
@@ -1101,7 +931,7 @@ function  evaluate_prior(theta_star, Theta_parameters, dist_type = "Uniform")
   if dist_type == "Uniform"
     for i = 1:length(theta_star)
       # Update loglik, i.e. add the loglik for each model paramter in theta
-      log_prior = log_prior + log_unifpdf( theta_star[i], Theta_parameters[i,1], Theta_parameters[i,2] )
+      log_prior = log_prior + log_unifpdf( theta_star[i], prior_parameters[i,1], prior_parameters[i,2] )
     end
   else
     # add other priors

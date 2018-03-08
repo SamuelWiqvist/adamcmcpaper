@@ -7,6 +7,8 @@ catch
   warn("Already in the Ricker model folder")
 end
 
+a = 5
+
 include("set_up.jl")
 
 using JLD
@@ -105,8 +107,6 @@ problem_training.alg_param.dt = dt
 problem_training.alg_param.dt_U = dt_U
 problem_training.alg_param.alg = mcmc_alg
 problem_training.adaptive_update =  AMUpdate_gen(eye(set_nbr_params), 1/sqrt(set_nbr_params), 0.15, 1, 0.8, 25)
-
-
 
 ################################################################################
 ##                generate training data                                     ###

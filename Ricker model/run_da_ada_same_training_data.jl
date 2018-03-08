@@ -7,12 +7,20 @@ catch
  warn("Already in the Ricker model folder")
 end
 
-# set up
+# load case models
+cd("..")
+include(pwd()*"\\select case\\selectcase.jl")
+cd("Ricker model")
 
+# load algorithms
 include("rickermodel.jl")
 
+# packages for storing data
 using JLD
 using HDF5
+
+
+
 
 ################################################################################
 ###      set up problem                                                      ###
@@ -38,11 +46,9 @@ problem.alg_param.alg = "MCWM" # we should only! use the MCWM algorithm
 problem.alg_param.compare_GP_and_PF = false
 problem.alg_param.noisy_est = false
 problem.alg_param.pred_method = "sample"
-problem.alg_param.nbr_predictions = 1
 problem.alg_param.print_interval = 1000 # problem.alg_param.R#
-problem.alg_param.selection_method = "max_loglik"  # "local_loglik_approx" # "max_loglik"
 problem.alg_param.beta_MH = 0.1 # "local_loglik_approx" # "max_loglik"
-problem.alg_param.std_limit = 1
+problem.alg_param.lasso = false
 
 #problem.data.y = Array(readtable("y.csv"))[:,1]
 #problem.data.y = Array(readtable("y_data_set_1.csv"))[:,1]
@@ -206,7 +212,7 @@ algorithm_parameters = zeros(10, 2)
 algorithm_parameters[1,1] = problem.alg_param.burn_in + 1
 algorithm_parameters[2:4,1] = problem.model_param.theta_true
 algorithm_parameters[5:7,1] = problem.model_param.theta_0
-algorithm_parameters[8:end,:] = problem.prior_dist.Theta_parameters
+algorithm_parameters[8:end,:] = problem.prior_dist.prior_parameters
 
 if !accelerated_da
   writetable("Results/Theta_dagpmcmc.csv", convert(DataFrame, Theta))
@@ -222,9 +228,6 @@ end
 ################################################################################
 ###     A-DA-GP-MCMC                                                         ###
 ################################################################################
-
-
-# estimate probabilities for combinations of signs for the GP and PF estimations
 
 n = size(data_training,2)
 n_burn_in = problem_traning.alg_param.burn_in
@@ -279,15 +282,18 @@ prob_case_4 = nbr_case_4/nbr_GP_star_led_GP_old
 
 prob_cases = [prob_case_1;prob_case_2;prob_case_3;prob_case_4]
 
+casemodel = BiaseCoin(prob_cases)
+
 
 # A-DA-GP-MCMC
+
 
 accelerated_da = true
 
 
 problem.model_param.theta_0 = theta_training[:, end]
 
-res, res_traning, theta_training, loglik_training, assumption_list, loglik_list = adagpmcmc(problem_traning, problem, gp, cov_matrix, prob_cases)
+res, res_traning, theta_training, loglik_training, assumption_list, loglik_list = adagpmcmc(problem_traning, problem, gp, casemodel, cov_matrix)
 
 
 mcmc_results = Result(res[1].Theta_est, res[1].loglik_est, res[1].accept_vec, res[1].prior_vec)
@@ -310,7 +316,7 @@ algorithm_parameters = zeros(10, 2)
 algorithm_parameters[1,1] = problem.alg_param.burn_in + 1
 algorithm_parameters[2:4,1] = problem.model_param.theta_true
 algorithm_parameters[5:7,1] = problem.model_param.theta_0
-algorithm_parameters[8:end,:] = problem.prior_dist.Theta_parameters
+algorithm_parameters[8:end,:] = problem.prior_dist.prior_parameters
 
 if !accelerated_da
   writetable("Results/Theta_dagpmcmc.csv", convert(DataFrame, Theta))

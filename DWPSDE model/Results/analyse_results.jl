@@ -7,6 +7,13 @@ using KernelDensity
 using Distributions
 using DataFrames
 
+# set correct path
+try
+  cd("DWPSDE model")
+catch
+  warn("Already in the DWP-SDE folder.")
+end
+
 # set dir
 try
     cd("Results")
@@ -27,8 +34,8 @@ label_size = 15
 
 
 load_data_from_files = true # load data from files or form some matlab workspace
-ergp = "_dagp" #  set to _ergp to load ER-GP file  o.w. []
-jobname = "est2_test_new_codeada_gp_mcmc" # set to jobname string
+ergp = "" #  set to _ergp to load ER-GP file  o.w. use ""
+jobname = "test_lunarc_mcwm" # set to jobname string
 
 if load_data_from_files
 

@@ -57,7 +57,7 @@ function mcmc(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=
 
   # parameters for prior dist
   dist_type = problem.prior_dist.dist
-  Theta_parameters = problem.prior_dist.Theta_parameters
+  prior_parameters = problem.prior_dist.prior_parameters
 
   @printf "#####################################################################\n"
 
@@ -140,8 +140,8 @@ function mcmc(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=
       loglik_current = loglik[r-1]
     end
 
-    prior_log_star = evaluate_prior(theta_star,Theta_parameters, dist_type)
-    prior_log_old = evaluate_prior(Theta[:,r-1],Theta_parameters, dist_type)
+    prior_log_star = evaluate_prior(theta_star,prior_parameters, dist_type)
+    prior_log_old = evaluate_prior(Theta[:,r-1],prior_parameters, dist_type)
 
     jacobian_log_star = jacobian(theta_star)
     jacobian_log_old = jacobian(Theta[:,r-1])
@@ -272,7 +272,7 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
 
   # parameters for prior dist
   dist_type = problem.prior_dist.dist
-  Theta_parameters = problem.prior_dist.Theta_parameters
+  prior_parameters = problem.prior_dist.prior_parameters
 
   # prop kernl for DA-GP-MCMC
   problem.adaptive_update = noAdaptation(cov_matrix)
@@ -377,8 +377,8 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
         loglik_current = loglik[r-1]
       end
 
-      prior_log_star = evaluate_prior(theta_star,Theta_parameters, dist_type)
-      prior_log_old = evaluate_prior(Theta[:,r-1],Theta_parameters, dist_type)
+      prior_log_star = evaluate_prior(theta_star,prior_parameters, dist_type)
+      prior_log_old = evaluate_prior(Theta[:,r-1],prior_parameters, dist_type)
 
       jacobian_log_star = jacobian(theta_star)
       jacobian_log_old = jacobian(Theta[:,r-1])
@@ -484,12 +484,12 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
       # set proposal
       theta_star = theta_gp_predictions[:,index_keep_gp_er]
 
-      prior_log_star = evaluate_prior(theta_star,Theta_parameters,dist_type)
-      prior_log = evaluate_prior(Theta[:,r-1],Theta_parameters,dist_type)
+      prior_log_star = evaluate_prior(theta_star,prior_parameters,dist_type)
+      prior_log = evaluate_prior(Theta[:,r-1],prior_parameters,dist_type)
 
 
-      prior_log_star = evaluate_prior(theta_star,Theta_parameters,dist_type)
-      prior_log_old = evaluate_prior(Theta[:,r-1],Theta_parameters,dist_type)
+      prior_log_star = evaluate_prior(theta_star,prior_parameters,dist_type)
+      prior_log_old = evaluate_prior(Theta[:,r-1],prior_parameters,dist_type)
 
       jacobian_log_star = jacobian(theta_star)
       jacobian_log_old = jacobian(Theta[:,r-1])
@@ -681,7 +681,7 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
 
   # parameters for prior dist
   dist_type = problem.prior_dist.dist
-  Theta_parameters = problem.prior_dist.Theta_parameters
+  prior_parameters = problem.prior_dist.prior_parameters
 
   # prop kernl for DA-GP-MCMC
   problem.adaptive_update = noAdaptation(cov_matrix)
@@ -791,8 +791,8 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
         loglik_current = loglik[r-1]
       end
 
-      prior_log_star = evaluate_prior(theta_star,Theta_parameters, dist_type)
-      prior_log_old = evaluate_prior(Theta[:,r-1],Theta_parameters, dist_type)
+      prior_log_star = evaluate_prior(theta_star,prior_parameters, dist_type)
+      prior_log_old = evaluate_prior(Theta[:,r-1],prior_parameters, dist_type)
 
       jacobian_log_star = jacobian(theta_star)
       jacobian_log_old = jacobian(Theta[:,r-1])
@@ -900,8 +900,8 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
       # set proposal
       theta_star = theta_gp_predictions[:,index_keep_gp_er]
 
-      prior_log_star = evaluate_prior(theta_star,Theta_parameters, problem.prior_dist.dist)
-      prior_log_old = evaluate_prior(Theta[:,r-1],Theta_parameters, problem.prior_dist.dist)
+      prior_log_star = evaluate_prior(theta_star,prior_parameters, problem.prior_dist.dist)
+      prior_log_old = evaluate_prior(Theta[:,r-1],prior_parameters, problem.prior_dist.dist)
 
       jacobian_log_star = jacobian(theta_star)
       jacobian_log_old = jacobian(Theta[:,r-1])
@@ -1162,11 +1162,11 @@ function set_nbr_cores(nbr_of_cores::Int64, pf_alg::String)
 end
 
 doc"""
-    evaluate_prior(theta_star, Theta_parameters, dist_type)
+    evaluate_prior(theta_star, prior_parameters, dist_type)
 
 Calculates the `log-prior` value for the prior distribution for the parameters `theta_star`.
 """
-function  evaluate_prior(theta_star, Theta_parameters, dist_type)
+function  evaluate_prior(theta_star, prior_parameters, dist_type)
 
   # set start value for loglik
   log_prior = 0.
@@ -1174,90 +1174,90 @@ function  evaluate_prior(theta_star, Theta_parameters, dist_type)
   if dist_type == "Uniform"
     for i = 1:length(theta_star)
       # Update loglik, i.e. add the loglik for each model paramter in theta
-      log_prior = log_prior + log_unifpdf( theta_star[i], Theta_parameters[i,1], Theta_parameters[i,2] )
+      log_prior = log_prior + log_unifpdf( theta_star[i], prior_parameters[i,1], prior_parameters[i,2] )
     end
   elseif dist_type == "Normal"
     for i = 1:length(theta_star)
       # Update loglik, i.e. add the loglik for each model paramter in theta
-      log_prior = log_prior + log_normpdf(theta_star[i],Theta_parameters[i,1],Theta_parameters[i,2])
+      log_prior = log_prior + log_normpdf(theta_star[i],prior_parameters[i,1],prior_parameters[i,2])
     end
   elseif dist_type == "nonlog"
     # add code to handle priors on non-log-scale!
     if length(theta_star) == 2
       for i = 1:length(theta_star)
         # the unknown parameters c and d both have normal prior dists
-        log_prior = log_prior + log_normpdf( exp(theta_star[i]), Theta_parameters[i,1], Theta_parameters[i,2] )
+        log_prior = log_prior + log_normpdf( exp(theta_star[i]), prior_parameters[i,1], prior_parameters[i,2] )
       end
     elseif length(theta_star) == 3
       # the unknown parameter A has a inv-gamma prior dist
-      log_prior = log_prior + log_invgampdf(exp(theta_star[1]), Theta_parameters[1,1], Theta_parameters[1,2])
+      log_prior = log_prior + log_invgampdf(exp(theta_star[1]), prior_parameters[1,1], prior_parameters[1,2])
       for i = 2:3
         # The unknown parameters c and d both have normal prior dists
-        log_prior = log_prior + log_normpdf( exp(theta_star[i]), Theta_parameters[i,1], Theta_parameters[i,2] )
+        log_prior = log_prior + log_normpdf( exp(theta_star[i]), prior_parameters[i,1], prior_parameters[i,2] )
       end
     elseif length(theta_star) == 5
       for i in [1 2 5]
         # The unknown parameters Κ,Γ and sigma both have gamma prior dists
-        log_prior = log_prior + log_gampdf( exp(theta_star[i]), Theta_parameters[i,1], Theta_parameters[i,2] )
+        log_prior = log_prior + log_gampdf( exp(theta_star[i]), prior_parameters[i,1], prior_parameters[i,2] )
       end
       for i = 3:4
         # The unknown parameters c and d both have normal prior dists
-        log_prior = log_prior + log_normpdf( exp(theta_star[i]), Theta_parameters[i,1], Theta_parameters[i,2] )
+        log_prior = log_prior + log_normpdf( exp(theta_star[i]), prior_parameters[i,1], prior_parameters[i,2] )
       end
     elseif length(theta_star) == 6
       # The unknown parameter A has a gaminv prior dist
-      log_prior = log_prior + log_invgampdf(exp(theta_star[1]), Theta_parameters[1,1], Theta_parameters[1,2])
+      log_prior = log_prior + log_invgampdf(exp(theta_star[1]), prior_parameters[1,1], prior_parameters[1,2])
       for i = 2:3
         # The unknown parameters c and d both have normal prior dists
-        log_prior = log_prior + log_normpdf( exp(theta_star[i]), Theta_parameters[i,1], Theta_parameters[i,2] )
+        log_prior = log_prior + log_normpdf( exp(theta_star[i]), prior_parameters[i,1], prior_parameters[i,2] )
       end
       for i = 4:length(theta_star)
         # The unknown parameters p1, p2 and sigma both have gamma prior dists
-        log_prior = log_prior + log_gampdf( exp(theta_star[i]), Theta_parameters[i,1], Theta_parameters[i,2] )
+        log_prior = log_prior + log_gampdf( exp(theta_star[i]), prior_parameters[i,1], prior_parameters[i,2] )
       end
     elseif length(theta_star) == 7
       for i = [1,2,5,6,7]
         # The unknown parameters Κ,Γ,power1,power2 and sigma all have gamma prior dists
-        log_prior = log_prior + log_gampdf( exp(theta_star[i]), Theta_parameters[i,1], Theta_parameters[i,2] )
+        log_prior = log_prior + log_gampdf( exp(theta_star[i]), prior_parameters[i,1], prior_parameters[i,2] )
       end
       for i = [3,4]
         # The unknown parameters c and d have normal prior dists
-        log_prior = log_prior + log_normpdf( exp(theta_star[i]), Theta_parameters[i,1], Theta_parameters[i,2] )
+        log_prior = log_prior + log_normpdf( exp(theta_star[i]), prior_parameters[i,1], prior_parameters[i,2] )
       end
 
     elseif length(theta_star) == 8
       # the unknown parameter A has a inv-gamma prior dist
-      log_prior = log_prior + log_invgampdf(exp(theta_star[3]), Theta_parameters[3,1], Theta_parameters[3,2])
+      log_prior = log_prior + log_invgampdf(exp(theta_star[3]), prior_parameters[3,1], prior_parameters[3,2])
       for i = [1,2,5,6,7]
         # The unknown parameters Κ,Γ,power1,power2 and sigma all have gamma prior dists
-        log_prior = log_prior + log_gampdf( exp(theta_star[i]), Theta_parameters[i,1], Theta_parameters[i,2] )
+        log_prior = log_prior + log_gampdf( exp(theta_star[i]), prior_parameters[i,1], prior_parameters[i,2] )
       end
       for i = [3,4]
         # The unknown parameters c and d have normal prior dists
-        log_prior = log_prior + log_normpdf( exp(theta_star[i]), Theta_parameters[i,1], Theta_parameters[i,2] )
+        log_prior = log_prior + log_normpdf( exp(theta_star[i]), prior_parameters[i,1], prior_parameters[i,2] )
       end
     elseif length(theta_star) == 4
       for i = 1:2
         # The unknown parameters Κ and Γ both have gammma prior dists
-        log_prior = log_prior + log_invgampdf( exp(theta_star[i]), Theta_parameters[i,1], Theta_parameters[i,2] )
+        log_prior = log_prior + log_invgampdf( exp(theta_star[i]), prior_parameters[i,1], prior_parameters[i,2] )
       end
       for i = 3:4
         # The unknown parameters c and d both have normal prior dists
-        log_prior = log_prior + log_normpdf( exp(theta_star[i]), Theta_parameters[i,1], Theta_parameters[i,2] )
+        log_prior = log_prior + log_normpdf( exp(theta_star[i]), prior_parameters[i,1], prior_parameters[i,2] )
       end
 
     else
       for i in [3 6]
         # The unknown parameters A and g have a gaminv prior dist
-        log_prior = log_prior + log_invgampdf(exp(theta_star[i]), Theta_parameters[i,1], Theta_parameters[i,2])
+        log_prior = log_prior + log_invgampdf(exp(theta_star[i]), prior_parameters[i,1], prior_parameters[i,2])
       end
       for i in [4 5]
         # The unknown parameters c and d both have normal prior dists
-        log_prior = log_prior + log_normpdf( exp(theta_star[i]), Theta_parameters[i,1], Theta_parameters[i,2] )
+        log_prior = log_prior + log_normpdf( exp(theta_star[i]), prior_parameters[i,1], prior_parameters[i,2] )
       end
       for i in [1 2 7 8 9]
         # The unknown parameters Κ,Γ,power1,power2 and sigma all have gamma prior dists
-        log_prior = log_prior + log_gampdf( exp(theta_star[i]), Theta_parameters[i,1], Theta_parameters[i,2] )
+        log_prior = log_prior + log_gampdf( exp(theta_star[i]), prior_parameters[i,1], prior_parameters[i,2] )
       end
 
     end

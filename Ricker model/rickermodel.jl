@@ -65,10 +65,7 @@ type AlgorithmParametersgpPMCMC
   independet_sampling::Bool
   noisy_est::Bool
   compare_GP_and_PF::Bool
-  nbr_predictions::Int64
-  selection_method::String
   beta_MH::Float64
-  std_limit::Float64
 end
 
 
@@ -227,8 +224,7 @@ function set_up_gp_problem(use_sim_data::Bool=true;nbr_of_unknown_parameters::In
   prior_dist::String = "Uniform", adaptiveon::Bool = true, ploton::Bool = false,
   nbr_of_cores::Int64 = 8, pf_algorithm::String = "bootstrap", est_method::String = "ml",lasso::Bool=true,
   independet_sampling::Bool = false, compare_GP_and_PF::Bool = true,noisy_est::Bool = true,
-  pred_method::String = "sample",T::Int64 = 50,  x0::Float64 = 7., print_interval::Int64 = 500, nbr_predictions::Int64 = 25,
-  selection_method::String="max_loglik", alg::String="PMCMC", beta_MH::Float64=0.1, std_limit::Float64 = 2.)
+  pred_method::String = "sample",T::Int64 = 50,  x0::Float64 = 7., print_interval::Int64 = 500, alg::String="PMCMC", beta_MH::Float64=0.1)
 
   # set algorithm parameters
   theta_true = log([44.7; 10; 0.3])
@@ -236,7 +232,7 @@ function set_up_gp_problem(use_sim_data::Bool=true;nbr_of_unknown_parameters::In
   Theta_parameters = [0 10; 0 4;-10 1]
   theta_known = NaN
   # create instance of AlgorithmParametersgpPMCMC (set parameters to default values)
-  alg_param = AlgorithmParametersgpPMCMC(10000,500,2000,2000,alg,pf_algorithm,print_interval,est_method,lasso,pred_method,independet_sampling,noisy_est,compare_GP_and_PF,nbr_predictions,selection_method,beta_MH,std_limit)
+  alg_param = AlgorithmParametersgpPMCMC(10000,500,2000,2000,alg,pf_algorithm,print_interval,est_method,lasso,pred_method,independet_sampling,noisy_est,compare_GP_and_PF,beta_MH)
 
   # create instance of ModelParameters, all theta paramters are on log-scale
   model_param = ModelParameters(theta_true,theta_known,theta_0)
