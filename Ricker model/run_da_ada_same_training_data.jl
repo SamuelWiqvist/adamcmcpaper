@@ -229,6 +229,14 @@ end
 ###     A-DA-GP-MCMC                                                         ###
 ################################################################################
 
+accelerated_da = true
+
+problem.model_param.theta_0 = theta_training[:, end]
+
+################################################################################
+##  Create features for classification models                                                                            ##
+################################################################################
+
 n = size(data_training,2)
 n_burn_in = problem_traning.alg_param.burn_in
 
@@ -244,60 +252,193 @@ idx_test_old = idx_test_start-1:idx_test_end-1
 loglik_training_old = res_training[1].loglik_est[idx_training_old]
 loglik_test_old = res_training[1].loglik_est[idx_test_old]
 
+
 dim = length(problem.model_param.theta_true)
 data_signs = zeros(4,n)
 data_signs[3,:] = data_training[dim+1,:]
 data_signs[4,:] = loglik_training_old
 
+std_pred_gp_star = zeros(n)
+
 noisy_pred = problem.alg_param.noisy_est
 
 for i = 1:n
-  (loglik_est_star, var_pred_ml, prediction_sample_ml_star) = predict(data_training[1:dim,i],gp,noisy_pred)
+  (loglik_est_star, var_pred_ml_star, prediction_sample_ml_star) = predict(data_training[1:dim,i],gp,noisy_pred)
   (loglik_est_old, var_pred_ml, prediction_sample_ml_old) = predict(res_training[1].Theta_est[:,idx_training_old[i]],gp,noisy_pred)
   data_signs[1,i] = prediction_sample_ml_star[1]
   data_signs[2,i] = prediction_sample_ml_old[1]
+  std_pred_gp_star[i] = sqrt(var_pred_ml_star[1])
 end
 
 nbr_GP_star_geq_GP_old = zero(Int64)
 nbr_case_1 = zero(Int64)
 nbr_case_4 = zero(Int64)
 
+targets_case_1_and_3 = []
+data_case_1_and_3 = []
+
+targets_case_2_and_4 = []
+data_case_2_and_4 = []
+
 for i = 1:n
   if data_signs[1,i] > data_signs[2,i]
     nbr_GP_star_geq_GP_old += 1
+    data_case_1_and_3 = vcat(data_case_1_and_3, [data_training[1:dim,i]; data_signs[1,i]/data_signs[2,i]; std_pred_gp_star[i]])
     if data_signs[3,i] > data_signs[4,i]
+      append!(targets_case_1_and_3, 1)
       nbr_case_1 += 1
+    else
+      append!(targets_case_1_and_3, 0)
     end
   elseif data_signs[3,i] > data_signs[4,i]
+    data_case_2_and_4 = vcat(data_case_2_and_4, [data_training[1:dim,i]; data_signs[1,i]/data_signs[2,i]; std_pred_gp_star[i]])
+    append!(targets_case_2_and_4, 0)
     nbr_case_4 += 1
+  else
+    data_case_2_and_4 = vcat(data_case_2_and_4, [data_training[1:dim,i]; data_signs[1,i]/data_signs[2,i]; std_pred_gp_star[i]])
+    append!(targets_case_2_and_4, 1)
   end
 end
 
-nbr_GP_star_led_GP_old = n-nbr_GP_star_geq_GP_old
 
-prob_case_1 = nbr_case_1/nbr_GP_star_geq_GP_old
-prob_case_2 = (nbr_GP_star_led_GP_old-nbr_case_4)/nbr_GP_star_led_GP_old
-prob_case_3 = 1-prob_case_1
-prob_case_4 = nbr_case_4/nbr_GP_star_led_GP_old
+# tansform features and set input data
 
-prob_cases = [prob_case_1;prob_case_2;prob_case_3;prob_case_4]
+# convert matricies to floats
+data_case_1_and_3 = convert(Array{Float64,2},reshape(data_case_1_and_3, (dim+2, length(targets_case_1_and_3))))
+data_case_2_and_4 = convert(Array{Float64,2},reshape(data_case_2_and_4, (dim+2, length(targets_case_2_and_4))))
 
-casemodel = BiaseCoin(prob_cases)
-
-
-# A-DA-GP-MCMC
+targets_case_1_and_3 = convert(Array{Float64,1}, targets_case_1_and_3)
+targets_case_2_and_4 = convert(Array{Float64,1}, targets_case_2_and_4)
 
 
-accelerated_da = true
+################################################################################
+##   set case model                                                          ###
+################################################################################
+
+select_case_model = "biasedcoin" # logisticregression or dt
+
+if select_case_model == "biasedcoin"
+
+  # fit model, i.e. est probabilities
+  nbr_GP_star_led_GP_old = n-nbr_GP_star_geq_GP_old
+
+  prob_case_1 = nbr_case_1/nbr_GP_star_geq_GP_old
+  prob_case_2 = (nbr_GP_star_led_GP_old-nbr_case_4)/nbr_GP_star_led_GP_old
+  prob_case_3 = 1-prob_case_1
+  prob_case_4 = nbr_case_4/nbr_GP_star_led_GP_old
+  prob_cases = [prob_case_1;prob_case_2;prob_case_3;prob_case_4]
+
+  casemodel = BiaseCoin(prob_cases)
+
+elseif select_case_model == "logisticregression"
+
+  mean_posterior = mean(theta_training,2)[:]
+
+  input_data_case_1_and_3 = zeros(length(targets_case_1_and_3), dim+3)
+  input_data_case_1_and_3[:,1] = sqrt((mean_posterior[1] - data_case_1_and_3[1,:]).^2)
+  input_data_case_1_and_3[:,2] = sqrt((mean_posterior[2] - data_case_1_and_3[2,:]).^2)
+  input_data_case_1_and_3[:,3] = sqrt((mean_posterior[3] - data_case_1_and_3[3,:]).^2)
+  input_data_case_1_and_3[:,4] = sqrt(sum((repmat(mean_posterior', size(data_case_1_and_3,2))'-data_case_1_and_3[1:3,:]).^2,1))
+  input_data_case_1_and_3[:,5] = data_case_1_and_3[4,:]
+  input_data_case_1_and_3[:,end] = targets_case_1_and_3
+
+  input_data_case_1_and_3 = DataFrame(input_data_case_1_and_3)
 
 
-problem.model_param.theta_0 = theta_training[:, end]
+  input_data_case_2_and_4 = zeros(length(targets_case_2_and_4), dim+3)
+  input_data_case_2_and_4[:,1] = sqrt((mean_posterior[1] - data_case_2_and_4[1,:]).^2)
+  input_data_case_2_and_4[:,2] = sqrt((mean_posterior[2] - data_case_2_and_4[2,:]).^2)
+  input_data_case_2_and_4[:,3] = sqrt((mean_posterior[3] - data_case_2_and_4[3,:]).^2)
+  input_data_case_2_and_4[:,4] = sqrt(sum((repmat(mean_posterior', size(data_case_2_and_4,2))'-data_case_2_and_4[1:3,:]).^2,1))
+  input_data_case_2_and_4[:,5] = data_case_2_and_4[4,:]
+  input_data_case_2_and_4[:,end] = targets_case_2_and_4
 
+  input_data_case_2_and_4 = DataFrame(input_data_case_2_and_4)
+
+
+  log_reg_model_case_1_and_3 = glm(@formula(x6 ~ x1 + x2 + x3 + x4 + x5), input_data_case_1_and_3, Binomial(), LogitLink())
+
+  log_reg_model_case_2_and_4 = glm(@formula(x6 ~ x1 + x2 + x3 + x4 + x5), input_data_case_2_and_4, Binomial(), LogitLink())
+
+  β_for_model1or3 = coef(log_reg_model_case_1_and_3)
+  β_for_model2or4 = coef(log_reg_model_case_2_and_4)
+
+
+  casemodel = LogisticRegression(β_for_model1or3, β_for_model2or4, mean_posterior)
+
+elseif select_case_model == "dt"
+
+
+  #standardization!(data_case_1_and_3)
+
+  input_data_case_1_and_3 = zeros(length(targets_case_1_and_3), dim+2)
+
+  input_data_case_1_and_3[:,1] =  data_case_1_and_3[1,:]
+  input_data_case_1_and_3[:,2] =  data_case_1_and_3[2,:]
+  input_data_case_1_and_3[:,3] =  data_case_1_and_3[3,:]
+  input_data_case_1_and_3[:,4] =  data_case_1_and_3[4,:]
+  input_data_case_1_and_3[:,end] = targets_case_1_and_3
+
+  #standardization!(data_case_2_and_4)
+
+
+  input_data_case_2_and_4 = zeros(length(targets_case_2_and_4), dim+2)
+
+  input_data_case_2_and_4[:,1] =  data_case_2_and_4[1,:]
+  input_data_case_2_and_4[:,2] =  data_case_2_and_4[2,:]
+  input_data_case_2_and_4[:,3] =  data_case_2_and_4[3,:]
+  input_data_case_2_and_4[:,4] =  data_case_2_and_4[4,:]
+  input_data_case_2_and_4[:,end] = targets_case_2_and_4
+
+
+
+  # 4 features model
+  features_1_and_3 = convert(Array, input_data_case_1_and_3[:, 1:dim+1])
+
+
+  labels_1_and_3 = convert(Array, input_data_case_1_and_3[:, end])
+
+  labels_1_and_3 = Array{String}(size(features_1_and_3,1))
+
+  for i = 1:length(labels_1_and_3)
+    if input_data_case_1_and_3[i,end] == 0
+      labels_1_and_3[i] = "case 3"
+    else
+      labels_1_and_3[i] = "case 1"
+    end
+  end
+
+  decisiontree1or3 = build_tree(labels_1_and_3, features_1_and_3)
+
+  decisiontree1or3 = prune_tree(decisiontree1or3, 0.9)
+
+  # 4 features model
+  features_case_2_and_4 = convert(Array, input_data_case_2_and_4[:, 1:dim+1])
+
+  labels_case_2_and_4 = Array{String}(size(features_case_2_and_4,1))
+
+  for i = 1:length(labels_case_2_and_4)
+    if input_data_case_2_and_4[i,end] == 0
+      labels_case_2_and_4[i] = "case 4"
+    else
+      labels_case_2_and_4[i] = "case 2"
+    end
+  end
+
+  # train full-tree classifier
+  decisiontree2or4 = build_tree(labels_case_2_and_4, features_case_2_and_4)
+
+  decisiontree2or4 = prune_tree(decisiontree2or4, 0.9)
+
+  casemodel = DT(decisiontree1or3, decisiontree2or4)
+
+end
+
+# run ADA
 res, res_traning, theta_training, loglik_training, assumption_list, loglik_list = adagpmcmc(problem_traning, problem, gp, casemodel, cov_matrix)
 
-
+# write results
 mcmc_results = Result(res[1].Theta_est, res[1].loglik_est, res[1].accept_vec, res[1].prior_vec)
-
 
 # write output
 Theta = mcmc_results.Theta_est

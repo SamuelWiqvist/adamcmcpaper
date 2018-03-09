@@ -7,17 +7,18 @@ using GLM
 
 # types for the models
 type BiaseCoin <: CaseModel
-    p::Vector # vector with the probabilites for selecting case 1,2,3, and 4
+  p::Vector # vector with the probabilites for selecting case 1,2,3, and 4
 end
 
 type LogisticRegression <: CaseModel
-    β_for_model1or3::Vector # parameter vector for the logistic regression model for case 1 or 3
-    β_for_model2or4::Vector # parameter vector for the logistic regression model  for case 1 or 3
+  β_for_model1or3::Vector # parameter vector for the logistic regression model for case 1 or 3
+  β_for_model2or4::Vector # parameter vector for the logistic regression model  for case 1 or 3
+  mean_posterior::Vector
 end
 
 type DT <: CaseModel
-    decisiontree1or3::DecisionTree.Node # DT model  for case 1 or 3
-    decisiontree2or4::DecisionTree.Node # DT model  for case 1 or 3
+  decisiontree1or3::DecisionTree.Node # DT model  for case 1 or 3
+  decisiontree2or4::DecisionTree.Node # DT model  for case 1 or 3
 end
 
 # functions for selecting case 1 or 3
@@ -26,13 +27,13 @@ end
 
 Returns 1 if case 1 is selected.
 """
-function selectcase1or3(model::BiaseCoin, theta::Vector)
+function selectcase1or3(model::BiaseCoin, theta::Vector, prediction_sample_ml_star::Real, prediction_sample_ml_old::Real)
 
-    if rand(Bernoulli(model.p[1])) == 1
-        return 1
-    else
-        return 0
-    end
+  if rand(Bernoulli(model.p[1])) == 1
+    return 1
+  else
+    return 0
+  end
 
 end
 
@@ -41,13 +42,26 @@ end
 
 Returns 1 if case 1 is selected.
 """
-function selectcase1or3(model::LogisticRegression, theta::Vector)
-    prob_case_1 = _predict(model.β_for_model1or2, [1;theta])
-    if rand(Bernoulli(prob_case_1)) == 1
-        return 1
-    else
-        return 0
-    end
+function selectcase1or3(model::LogisticRegression, theta::Vector, prediction_sample_ml_star::Real, prediction_sample_ml_old::Real)
+
+  # create new obs using theta
+
+  theta_log_reg_mod = zeros(length(theta)+2)
+  model.mean_posterior
+  for i = 1:length(theta)
+    theta_log_reg_mod[i] = sqrt((model.mean_posterior[i] - theta[i]).^2)
+  end
+
+  theta_log_reg_mod[length(theta)+1] = sqrt(sum((mean_posterior - theta).^2))
+  theta_log_reg_mod[length(theta)+2] = prediction_sample_ml_star/prediction_sample_ml_old
+
+
+  prob_case_1 = _predict(model.β_for_model1or3, [1;theta_log_reg_mod])
+  if rand(Bernoulli(prob_case_1)) == 1
+    return 1
+  else
+    return 0
+  end
 end
 
 """
@@ -55,13 +69,17 @@ end
 
 Returns 1 if case 1 is selected.
 """
-function selectcase1or3(model::DT, theta::Vector)
+function selectcase1or3(model::DT, theta::Vector, prediction_sample_ml_star::Real, prediction_sample_ml_old::Real)
 
-    if apply_tree(model.decisiontree1or3, theta) == "case 1"
-        return 1
-    else
-        return 0
-    end
+
+  theta_tree_model = zeros(length(theta)+1)
+  theta_tree_model = [theta; prediction_sample_ml_star/prediction_sample_ml_old]
+
+  if apply_tree(model.decisiontree1or3, theta_tree_model) == "case 1"
+    return 1
+  else
+    return 0
+  end
 
 end
 
@@ -71,13 +89,13 @@ end
 
 Returns 1 if case 2 is selected.
 """
-function selectcase2or4(model::BiaseCoin, theta::Vector)
+function selectcase2or4(model::BiaseCoin, theta::Vector, prediction_sample_ml_star::Real, prediction_sample_ml_old::Real)
 
-    if rand(Bernoulli(model.p[2])) == 1
-        return 1
-    else
-        return 0
-    end
+  if rand(Bernoulli(model.p[2])) == 1
+    return 1
+  else
+    return 0
+  end
 
 end
 
@@ -86,13 +104,25 @@ end
 
 Returns 1 if case 2 is selected.
 """
-function selectcase2or4(model::LogisticRegression, theta::Vector)
-    prob_case_2 = _predict(model.β_for_model2or4, [1;theta])
-    if rand(Bernoulli(prob_case_2)) == 1
-        return 1
-    else
-        return 0
-    end
+function selectcase2or4(model::LogisticRegression, theta::Vector, prediction_sample_ml_star::Real, prediction_sample_ml_old::Real)
+
+  # create new obs using theta
+
+  theta_log_reg_mod = zeros(length(theta)+2)
+  model.mean_posterior
+  for i = 1:length(theta)
+    theta_log_reg_mod[i] = sqrt((model.mean_posterior[i] - theta[i]).^2)
+  end
+
+  theta_log_reg_mod[length(theta)+1] = sqrt(sum((mean_posterior - theta).^2))
+  theta_log_reg_mod[length(theta)+2] = prediction_sample_ml_star/prediction_sample_ml_old
+
+  prob_case_2 = _predict(model.β_for_model2or4, [1;theta_log_reg_mod])
+  if rand(Bernoulli(prob_case_2)) == 1
+    return 1
+  else
+    return 0
+  end
 end
 
 """
@@ -100,14 +130,16 @@ end
 
 Returns 1 if case 2 is selected.
 """
-function selectcase2or4(model::DT, theta::Vector)
-    error("selectcase2or4(model::DT) is not implemented yet.")
+function selectcase2or4(model::DT, theta::Vector,prediction_sample_ml_star::Real, prediction_sample_ml_old::Real)
 
-    if apply_tree(model.decisiontree2or4, theta) == "case 2"
-        return 1
-    else
-        return 0
-    end
+  theta_tree_model = zeros(length(theta)+1)
+  theta_tree_model = [theta; prediction_sample_ml_star/prediction_sample_ml_old]
+
+  if apply_tree(model.decisiontree2or4, theta_tree_model) == "case 2"
+    return 1
+  else
+    return 0
+  end
 
 end
 

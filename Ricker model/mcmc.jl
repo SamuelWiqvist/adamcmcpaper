@@ -682,7 +682,7 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, ca
         if loglik_gp_old < loglik_gp_new
 
           # select case 1 or 3
-          if selectcase1or3(casemodel, theta_star) == 1
+          if selectcase1or3(casemodel, theta_star, loglik_gp_new, loglik_gp_old) == 1
 
             # case 1
 
@@ -780,7 +780,7 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, ca
 
     # select case 2 or 4
 
-    if selectcase2or4(casemodel, theta_star) == 1
+    if selectcase2or4(casemodel, theta_star, loglik_gp_new, loglik_gp_old) == 1
 
       # case 2
 
