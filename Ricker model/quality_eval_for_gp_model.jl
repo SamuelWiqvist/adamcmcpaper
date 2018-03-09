@@ -425,8 +425,10 @@ PyPlot.ylabel(L"$\ell$")
 
 
 ################################################################################
-##  Create features for classification models                                                                            ##
+##  Selecting case problem                                                    ##
 ################################################################################
+
+# Create features for classification models                                                                            ##
 
 n = size(data_training,2)
 n_burn_in = problem_traning.alg_param.burn_in
