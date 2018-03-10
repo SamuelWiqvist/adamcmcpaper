@@ -32,6 +32,7 @@ jobname = "_adagp"
 
 # path to folder with data
 savepath = "C:\\Users\\samuel\\Dropbox\\Phd Education\\Projects\\project 1 accelerated DA and DWP SDE\\results\\ricker model\\"
+savepath = "C:\\Users\\samue\\Dropbox\\Phd Education\\Projects\\project 1 accelerated DA and DWP SDE\\results\\ricker model\\"
 
 # load data
 Theta = Array(readtable(savepath*"Theta"*jobname*".csv"))
