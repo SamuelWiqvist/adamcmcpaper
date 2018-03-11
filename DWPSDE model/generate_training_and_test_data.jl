@@ -1,6 +1,5 @@
 # set up
 
-include("set_up.jl")
 
 # set correct path
 try
@@ -8,6 +7,13 @@ try
 catch
   warn("Already in the Ricker model folder")
 end
+
+# load case models
+cd("..")
+include(pwd()*"\\select case\\selectcase.jl")
+cd("DWPSDE model")
+
+include("set_up.jl")
 
 using JLD
 using HDF5
@@ -77,7 +83,7 @@ problem_training.adaptive_update =  AMUpdate_gen(eye(set_nbr_params), 1/sqrt(set
 if !log_scale_prior
 	println("run Normal prior model")
 	tic()
-	res_training, theta_training, loglik_training, cov_matrix = MCMC(problem_training, true, true)
+	res_training, theta_training, loglik_training, cov_matrix = mcmc(problem_training, true, true)
 	time_pre_er = toc()
 	#export_parameters(res_problem_normal_prior_est_AM_gen[2],jobname)
 else

@@ -7,8 +7,10 @@ catch
   warn("Already in the Ricker model folder")
 end
 
-a = 5
-
+# load case models
+cd("..")
+include(pwd()*"\\select case\\selectcase.jl")
+cd("DWPSDE model")
 include("set_up.jl")
 
 using JLD

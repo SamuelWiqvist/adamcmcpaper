@@ -7,16 +7,19 @@ catch
   warn("Already in the Ricker model folder")
 end
 
+
+# load case models
+cd("..")
+include(pwd()*"\\select case\\selectcase.jl")
+cd("Ricker model")
+
 include("rickermodel.jl")
-
-
-jobname = ""
 
 # set up problem
 problem = set_up_problem(ploton = false)
 
 problem.alg_param.N = 1000
-problem.alg_param.R = 10000
+problem.alg_param.R = 50000
 problem.alg_param.burn_in = 2000
 problem.data.y = Array(readtable("y_data_set_2.csv"))[:,1]
 #problem.data.y = Array(readtable("y_data_200_obs_3.csv"))[:,1]
@@ -80,7 +83,7 @@ algorithm_parameters = zeros(10, 2)
 algorithm_parameters[1,1] = problem.alg_param.burn_in
 algorithm_parameters[2:4,1] = problem.model_param.theta_true
 algorithm_parameters[5:7,1] = problem.model_param.theta_0
-algorithm_parameters[8:end,:] = problem.prior_dist.Theta_parameters
+algorithm_parameters[8:end,:] = problem.prior_dist.prior_parameters
 
 writetable("Results/Theta"*jobname*".csv", convert(DataFrame, Theta))
 writetable("Results/loglik_avec_priorvec"*jobname*".csv", convert(DataFrame, loglik_avec_priorvec))

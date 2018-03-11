@@ -34,6 +34,9 @@ jobname = "_adagp"
 savepath = "C:\\Users\\samuel\\Dropbox\\Phd Education\\Projects\\project 1 accelerated DA and DWP SDE\\results\\ricker model\\"
 savepath = "C:\\Users\\samue\\Dropbox\\Phd Education\\Projects\\project 1 accelerated DA and DWP SDE\\results\\ricker model\\"
 
+# or use if we are loading results from the Results folder
+savepath = ""
+
 # load data
 Theta = Array(readtable(savepath*"Theta"*jobname*".csv"))
 loklik_avec_priorv = Array(readtable(savepath*"loglik_avec_priorvec"*jobname*".csv"))
@@ -51,11 +54,9 @@ prior_parameters = algorithm_parameters[8:end,:]
 # calc results and plot results
 analyse_results(Theta, loglik, accept_vec, prior_vec,theta_true, burn_in, prior_parameters)
 
-
 ################################################################################
 ###    Compare results for MCWM, DA-GP-MCMC, and ADA-GP-MCMC                                            ###
 ################################################################################
-
 
 jobname_mcwm = "mcwm"
 jobname_da = "_dagp"

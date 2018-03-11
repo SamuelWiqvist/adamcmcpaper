@@ -19,9 +19,6 @@ include("rickermodel.jl")
 using JLD
 using HDF5
 
-
-
-
 ################################################################################
 ###      set up problem                                                      ###
 ################################################################################
@@ -170,8 +167,10 @@ data_training = data_training
 # fit GP model
 if problem.alg_param.est_method == "ml"
   # fit GP model using ml
+
   perc_outlier = 0.1 # used when using PMCMC for trainig data 0.05
   tail_rm = "left"
+  problem.alg_param.lasso = false
 
   ml_est(gp, data_training,"SE", problem.alg_param.lasso,perc_outlier,tail_rm)
 else
@@ -187,18 +186,15 @@ time_fit_gp = toc()
 
 accelerated_da = false
 
-problem.model_param.theta_0 = theta_training[:, end]
+problem.model_param.theta_0 = mean(res_training[1].Theta_est[:,end-size(data_training,2)-size(data_test,2):end],2)
 
 res, res_traning, theta_training, loglik_training, assumption_list, loglik_list = dagpmcmc(problem_traning, problem, gp, cov_matrix)
 
-
 mcmc_results = Result(res[1].Theta_est, res[1].loglik_est, res[1].accept_vec, res[1].prior_vec)
-
 
 # write output
 Theta = mcmc_results.Theta_est
 loglik = mcmc_results.loglik_est
-
 accept_vec = mcmc_results.accept_vec
 prior_vec = mcmc_results.prior_vec
 
@@ -231,7 +227,7 @@ end
 
 accelerated_da = true
 
-problem.model_param.theta_0 = theta_training[:, end]
+problem.model_param.theta_0 = mean(res_training[1].Theta_est[:,end-size(data_training,2)-size(data_test,2):end],2)
 
 ################################################################################
 ##  Create features for classification models                                                                            ##

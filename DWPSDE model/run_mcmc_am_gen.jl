@@ -9,10 +9,15 @@ catch
   warn("Already in the DWP-SDE folder.")
 end
 
+# load case models
+cd("..")
+include(pwd()*"\\select case\\selectcase.jl")
+cd("DWPSDE model")
+
 # load files and functions
 include("set_up.jl")
 
-jobname = "test_new_calc_for_a"
+jobname = "test_new_code_structure"
 
 # set parameters
 nbr_iterations = 2000
@@ -66,14 +71,14 @@ problem_nonlog_prior_est_AM_gen.adaptive_update =  AMUpdate_gen(eye(set_nbr_para
 if !log_scale_prior
   println("run Normal prior model")
   tic()
-  res_problem_normal_prior_est_AM_gen = MCMC(problem_normal_prior_est_AM_gen)
+  res_problem_normal_prior_est_AM_gen = mcmc(problem_normal_prior_est_AM_gen)
   run_time = toc()
   export_data(problem_normal_prior_est_AM_gen, res_problem_normal_prior_est_AM_gen[1],jobname)
   #export_parameters(res_problem_normal_prior_est_AM_gen[2],jobname)
 else
   println("run log-scale prior model")
   tic()
-  res_problem_nonlog_prior_est_AM_gen  = @time MCMC(problem_nonlog_prior_est_AM_gen)
+  res_problem_nonlog_prior_est_AM_gen  = @time mcmc(problem_nonlog_prior_est_AM_gen)
   run_time = toc()
   export_data(problem_nonlog_prior_est_AM_gen, res_problem_nonlog_prior_est_AM_gen[1],jobname)
   #export_parameters(res_problem_nonlog_prior_est_AM_gen[2],jobname)

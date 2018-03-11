@@ -4,7 +4,6 @@
 ######               algorithms                                            #####
 ################################################################################
 
-
 # PMCMC/MCWM
 
 doc"""
@@ -81,12 +80,7 @@ function mcmc(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=
   print_covariance(problem.adaptive_update,adaptive_update_params, 1)
 
   Theta[:,1] = theta_0
-
-  if pf_alg == "parallel_apf"
-    error("The auxiliary particle filter is not implemented.")
-  elseif pf_alg == "parallel_bootstrap"
-    loglik[1] = pf_paralell(Z, Theta[:,1],theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,true,false, nbr_of_proc,loglik_vec)
-  end
+  loglik[1] = pf_paralell(Z, Theta[:,1],theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,true,false, nbr_of_proc,loglik_vec)
 
   # print start loglik
   @printf "Loglik: %.4f \n" loglik[1]
@@ -97,8 +91,7 @@ function mcmc(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=
     print_on = false
 
     # Gaussian random walk
-    (theta_star,Z_proposal) = gaussian_random_walk(problem.adaptive_update, adaptive_update_params, Theta[:,r-1], r)
-
+    (theta_star,) = gaussian_random_walk(problem.adaptive_update, adaptive_update_params, Theta[:,r-1], r)
 
     # print acceptance rate for the last print_interval iterations
     if mod(r-1,print_interval) == 0
@@ -118,11 +111,7 @@ function mcmc(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=
     end
 
     # calc loglik using proposed parameters
-    if pf_alg == "parallel_apf"
-      error("The auxiliary particle filter is not implemented.")
-    elseif pf_alg == "parallel_bootstrap"
-      loglik_star = pf_paralell(Z, theta_star,theta_known, N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,print_on,false, nbr_of_proc,loglik_vec)
-    end
+    loglik_star = pf_paralell(Z, theta_star,theta_known, N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,print_on,false, nbr_of_proc,loglik_vec)
 
     if store_data && r > burn_in # store data
       Theta_val[:,r-burn_in] = theta_star
@@ -131,11 +120,7 @@ function mcmc(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=
 
     # run MCWM or PMCMC
     if alg == "MCWM"
-      if pf_alg == "parallel_bootstrap"
-        loglik_current =  pf_paralell(Z, Theta[:,r-1],theta_known, N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,print_on, false, nbr_of_proc,loglik_vec)
-      elseif pf_alg == "parallel_apf"
-        error("The auxiliary particle filter is not implemented.")
-      end
+      loglik_current =  pf_paralell(Z, Theta[:,r-1],theta_known, N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,print_on, false, nbr_of_proc,loglik_vec)
     else
       loglik_current = loglik[r-1]
     end
@@ -147,12 +132,10 @@ function mcmc(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=
     jacobian_log_old = jacobian(Theta[:,r-1])
 
     a_log = loglik_star + prior_log_star +  jacobian_log_star - (loglik_current +  prior_log_old + jacobian_log_old)
-
     # generate log(u)
+
     u_log = log(rand())
-
     accept = u_log < a_log # calc accaptace decision
-
 
     # update chain
     if accept # the proposal is accapted
@@ -214,8 +197,6 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
   pf_alg = problem.alg_param.pf_alg # pf algorithm
   alg = problem.alg_param.alg # use PMCMC or MCWM
   #print_interval = problem.alg_param.print_interval # print the accaptance rate every print_interval:th iteration
-  nbr_predictions = problem.alg_param.nbr_predictions # number of predictions to compute at each iteration
-  selection_method = problem.alg_param.selection_method # selection method
   lasso = problem.alg_param.lasso # use Lasso
   beta_mh = problem.alg_param.beta_MH
 
@@ -239,19 +220,16 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
   compare_GP_PF = zeros(2,R-length_training_data-burn_in)
   data_gp_pf = zeros(length(theta_0)+2,R-length_training_data-burn_in)
   data_training = zeros(1+length(theta_0), length_training_data)
-  theta_gp_predictions = zeros(length(theta_0), nbr_predictions)
   accept_prob_log = zeros(2, R-length_training_data-burn_in) # [gp ; pf]
 
   loglik_star = zero(Float64)
-  loglik_gp = zeros(nbr_predictions)
+  loglik_gp = zeros(Float64)
   loglik_gp_old = zero(Float64)
   loglik_gp_new = zero(Float64)
   index_keep_gp_er = zero(Int64)
   nbr_early_rejections = zero(Int64)
   accept = true
-  pdf_indecies_selction = zeros(nbr_predictions)
-  secound_stage_direct_limit = zero(Float64)
-  secound_stage_direct = false
+  MH_direct = false
   nbr_ordinary_mh = 0
   nbr_split_accaptance_region = 0
   nbr_split_accaptance_region_early_accept = 0
@@ -260,15 +238,12 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
   assumption_list = []
   loglik_list = []
   a_log = zero(Float64)
+  loglik_current = zero(Float64)
 
   # starting values for times:
   time_pre_er = zero(Float64)
   time_fit_gp = zero(Float64)
   time_er_part = zero(Float64)
-
-  # set start value
-  #theta_0 = theta_training[:, end] # start at last value of the chain for the training part
-  Theta[:,1] = theta_0
 
   # parameters for prior dist
   dist_type = problem.prior_dist.dist
@@ -279,10 +254,10 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
 
   adaptive_update_params = set_adaptive_alg_params(problem.adaptive_update, length(theta_0),Theta[:,1], R)
 
-  # prop kernl for secound_stage_direct
+  # prop kernl for MH_direct
   xi = 1.2
-  kernel_secound_stage_direct = noAdaptation(xi^2*cov_matrix)
-  adaptive_update_params_secound_stage_direct = set_adaptive_alg_params(kernel_secound_stage_direct, length(theta_0),Theta[:,1], R)
+  kernel_MH_direct = noAdaptation(xi^2*cov_matrix)
+  adaptive_update_params_MH_direct = set_adaptive_alg_params(kernel_MH_direct, length(theta_0),Theta[:,1], R)
 
   @printf "#####################################################################\n"
 
@@ -294,8 +269,8 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
   @printf "Particel filter: %s\n" pf_alg
 
 
-  @printf "Covariance - kernel_secound_stage_direct:\n"
-  print_covariance(kernel_secound_stage_direct,adaptive_update_params_secound_stage_direct, 1)
+  @printf "Covariance - kernel_MH_direct:\n"
+  print_covariance(kernel_MH_direct,adaptive_update_params_MH_direct, 1)
 
   # first iteration
   @printf "Iteration: %d\n" 1 # print first iteration
@@ -314,13 +289,9 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
   @printf "Covariance:\n"
   print_covariance(problem.adaptive_update,adaptive_update_params, 1)
 
+  # first iteration
   Theta[:,1] = theta_0
-
-  if pf_alg == "parallel_apf"
-    error("The auxiliary particle filter is not implemented.")
-  elseif pf_alg == "parallel_bootstrap"
-    loglik[1] = pf_paralell(Z, Theta[:,1],theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,true,false, nbr_of_proc, loglik_vec)
-  end
+  loglik[1] = pf_paralell(Z, Theta[:,1],theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,true,false, nbr_of_proc, loglik_vec)
 
   # print start loglik
   @printf "Loglik: %.4f \n" loglik[1]
@@ -348,31 +319,23 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
       println(loglik_vec)
     end
 
-    secound_stage_direct = rand() < beta_MH # we always run the early-rejection scheme
+    MH_direct = rand() < beta_MH # we always run the early-rejection scheme
 
-    if secound_stage_direct
+    if MH_direct
 
       # secound stage direct
 
       nbr_ordinary_mh +=  1
 
       # Gaussian random walk using secound stage direct kernel
-      (theta_star, ) = gaussian_random_walk(kernel_secound_stage_direct, adaptive_update_params_secound_stage_direct, Theta[:,r-1], r)
+      (theta_star, ) = gaussian_random_walk(kernel_MH_direct, adaptive_update_params_MH_direct, Theta[:,r-1], r)
 
       # calc loglik using proposed parameters
-      if pf_alg == "parallel_apf"
-        error("The auxiliary particle filter is not implemented.")
-      elseif pf_alg == "parallel_bootstrap"
-        loglik_star = pf_paralell(Z, theta_star,theta_known, N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,print_on,false, nbr_of_proc,loglik_vec)
-      end
+      loglik_star = pf_paralell(Z, theta_star,theta_known, N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,print_on,false, nbr_of_proc,loglik_vec)
 
       # run MCWM or PMCMC
       if alg == "MCWM"
-        if pf_alg == "parallel_bootstrap"
-          loglik_current =  pf_paralell(Z, Theta[:,r-1],theta_known, N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,print_on, false, nbr_of_proc,loglik_vec)
-        elseif pf_alg == "parallel_apf"
-          error("The auxiliary particle filter is not implemented.")
-        end
+        loglik_current =  pf_paralell(Z, Theta[:,r-1],theta_known, N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,print_on, false, nbr_of_proc,loglik_vec)
       else
         loglik_current = loglik[r-1]
       end
@@ -385,10 +348,7 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
 
       a_log = loglik_star + prior_log_star +  jacobian_log_star - (loglik_current +  prior_log_old + jacobian_log_old)
 
-      # generate log(u)
-      u_log = log(rand())
-
-      accept = u_log < a_log # calc accaptace decision
+      accept = log(rand()) < a_log # calc accaptace decision
 
       if accept # the proposal is accapted
         Theta[:,r] = theta_star # update chain with new values
@@ -402,91 +362,18 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
 
     else
 
-      # Gaussian random walk using DA proposal kernel
-      for i = 1:size(theta_gp_predictions,2)
-        (theta_gp_predictions[:,i], ) = gaussian_random_walk(problem.adaptive_update, adaptive_update_params, Theta[:,r-1], r)
-      end
-
-      # compute theta_star
-      if selection_method == "max_loglik"
-
-        # calc estimation of loglik using the max_loglik selection method
-
-        (loglik_gp,std_loglik) = predict(theta_gp_predictions, gp, pred_method,est_method,noisy_est,true)
-        index_keep_gp_er = indmax(loglik_gp)
-        loglik_gp_new = loglik_gp[index_keep_gp_er]
-        loglik_gp_new_std = std_loglik[index_keep_gp_er]
-
-        #secound_stage_direct = std_loglik[index_keep_gp_er] >= secound_stage_direct_limit
-
-        if print_on
-          println("Predictions:")
-          println(theta_gp_predictions)
-          println("loglik values:")
-          println(loglik_gp)
-          println("best loglik value:")
-          println(loglik_gp_new)
-          println("index for  best loglik value:")
-          println(index_keep_gp_er)
-          println("std_loglik:")
-          println(std_loglik[index_keep_gp_er])
-          println("secound_stage_direct:")
-          println(secound_stage_direct)
-
-        end
-
-      elseif selection_method == "local_loglik_approx"
-
-        # calc estimation of loglik using the local_loglik_approx selection method
-
-        (mean_pred_ml, var_pred_ml, prediction_sample_ml) = predict(theta_gp_predictions,gp,noisy_est)
-
-        if est_method == "mean"
-
-          index_keep_gp_er = stratresample(mean_pred_ml/sum(mean_pred_ml),1)[1]
-          loglik_gp_new = mean_pred_ml[index_keep_gp_er]
-          loglik_gp_new_std = var_pred_ml[index_keep_gp_er]
-
-          #secound_stage_direct = var_pred_ml[index_keep_gp_er] >= secound_stage_direct_limit
-
-          if print_on
-            println("Predictions:")
-            println(theta_gp_predictions)
-            println("loglik values:")
-            println(mean_pred_ml)
-            println("best loglik value:")
-            println(loglik_gp_new)
-            println("index for  best loglik value:")
-            println(index_keep_gp_er)
-          end
-
-        else
-
-          index_keep_gp_er = stratresample(prediction_sample_ml/sum(prediction_sample_ml),1)[1]
-          loglik_gp_new = prediction_sample_ml[index_keep_gp_er]
-          loglik_gp_new_std = var_pred_ml[index_keep_gp_er]
-          #secound_stage_direct = var_pred_ml[index_keep_gp_er] >= secound_stage_direct_limit
-
-          if print_on
-            println("Predictions:")
-            println(theta_gp_predictions)
-            println("loglik values:")
-            println(prediction_sample_ml)
-            println("best loglik value:")
-            println(loglik_gp_new)
-            println("index for  best loglik value:")
-            println(index_keep_gp_er)
-          end
-
-        end
-      end
+      # first stage
 
       # set proposal
-      theta_star = theta_gp_predictions[:,index_keep_gp_er]
+      (theta_star, ) = gaussian_random_walk(problem.adaptive_update, adaptive_update_params, Theta[:,r-1], r)
+
+      (loglik_gp_pred,loglik_gp_new_std) = predict(theta_star, gp, pred_method,est_method,noisy_est,true)
+
+      loglik_gp_new = loglik_gp_pred[1]
+      loglik_gp_new_std = loglik_gp_new_std[1]
 
       prior_log_star = evaluate_prior(theta_star,prior_parameters,dist_type)
       prior_log = evaluate_prior(Theta[:,r-1],prior_parameters,dist_type)
-
 
       prior_log_star = evaluate_prior(theta_star,prior_parameters,dist_type)
       prior_log_old = evaluate_prior(Theta[:,r-1],prior_parameters,dist_type)
@@ -514,31 +401,21 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
 # adaptation(problem.adaptive_update, adaptive_update_params, Theta, r,a_gp)
       else
 
-        # run PF
-        nbr_second_stage = nbr_second_stage+1
+        # run pf
 
-        if pf_alg == "parallel_apf"
-          error("The auxiliary particle filter is not implemented.")
-        elseif pf_alg == "parallel_bootstrap"
-          #loglik_star = pf_paralell(Z, theta_star,theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,print_on,false, nbr_of_proc)
-          loglik_star = pf_paralell(Z, theta_star,theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,print_on,false, nbr_of_proc,loglik_vec)
-        end
+        nbr_second_stage += 1
 
-        # run MCWM or PMCMC
+        loglik_star = pf_paralell(Z, theta_star,theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,print_on,false, nbr_of_proc,loglik_vec)
+
         if alg == "MCWM"
-          if pf_alg == "parallel_bootstrap"
-            loglik_current =  pf_paralell(Z, Theta[:,r-1],theta_known, N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,false, false, nbr_of_proc,loglik_vec)
-          elseif pf_alg == "parallel_apf"
-            error("The auxiliary particle filter is not implemented.")
-          end
+          loglik_current =  pf_paralell(Z, Theta[:,r-1],theta_known, N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,false, false, nbr_of_proc,loglik_vec)
         else
           loglik_current = loglik[r-1]
         end
 
-        a_log = (loglik_star + loglik_gp_old)  -  (loglik_current  + loglik_gp_new)
+        a_log = (loglik_star + loglik_gp_old)  -  (loglik_current + loglik_gp_new)
 
         accept = log(rand()) < a_log # calc accaptance decision
-        #accept_prob_log[2, r] = a_log # store data
 
         if accept # the proposal is accapted
           nbr_second_stage_accepted = nbr_second_stage_accepted+1
@@ -583,11 +460,11 @@ end
 # ADA-GP_MCMC
 
 doc"""
-    adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov_matrix::Matrix, prob_cases::Vector)
+    problem_traning::Problem, problem::gpProblem, gp::GPModel, casemodel::CaseModel, cov_matrix::Matrix)
 
 Runs the ADA-GP-MCMC algorithm.
 """
-function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov_matrix::Matrix, prob_cases::Vector)
+function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, casemodel::CaseModel, cov_matrix::Matrix)
 
   # data
   Z = problem.data.Z
@@ -605,8 +482,6 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
   pf_alg = problem.alg_param.pf_alg # pf algorithm
   alg = problem.alg_param.alg # use PMCMC or MCWM
   #print_interval = problem.alg_param.print_interval # print the accaptance rate every print_interval:th iteration
-  nbr_predictions = problem.alg_param.nbr_predictions # number of predictions to compute at each iteration
-  selection_method = problem.alg_param.selection_method # selection method
   lasso = problem.alg_param.lasso # use Lasso
   beta_mh = problem.alg_param.beta_MH
 
@@ -630,19 +505,16 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
   compare_GP_PF = zeros(2,R-length_training_data-burn_in)
   data_gp_pf = zeros(length(theta_0)+2,R-length_training_data-burn_in)
   data_training = zeros(1+length(theta_0), length_training_data)
-  theta_gp_predictions = zeros(length(theta_0), nbr_predictions)
   accept_prob_log = zeros(2, R-length_training_data-burn_in) # [gp ; pf]
 
   loglik_star = zero(Float64)
-  loglik_gp = zeros(nbr_predictions)
+  loglik_gp = zeros(Float64)
   loglik_gp_old = zero(Float64)
   loglik_gp_new = zero(Float64)
   index_keep_gp_er = zero(Int64)
   nbr_early_rejections = zero(Int64)
   accept = true
-  pdf_indecies_selction = zeros(nbr_predictions)
-  secound_stage_direct_limit = zero(Float64)
-  secound_stage_direct = false
+  MH_direct = false
   nbr_ordinary_mh = 0
   nbr_split_accaptance_region = 0
   nbr_split_accaptance_region_early_accept = 0
@@ -658,26 +530,16 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
   time_fit_gp = zero(Float64)
   time_er_part = zero(Float64)
 
-
   nbr_case_1 = 0
   nbr_case_2 = 0
   nbr_case_3 = 0
   nbr_case_4 = 0
 
-  # draw u's for checking if u < a
-  u_log = log(rand(1,R))
-
   # da new
-  std_limit = 0
   loglik_gp_new_std = 0
 
   #(~,std_loglik_traning) = predict(theta_training, gp, pred_method,est_method,noisy_est,true)
-  std_limit = problem.alg_param.std_limit# percentile(std_loglik_traning,50)
   loglik_gp_new_std = 0
-
-  # set start value
-  #theta_0 = theta_training[:, end] # start at last value of the chain for the training part
-  Theta[:,1] = theta_0
 
   # parameters for prior dist
   dist_type = problem.prior_dist.dist
@@ -688,10 +550,10 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
 
   adaptive_update_params = set_adaptive_alg_params(problem.adaptive_update, length(theta_0),Theta[:,1], R)
 
-  # prop kernl for secound_stage_direct
+  # prop kernl for MH_direct
   xi = 1.2
-  kernel_secound_stage_direct = noAdaptation(xi^2*cov_matrix)
-  adaptive_update_params_secound_stage_direct = set_adaptive_alg_params(kernel_secound_stage_direct, length(theta_0),Theta[:,1], R)
+  kernel_MH_direct = noAdaptation(xi^2*cov_matrix)
+  adaptive_update_params_MH_direct = set_adaptive_alg_params(kernel_MH_direct, length(theta_0),Theta[:,1], R)
 
   @printf "#####################################################################\n"
 
@@ -699,15 +561,12 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
   @printf "Starting DA-GP-MCMC with adaptive RW estimating %d parameters\n" length(theta_true)
   @printf "MCMC algorithm: %s\n" alg
   @printf "Adaptation algorithm: %s\n" typeof(problem.adaptive_update)
+  @printf "Select case model: %s\n" typeof(casemodel)
   @printf "Prior distribution: %s\n" problem.prior_dist.dist
   @printf "Particel filter: %s\n" pf_alg
 
-
-  @printf "Covariance - kernel_secound_stage_direct:\n"
-  print_covariance(kernel_secound_stage_direct,adaptive_update_params_secound_stage_direct, 1)
-
-
-
+  @printf "Covariance - kernel_MH_direct:\n"
+  print_covariance(kernel_MH_direct,adaptive_update_params_MH_direct, 1)
 
   # first iteration
   @printf "Iteration: %d\n" 1 # print first iteration
@@ -727,12 +586,7 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
   print_covariance(problem.adaptive_update,adaptive_update_params, 1)
 
   Theta[:,1] = theta_0
-
-  if pf_alg == "parallel_apf"
-    error("The auxiliary particle filter is not implemented.")
-  elseif pf_alg == "parallel_bootstrap"
-    loglik[1] = pf_paralell(Z, Theta[:,1],theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,true,false, nbr_of_proc,loglik_vec)
-  end
+  loglik[1] = pf_paralell(Z, Theta[:,1],theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,true,false, nbr_of_proc,loglik_vec)
 
   # print start loglik
   @printf "Loglik: %.4f \n" loglik[1]
@@ -759,34 +613,22 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
       println(loglik_vec)
     end
 
-    secound_stage_direct = rand() < beta_MH # we always run the early-rejection scheme
+    MH_direct = rand() < beta_MH # we always run the early-rejection scheme
 
-
-
-    if secound_stage_direct
+    if MH_direct
 
       # secound stage direct
-
       nbr_ordinary_mh = nbr_ordinary_mh + 1
 
       # Gaussian random walk using secound stage direct kernel
-      (theta_star, ) = gaussian_random_walk(kernel_secound_stage_direct, adaptive_update_params_secound_stage_direct, Theta[:,r-1], r)
-
+      (theta_star, ) = gaussian_random_walk(kernel_MH_direct, adaptive_update_params_MH_direct, Theta[:,r-1], r)
 
       # calc loglik using proposed parameters
-      if pf_alg == "parallel_apf"
-        error("The auxiliary particle filter is not implemented.")
-      elseif pf_alg == "parallel_bootstrap"
-        loglik_star = pf_paralell(Z, theta_star,theta_known, N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,print_on,false, nbr_of_proc,loglik_vec)
-      end
+      loglik_star = pf_paralell(Z, theta_star,theta_known, N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,print_on,false, nbr_of_proc,loglik_vec)
 
       # run MCWM or PMCMC
       if alg == "MCWM"
-        if pf_alg == "parallel_bootstrap"
-          loglik_current =  pf_paralell(Z, Theta[:,r-1],theta_known, N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,print_on, false, nbr_of_proc,loglik_vec)
-        elseif pf_alg == "parallel_apf"
-          error("The auxiliary particle filter is not implemented.")
-        end
+        loglik_current =  pf_paralell(Z, Theta[:,r-1],theta_known, N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,print_on, false, nbr_of_proc,loglik_vec)
       else
         loglik_current = loglik[r-1]
       end
@@ -799,10 +641,7 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
 
       a_log = loglik_star + prior_log_star +  jacobian_log_star - (loglik_current +  prior_log_old + jacobian_log_old)
 
-      # generate log(u)
-      u_log = log(rand())
-
-      accept = u_log < a_log # calc accaptace decision
+      accept = log(rand()) < a_log # calc accaptace decision
 
       if accept # the proposal is accapted
         Theta[:,r] = theta_star # update chain with new values
@@ -813,92 +652,17 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
         loglik[r] = loglik[r-1]
       end
 
-
-
     else
 
-      # Gaussian random walk using DA proposal kernel
-      for i = 1:size(theta_gp_predictions,2)
-        (theta_gp_predictions[:,i], ) = gaussian_random_walk(problem.adaptive_update, adaptive_update_params, Theta[:,r-1], r)
-      end
-
-      # compute theta_star
-      if selection_method == "max_loglik"
-
-        # calc estimation of loglik using the max_loglik selection method
-
-        (loglik_gp,std_loglik) = predict(theta_gp_predictions, gp, pred_method,est_method,noisy_est,true)
-        index_keep_gp_er = indmax(loglik_gp)
-        loglik_gp_new = loglik_gp[index_keep_gp_er]
-        loglik_gp_new_std = std_loglik[index_keep_gp_er]
-
-        #secound_stage_direct = std_loglik[index_keep_gp_er] >= secound_stage_direct_limit
-
-        if print_on
-          println("Predictions:")
-          println(theta_gp_predictions)
-          println("loglik values:")
-          println(loglik_gp)
-          println("best loglik value:")
-          println(loglik_gp_new)
-          println("index for  best loglik value:")
-          println(index_keep_gp_er)
-          println("std_loglik:")
-          println(std_loglik[index_keep_gp_er])
-          println("secound_stage_direct:")
-          println(secound_stage_direct)
-
-        end
-
-      elseif selection_method == "local_loglik_approx"
-
-        # calc estimation of loglik using the local_loglik_approx selection method
-
-        (mean_pred_ml, var_pred_ml, prediction_sample_ml) = predict(theta_gp_predictions,gp,noisy_est)
-
-        if est_method == "mean"
-
-          index_keep_gp_er = stratresample(mean_pred_ml/sum(mean_pred_ml),1)[1]
-          loglik_gp_new = mean_pred_ml[index_keep_gp_er]
-          loglik_gp_new_std = var_pred_ml[index_keep_gp_er]
-
-          #secound_stage_direct = var_pred_ml[index_keep_gp_er] >= secound_stage_direct_limit
-
-          if print_on
-            println("Predictions:")
-            println(theta_gp_predictions)
-            println("loglik values:")
-            println(mean_pred_ml)
-            println("best loglik value:")
-            println(loglik_gp_new)
-            println("index for  best loglik value:")
-            println(index_keep_gp_er)
-          end
-
-        else
-
-          index_keep_gp_er = stratresample(prediction_sample_ml/sum(prediction_sample_ml),1)[1]
-          loglik_gp_new = prediction_sample_ml[index_keep_gp_er]
-          loglik_gp_new_std = var_pred_ml[index_keep_gp_er]
-          #secound_stage_direct = var_pred_ml[index_keep_gp_er] >= secound_stage_direct_limit
-
-          if print_on
-            println("Predictions:")
-            println(theta_gp_predictions)
-            println("loglik values:")
-            println(prediction_sample_ml)
-            println("best loglik value:")
-            println(loglik_gp_new)
-            println("index for  best loglik value:")
-            println(index_keep_gp_er)
-          end
-
-        end
-
-      end
+      # stage 1
 
       # set proposal
-      theta_star = theta_gp_predictions[:,index_keep_gp_er]
+      (theta_star, ) = gaussian_random_walk(problem.adaptive_update, adaptive_update_params, Theta[:,r-1], r)
+
+      (loglik_gp_pred,loglik_gp_new_std) = predict(theta_star, gp, pred_method,est_method,noisy_est,true)
+
+      loglik_gp_new = loglik_gp_pred[1]
+      loglik_gp_new_std = loglik_gp_new_std[1]
 
       prior_log_star = evaluate_prior(theta_star,prior_parameters, problem.prior_dist.dist)
       prior_log_old = evaluate_prior(Theta[:,r-1],prior_parameters, problem.prior_dist.dist)
@@ -930,6 +694,8 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
 
       else
 
+        # stage 2 usign A-DA
+
         nbr_second_stage = nbr_second_stage+1
 
         # A-DA
@@ -939,7 +705,10 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
 
           nbr_split_accaptance_region = nbr_split_accaptance_region+1
 
-          if rand(Bernoulli(prob_cases[1])) == 1 #&& loglik_gp_new_std < std_limit && loglik_gp_old_std < std_limit
+          # select case 1 or 3
+          if selectcase1or3(casemodel, theta_star, loglik_gp_new, loglik_gp_old) == 1
+
+            # case 1
 
             nbr_case_1 = nbr_case_1 + 1
 
@@ -951,11 +720,7 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
               accept_vec[r] = 1
             else
 
-              if pf_alg == "parallel_pf"
-                error("The auxiliary particle filter is not implemented.")
-              elseif pf_alg == "parallel_bootstrap"
-                loglik_star = pf_paralell(Z, theta_star,theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,print_on,false, nbr_of_proc,loglik_vec)
-              end
+              loglik_star = pf_paralell(Z, theta_star,theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,print_on,false, nbr_of_proc,loglik_vec)
 
               loglik_old = pf_paralell(Z, Theta[:,r-1],theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,false,false, nbr_of_proc,loglik_vec)
               a_log = (loglik_star + loglik_gp_old)  -  (loglik_old + loglik_gp_new)
@@ -990,11 +755,7 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
 
           else
 
-            if pf_alg == "parallel_pf"
-              error("The auxiliary particle filter is not implemented.")
-            elseif pf_alg == "parallel_bootstrap"
-              loglik_star = pf_paralell(Z, theta_star,theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,print_on,false, nbr_of_proc,loglik_vec)
-            end
+            loglik_star = pf_paralell(Z, theta_star,theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,print_on,false, nbr_of_proc,loglik_vec)
 
             loglik_old = pf_paralell(Z, Theta[:,r-1],theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,false,false, nbr_of_proc,loglik_vec)
             a_log = (loglik_star + loglik_gp_old)  -  (loglik_old + loglik_gp_new)
@@ -1018,17 +779,15 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, co
 
       else
 
-        if rand(Bernoulli(prob_cases[2])) == 1
+        # select case 2 or 4
+
+        if selectcase2or4(casemodel, theta_star, loglik_gp_new, loglik_gp_old) == 1
 
           # case 2
           nbr_case_2 = nbr_case_2 + 1
 
 
-          if pf_alg == "parallel_pf"
-            error("The auxiliary particle filter is not implemented.")
-          elseif pf_alg == "parallel_bootstrap"
-            loglik_star = pf_paralell(Z, theta_star,theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,print_on,false, nbr_of_proc,loglik_vec)
-          end
+          loglik_star = pf_paralell(Z, theta_star,theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,print_on,false, nbr_of_proc,loglik_vec)
 
           loglik_old = pf_paralell(Z, Theta[:,r-1],theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,false,false, nbr_of_proc,loglik_vec)
           a_log = (loglik_star + loglik_gp_old)  -  (loglik_old + loglik_gp_new)

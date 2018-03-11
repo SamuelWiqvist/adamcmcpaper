@@ -72,11 +72,8 @@ type AlgorithmParametersgpPMCMC
   independet_sampling::Bool
   noisy_est::Bool
   compare_GP_and_PF::Bool
-  nbr_predictions::Int64
-  selection_method::String
   beta_MH::Float64
   dt_U::Float64
-  std_limit::Float64
 end
 
 
@@ -271,8 +268,7 @@ function set_up_gp_problem(;use_sim_data::Bool=true,nbr_of_unknown_parameters::I
   prior_dist::String = "Normal", ploton::Bool = false, nbr_of_cores::Int64 = 8, alg::String= "MCWM",
   pf_algorithm::String = "parallel_bootstrap",length_training_data::Int64=2000, est_method::String="ml",
   lasso::Bool=true, pred_method::String="sample",independet_sampling::Bool=false,noisy_est::Bool=false,
-  compare_GP_and_PF::Bool=false, nbr_predictions::Int64=25, selection_method::String="max_loglik",
-  beta_MH::Float64=0.1,data_set::String = "old", dt_U::Float64=1., std_limit::Float64 = 2.)
+  compare_GP_and_PF::Bool=false, beta_MH::Float64=0.1,data_set::String = "old", dt_U::Float64=1.,)
 
 
   # set algorithm parameters
@@ -280,8 +276,7 @@ function set_up_gp_problem(;use_sim_data::Bool=true,nbr_of_unknown_parameters::I
 
   # create instance of AlgorithmParametersgpPMCMC (set parameters to default values)
   alg_param = AlgorithmParametersgpPMCMC(10000,25,5000,alg, pf_algorithm,nbr_of_cores,
-  1,1,1,0.01,length_training_data,est_method,lasso,pred_method,independet_sampling,noisy_est,compare_GP_and_PF,
-  nbr_predictions,selection_method,beta_MH,  dt_U,std_limit)
+  1,1,1,0.01,length_training_data,est_method,lasso,pred_method,independet_sampling,noisy_est,compare_GP_and_PF,beta_MH,  dt_U)
 
   # create instance of ModelParameters
   model_param = ModelParameters(theta_true,theta_known,theta_0)

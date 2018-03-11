@@ -5,7 +5,7 @@ include("pf.jl")
 
 
 ################################################################################
-######               algorithms                                            #####
+###                  algorithms                                            #####
 ################################################################################
 
 # PMCMC/MCWM
@@ -44,7 +44,7 @@ function mcmc(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=
   prior_vec = zeros(R)
   theta_star = zeros(length(theta_0),1)
   loglik_star = zeros(Float64)
-  a_log = 0
+  a_log = zero(Float64)
 
   # pre-allocate matricies and vectors for storing data
   if store_data
@@ -70,11 +70,7 @@ function mcmc(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=
 
   Theta[:,1] = theta_0
 
-  if pf_alg == "apf"
-    error("The auxiliary particle filter is not implemented")
-  elseif pf_alg == "bootstrap"
-    loglik[1] = pf(y, Theta[:,1],theta_known,N,true)
-  end
+  loglik[1] = pf(y, Theta[:,1],theta_known,N,true)
 
   # print start loglik
   @printf "Loglik: %.4f \n" loglik[1]
@@ -102,11 +98,7 @@ function mcmc(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=
     (theta_star, ) = gaussian_random_walk(problem.adaptive_update, adaptive_update_params, Theta[:,r-1], r)
 
     # calc loglik using proposal
-    if pf_alg == "apf"
-      error("The auxiliary particle filter is not implemented")
-    elseif pf_alg == "bootstrap"
-      loglik_star = pf(y, theta_star,theta_known, N,print_on)
-    end
+    loglik_star = pf(y, theta_star,theta_known, N,print_on)
 
     prior_log_star = evaluate_prior(theta_star,prior_parameters, problem.prior_dist.dist)
     prior_log_old = evaluate_prior(Theta[:,r-1],prior_parameters, problem.prior_dist.dist)
@@ -121,10 +113,7 @@ function mcmc(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=
       a_log = loglik_star + prior_log_star +  jacobian_log_star - (loglik[r-1] +  prior_log_old + jacobian_log_old)
     end
 
-    # generate log(u)
-    u_log = log(rand())
-
-    accept = u_log < a_log # calc accaptace decision
+    accept = log(rand()) < a_log # calc accaptace decision
 
     if store_data && r > burn_in # store data
       Theta_val[:,r-burn_in] = theta_star
@@ -239,12 +228,7 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
   prior_parameters = problem.prior_dist.prior_parameters
 
   # da new
-  std_limit = 0
   loglik_gp_new_std = 0
-
-  # set start value
-  #theta_0 = theta_training[:, end] # start at last value of the chain for the training part
-  Theta[:,1] = theta_0
 
   # set kernels
 
@@ -276,12 +260,9 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
   @printf "Covariance:\n"
   print_covariance(problem.adaptive_update,adaptive_update_params, 1)
 
-
-  if pf_alg == "apf"
-    error("The auxiliary particle filter is not implemented")
-  elseif pf_alg == "bootstrap"
-    loglik[1]  = pf(y, Theta[:,1],theta_known,N,true)
-  end
+  # first iteration
+  Theta[:,1] = theta_0
+  loglik[1]  = pf(y, Theta[:,1],theta_known,N,true)
 
   # print start loglik
   @printf "Loglik: %.4f \n" loglik[1]
@@ -319,11 +300,7 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
       (theta_star, ) = gaussian_random_walk(kernel_MH_direct, adaptive_update_params_MH_direct, Theta[:,r-1], r)
 
       # calc loglik using proposed parameters
-      if pf_alg == "apf"
-        error("The auxiliary particle filter is not implemented")
-      elseif pf_alg == "bootstrap"
-        loglik_star = pf(y, theta_star,theta_known,N,print_on)
-      end
+      loglik_star = pf(y, theta_star,theta_known,N,print_on)
 
       prior_log_star = evaluate_prior(theta_star,prior_parameters, problem.prior_dist.dist)
       prior_log_old = evaluate_prior(Theta[:,r-1],prior_parameters, problem.prior_dist.dist)
@@ -393,11 +370,7 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
 
         nbr_second_stage += 1
 
-        if pf_alg == "apf"
-          error("The auxiliary particle filter is not implemented")
-        elseif pf_alg == "bootstrap"
-          loglik_star = pf(y, theta_star,theta_known,N,print_on)
-        end
+        loglik_star = pf(y, theta_star,theta_known,N,print_on)
 
         if alg == "MCWM"
           a_log = (loglik_star + loglik_gp_old)  -  (pf(y, Theta[:,r-1],theta_known,N,print_on) + loglik_gp_new)
@@ -489,7 +462,7 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, ca
   accept_prob_log = zeros(2, R) # [gp ; pf]
   kernel_MH_direct = problem.adaptive_update
 
-
+  loglik_current = zero(Float64)
   loglik_star = zero(Float64)
   loglik_gp = zeros(Float64)
   loglik_gp_old = zero(Float64)
@@ -518,14 +491,9 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, ca
   nbr_case_3 = 0
   nbr_case_4 = 0
 
-
   # parameters for prior dist
   dist_type = problem.prior_dist.dist
   prior_parameters = problem.prior_dist.prior_parameters
-
-  # set start value
-  #theta_0 = theta_training[:, end] # start at last value of the chain for the training part
-  Theta[:,1] = theta_0
 
   # set kernels
 
@@ -558,12 +526,9 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, ca
   @printf "Covariance:\n"
   print_covariance(problem.adaptive_update,adaptive_update_params, 1)
 
-
-  if pf_alg == "apf"
-    error("The auxiliary particle filter is not implemented")
-  elseif pf_alg == "bootstrap"
-    loglik[1]  = pf(y, Theta[:,1],theta_known,N,true)
-  end
+  # first iteration
+  Theta[:,1] = theta_0
+  loglik[1]  = pf(y, Theta[:,1],theta_known,N,true)
 
   # print start loglik
   @printf "Loglik: %.4f \n" loglik[1]
@@ -601,11 +566,7 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, ca
       (theta_star, ) = gaussian_random_walk(kernel_MH_direct, adaptive_update_params_MH_direct, Theta[:,r-1], r)
 
       # calc loglik using proposed parameters
-      if pf_alg == "apf"
-        error("The auxiliary particle filter is not implemented")
-      elseif pf_alg == "bootstrap"
-        loglik_star = pf(y, theta_star,theta_known,N,print_on)
-      end
+      loglik_star = pf(y, theta_star,theta_known,N,print_on)
 
       prior_log_star = evaluate_prior(theta_star,prior_parameters, problem.prior_dist.dist)
       prior_log_old = evaluate_prior(Theta[:,r-1],prior_parameters, problem.prior_dist.dist)
@@ -614,11 +575,13 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, ca
       jacobian_log_old = jacobian(Theta[:,r-1])
 
       if alg == "MCWM"
-        a_log = loglik_star + prior_log_star +  jacobian_log_star - (pf(y, Theta[:,r-1],theta_known,N,print_on) +  prior_log_old + jacobian_log_old)
+        loglik_current = pf(y, Theta[:,r-1],theta_known,N,print_on)
       else
         # calc accaptace probability for the PMCMC algorithm
-        a_log = loglik_star + prior_log_star +  jacobian_log_star - (loglik[r-1] +  prior_log_old + jacobian_log_old)
+        loglik_current = loglik[r-1]
       end
+
+      a_log = loglik_star + prior_log_star +  jacobian_log_star - (loglik_current +  prior_log_old + jacobian_log_old)
 
       accept = log(rand()) < a_log
 
@@ -700,12 +663,7 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, ca
 
               # run ordinary stage 2
 
-              if pf_alg == "apf"
-                error("The auxiliary particle filter is not implemented")
-              elseif pf_alg == "bootstrap"
-                loglik_star = pf(y, theta_star,theta_known,N,print_on)
-              end
-
+              loglik_star = pf(y, theta_star,theta_known,N,print_on)
 
               # calc accaptance probability using PF
               # can only run MCWM in this case
@@ -745,12 +703,7 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, ca
           else
 
             # run ordinary stage 2
-
-            if pf_alg == "apf"
-              error("The auxiliary particle filter is not implemented")
-            elseif pf_alg == "bootstrap"
-              loglik_star = pf(y, theta_star,theta_known,N,print_on)
-            end
+            loglik_star = pf(y, theta_star,theta_known,N,print_on)
 
             # calc accaptance probability using PF
             # can only run MCWM in this case
@@ -788,11 +741,7 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, ca
 
       # run ordinary stage 2
 
-      if pf_alg == "apf"
-        error("The auxiliary particle filter is not implemented")
-      elseif pf_alg == "bootstrap"
-        loglik_star = pf(y, theta_star,theta_known,N,print_on)
-      end
+      loglik_star = pf(y, theta_star,theta_known,N,print_on)
 
       # calc accaptance probability using PF
       # can only run MCWM in this case
