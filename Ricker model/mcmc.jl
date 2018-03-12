@@ -193,7 +193,8 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
   accept_vec = zeros(R)
   prior_vec = zeros(R)
   theta_star = zeros(length(theta_0))
-  compare_GP_PF = zeros(2,R-length_training_data-burn_in)
+  #compare_GP_PF = zeros(2,R-length_training_data-burn_in)
+  compare_GP_PF = zeros(2,R)
   data_gp_pf = zeros(length(theta_0)+2,R-length_training_data-burn_in)
   data_training = zeros(1+length(theta_0), length_training_data)
   accept_prob_log = zeros(2, R) # [gp ; pf]
@@ -456,7 +457,8 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, ca
   accept_vec = zeros(R)
   prior_vec = zeros(R)
   theta_star = zeros(length(theta_0))
-  compare_GP_PF = zeros(2,R-length_training_data-burn_in)
+  #compare_GP_PF = zeros(2,R-length_training_data-burn_in)
+  compare_GP_PF = zeros(2,R)
   data_gp_pf = zeros(length(theta_0)+2,R-length_training_data-burn_in)
   data_training = zeros(1+length(theta_0), length_training_data)
   accept_prob_log = zeros(2, R) # [gp ; pf]

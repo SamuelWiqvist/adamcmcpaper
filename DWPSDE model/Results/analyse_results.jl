@@ -34,7 +34,7 @@ label_size = 15
 
 
 load_data_from_files = true # load data from files or form some matlab workspace
-dagp = "" #  set to _dagp to load ER-GP file  o.w. use ""
+dagp = "_dagp" #  set to _dagp to load ER-GP file  o.w. use ""
 jobname = "lunarc_mcwm" # set to jobname string
 
 if load_data_from_files

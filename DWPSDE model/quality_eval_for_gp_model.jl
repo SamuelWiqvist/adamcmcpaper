@@ -76,11 +76,9 @@ problem.alg_param.compare_GP_and_PF = false
 problem.alg_param.noisy_est = false
 problem.alg_param.pred_method = "sample"
 problem.alg_param.length_training_data = length_training_data
-problem.alg_param.nbr_predictions = 1
 problem.alg_param.beta_MH = beta_MH
 
 #problem.alg_param.print_interval = 500
-problem.alg_param.selection_method = "max_loglik"  # "local_loglik_approx" # "max_loglik"
 
 
 
@@ -131,10 +129,12 @@ if !load_tranining_data
 
 else
 
-  #@load "gp_training_2_par_training_and_test_data_test_new_code.jld"
+  #@load "gp_training_2_par_training_and_test_data_test_new_code_structure.jld"
+
+  @load "gp_training_7_par_training_and_test_lunarc.jld"
 
   #@load "gp_training_7_par_training_and_test_data_multiple_cores.jld"
-  @load "gp_training_7_par_training_and_test_lunarc.jld"
+  #@load "gp_training_7_par_training_and_test_lunarc.jld"
 
   #@load "gp_training_$(set_nbr_params)_par.jld"
   #@load "gp_training_$(set_nbr_params)_par.jld"

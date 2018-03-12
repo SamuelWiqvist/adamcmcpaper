@@ -22,13 +22,13 @@ using HDF5
 ################################################################################
 
 # nbr of iterations
-nbr_iterations = 5000 # should be 10000
+nbr_iterations = 500 # should be 10000
 
 # nbr parameters
-set_nbr_params = 2  # should be 7
+set_nbr_params = 7  # should be 7
 
 # nbr particels
-nbr_particels = 25 # should be 200
+nbr_particels = 200 # should be 200
 
 # nbr cores
 nbr_of_cores= 4 # should be > 8
@@ -138,10 +138,11 @@ if !load_tranining_data
 
 else
 
-  @load "gp_training_2_par_training_and_test_data_test_new_code.jld"
+  #@load "gp_training_2_par_training_and_test_data_test_new_code_structure.jld"
 
-  #@load "gp_training_7_par_training_and_test_data_multiple_cores.jld"
-	#@load "gp_training_$(set_nbr_params)_par_test_new_code.jld"
+  @load "gp_training_7_par_training_and_test_lunarc.jld"
+
+  #@load "gp_training_$(set_nbr_params)_par_test_new_code.jld"
 
 	#=
 	gp_training_2_par_training_and_test_data_test_new_code.jld
@@ -233,7 +234,7 @@ accelerated_da = false
 
 jobname = global_jobname*"da_gp_mcmc"
 
-problem.model_param.theta_0 = mean(res_training[1].Theta_est[:,end-size(data_training,2)-size(data_test,2):end],2)
+problem.model_param.theta_0 = mean(res_training[1].Theta_est[:,end-size(data_training,2)-size(data_test,2):end],2)[:]
 
 if !log_scale_prior
   # run adaptive PMCMC
@@ -267,7 +268,7 @@ accelerated_da = true
 
 jobname = global_jobname*"ada_gp_mcmc"
 
-problem.model_param.theta_0 = mean(res_training[1].Theta_est[:,end-size(data_training,2)-size(data_test,2):end],2)
+problem.model_param.theta_0 = mean(res_training[1].Theta_est[:,end-size(data_training,2)-size(data_test,2):end],2)[:]
 
 ################################################################################
 ##  Create features for classification models                                                                            ##
@@ -492,7 +493,7 @@ end
 
 if !log_scale_prior
   # run adaptive PMCMC
-  res = adagpmcmc(problem_traning, problem, gp, casemodel, cov_matrix)
+  res = adagpmcmc(problem_training, problem, gp, casemodel, cov_matrix)
 
   mcmc_results = Result(res[1][1].Theta_est, res[1][1].loglik_est, res[1][1].accept_vec, res[1][1].prior_vec)
 

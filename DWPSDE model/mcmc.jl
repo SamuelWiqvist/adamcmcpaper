@@ -96,7 +96,7 @@ function mcmc(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=
     # print acceptance rate for the last print_interval iterations
     if mod(r-1,print_interval) == 0
       # print percentage done
-      @printf "Percentage done: %.4f\n" r/R*100
+      @printf "Percentage done: %.2f %% \n" 100*(r-1)/R
       print_on = true # print ESS and Nbr resample each print_interval:th iteration
       # print accaptance rate
       @printf "Acceptance rate on iteration %d to %d is %.4f\n" r-print_interval r-1  sum(accept_vec[r-print_interval:r-1])/( r-1 - (r-print_interval) )
@@ -217,10 +217,13 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
   accept_vec = zeros(R)
   prior_vec = zeros(R)
   theta_star = zeros(length(theta_0))
-  compare_GP_PF = zeros(2,R-length_training_data-burn_in)
-  data_gp_pf = zeros(length(theta_0)+2,R-length_training_data-burn_in)
+  #compare_GP_PF = zeros(2,R-length_training_data-burn_in)
+  compare_GP_PF = zeros(2,R)
+  #data_gp_pf = zeros(length(theta_0)+2,R-length_training_data-burn_in)
+  data_gp_pf = zeros(length(theta_0)+2,R)
   data_training = zeros(1+length(theta_0), length_training_data)
-  accept_prob_log = zeros(2, R-length_training_data-burn_in) # [gp ; pf]
+  #accept_prob_log = zeros(2, R-length_training_data-burn_in) # [gp ; pf]
+  accept_prob_log = zeros(2, R) # [gp ; pf]
 
   loglik_star = zero(Float64)
   loglik_gp = zeros(Float64)
@@ -282,7 +285,7 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
   loglik_vec = SharedArray{Float64}(nbr_of_proc)
 
   # print acceptance rate each print_interval:th iteration
-  print_interval = 1000
+  print_interval = 100
 
   # first iteration
   @printf "Iteration: %d\n" 1 # print first iteration
@@ -305,7 +308,7 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
     # print acceptance rate for the last print_interval iterations
     if mod(r-1,print_interval) == 0
       # print percentage done
-      @printf "Percentage done: %.4f\n" r/R*100
+      @printf "Percentage done: %.2f %% \n" 100*(r-1)/R
       print_on = true # print ESS and Nbr resample each print_interval:th iteration
       # print accaptance rate
       @printf "Acceptance rate on iteration %d to %d is %.4f\n" r-print_interval r-1  sum(accept_vec[r-print_interval:r-1])/( r-1 - (r-print_interval) )
@@ -502,10 +505,14 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, ca
   accept_vec = zeros(R)
   prior_vec = zeros(R)
   theta_star = zeros(length(theta_0))
-  compare_GP_PF = zeros(2,R-length_training_data-burn_in)
-  data_gp_pf = zeros(length(theta_0)+2,R-length_training_data-burn_in)
+  #compare_GP_PF = zeros(2,R-length_training_data-burn_in)
+  compare_GP_PF = zeros(2,R)
+
+  #data_gp_pf = zeros(length(theta_0)+2,R-length_training_data-burn_in)
+  data_gp_pf = zeros(length(theta_0)+2,R)
   data_training = zeros(1+length(theta_0), length_training_data)
-  accept_prob_log = zeros(2, R-length_training_data-burn_in) # [gp ; pf]
+  #accept_prob_log = zeros(2, R-length_training_data-burn_in) # [gp ; pf]
+  accept_prob_log = zeros(2, R) # [gp ; pf]
 
   loglik_star = zero(Float64)
   loglik_gp = zeros(Float64)
@@ -578,7 +585,7 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, ca
   loglik_vec = SharedArray{Float64}(nbr_of_proc)
 
   # print acceptance rate each print_interval:th iteration
-  print_interval = 1000
+  print_interval = 100
 
   # first iteration
   @printf "Iteration: %d\n" 1 # print first iteration
@@ -600,7 +607,7 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, ca
     # print acceptance rate for the last print_interval iterations
     if mod(r-1,print_interval) == 0
       # print percentage done
-      @printf "Percentage done: %.4f %%\n" r/R*100
+      @printf "Percentage done: %.2f %% \n" 100*(r-1)/R
       print_on = true # print ESS and Nbr resample each print_interval:th iteration
       # print accaptance rate
       @printf "Acceptance rate on iteration %d to %d is %.4f\n" r-print_interval r-1  sum(accept_vec[r-print_interval:r-1])/( r-1 - (r-print_interval) )

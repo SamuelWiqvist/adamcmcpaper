@@ -27,8 +27,8 @@ include("plotting.jl")
 jobname = "mcwm"
 jobname = "pmcmc"
 jobname = "_training"
-jobname = "_dagp"
-jobname = "_adagp"
+jobname = "_dagpmcmc"
+jobname = "_adagmcmcp"
 
 # path to folder with data
 savepath = "C:\\Users\\samuel\\Dropbox\\Phd Education\\Projects\\project 1 accelerated DA and DWP SDE\\results\\ricker model\\"
