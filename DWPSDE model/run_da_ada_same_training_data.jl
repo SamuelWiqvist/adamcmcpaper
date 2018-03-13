@@ -4,7 +4,7 @@
 try
   cd("DWPSDE model")
 catch
-  warn("Already in the Ricker model folder")
+  warn("Already in the DWPSDE model folder")
 end
 
 # load case models
@@ -22,7 +22,7 @@ using HDF5
 ################################################################################
 
 # nbr of iterations
-nbr_iterations = 500 # should be 10000
+nbr_iterations = 1000 # should be 10000
 
 # nbr parameters
 set_nbr_params = 7  # should be 7
@@ -55,7 +55,7 @@ dt_U = 1. # new = 1 old = 1
 length_training_data = 5000 # thid should ne 5000
 
 # job name
-global_jobname = "est2_test_new_code"
+global_jobname = "est7_test_new_code_1000iter_local"
 
 # load stored data
 load_tranining_data = true
@@ -90,9 +90,11 @@ problem.alg_param.burn_in = 1
 problem.alg_param.nbr_of_cores = nbr_of_cores
 problem.alg_param.length_training_data = length_training_data
 
+
 problem.adaptive_update =  AMUpdate_gen(eye(set_nbr_params), 1/sqrt(set_nbr_params), 0.2, 1, 0.8, 25) # was 0.3
 
-
+problem.alg_param.dt = dt
+problem.alg_param.dt_U = dt_U
 problem.alg_param.alg = mcmc_alg
 problem.alg_param.compare_GP_and_PF = false
 problem.alg_param.noisy_est = false
@@ -256,9 +258,6 @@ else
   #export_parameters(mcmc_results[2],jobname)
 end
 
-
-# analyse results
-#include("./Results/analyse_results.jl")
 
 ################################################################################
 ##                         set A-DA problem                               ##

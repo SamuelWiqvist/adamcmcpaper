@@ -297,7 +297,7 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
   loglik[1] = pf_paralell(Z, Theta[:,1],theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,true,false, nbr_of_proc, loglik_vec)
 
   # print start loglik
-  @printf "Loglik: %.4f \n" loglik[1]
+  @printf "Loglik start: %.4f \n" loglik[1]
 
   tic()
   for r = 2:R

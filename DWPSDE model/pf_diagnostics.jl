@@ -1,6 +1,18 @@
 # load functions and packages
+try
+  cd("DWPSDE model")
+catch
+  warn("Already in the DWPSDE model folder")
+end
+
+# load case models
+cd("..")
+include(pwd()*"\\select case\\selectcase.jl")
+cd("DWPSDE model")
+
+
 include("set_up.jl")
-include("run_pf_paralell.jl")
+#include("run_pf_paralell.jl")
 using PyPlot
 
 # set parameters
@@ -11,7 +23,7 @@ burn_in = 500 # nbr of iterations for the burn in
 # create a problem type where we estimate twp parameters and use the AM aglorithm for
 # the adaptive updating
 data_set = "old"
-problem = set_up_problem(nbr_of_unknown_parameters=9,use_sim_data = true,data_set=data_set)
+problem = set_up_problem(nbr_of_unknown_parameters=7,use_sim_data = true,data_set=data_set)
 problem.alg_param.nbr_of_cores = 4
 
 problem.alg_param.R = nbr_iterations
@@ -44,9 +56,9 @@ theta = theta_true #log([1.00556;2.66301;33.8242;19.5643;1.3644;1.87421;4.10332]
 
 nbr_parallel = 1
 nbr_itr_pf = 100*nbr_parallel
-loglik_vector = zeros(nbr_itr_pf)
+loglik_vector = zeros(100)
 
-N = 25
+N = 200
 
 (Κ, Γ, A, A_sign, B,c,d,g,f,power1,power2,sigma) = set_parameters(theta, theta_known,length(theta))
 
@@ -66,12 +78,30 @@ Z = problem.data.Z
 (subsample_interval_calc, nbr_x0_calc, nbr_x_calc,N_calc) = map(Float64, (subsample_interval, nbr_x0, nbr_x,N))
 loglik = @time run_pf_paralell(Z,theta,theta_known, N, N_calc, dt, dt_U, nbr_x0, nbr_x0_calc, nbr_x, nbr_x_calc, subsample_interval, subsample_interval_calc, true, false, Κ, Γ, A, B, c, d, f, g, power1, power2, b_const)
 
+nbr_of_proc = set_nbr_cores(4, pf_alg)
+loglik_vec = SharedArray{Float64}(nbr_of_proc)
+
+loglik = pf_paralell(Z, theta,theta_known, N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,true,false, nbr_of_proc,loglik_vec)
+
+println(theta)
+println(theta_known)
+println(N)
+println(dt)
+println(dt_U)
+println(nbr_x0)
+println(nbr_x)
+println(subsample_interval)
+println(nbr_of_proc)
+println(loglik_vec)
+
 tic()
-for i = 1:nbr_itr_pf
-  if mod(i,100) == 0
+for i = 1:100
+  if mod(i,10) == 0
     println(i)
+    println(loglik_vec)
   end
-  loglik_vector[i] = run_pf_paralell(Z,theta,theta_known, N, N_calc, dt, dt_U, nbr_x0, nbr_x0_calc, nbr_x, nbr_x_calc, subsample_interval, subsample_interval_calc, false, false, Κ, Γ, A, B, c, d, f, g, power1, power2, b_const)
+  #loglik_vector[i] = run_pf_paralell(Z,theta,theta_known, N, N_calc, dt, dt_U, nbr_x0, nbr_x0_calc, nbr_x, nbr_x_calc, subsample_interval, subsample_interval_calc, false, false, Κ, Γ, A, B, c, d, f, g, power1, power2, b_const)
+  loglik_vector[i] = pf_paralell(Z, theta,theta_known, N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,false,false, nbr_of_proc,loglik_vec)
 end
 toc()
 
