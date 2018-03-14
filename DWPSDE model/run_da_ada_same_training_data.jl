@@ -352,7 +352,7 @@ targets_case_2_and_4 = convert(Array{Float64,1}, targets_case_2_and_4)
 ##   set case model                                                          ###
 ################################################################################
 
-select_case_model = "biasedcoin" # logisticregression or dt
+select_case_model = "dt" # logisticregression or dt
 
 if select_case_model == "biasedcoin"
 

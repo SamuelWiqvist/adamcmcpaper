@@ -33,7 +33,7 @@ text_size = 15
 label_size = 15
 
 
-load_data_from_files = true # load data from files or form some matlab workspace
+load_data_from_files = true # load data from files or form some  workspace
 dagp = "_dagp" #  set to _dagp to load ER-GP file  o.w. use ""
 jobname = "lunarc_mcwm" # set to jobname string
 
@@ -62,6 +62,9 @@ else
 
 end
 
+if dagp = "_dagp"
+  burn_in = 1
+end
 
 Theta = data_res[:,1:N-2]' # stor data in column-major order
 loglik = data_res[:,N-1]
@@ -78,8 +81,8 @@ upper_q_int_limit = 97.5
 # use L"$\log r$"
 
 if N == 6
-    title_vec_log = [ L"$\log Kappa$"; L"$\log Gamma$"; L"$\log c$"; L"$\log d$"]
-    title_vec = [ "Kappa"; "Gamma"; "c"; "d"]
+    title_vec_log = [ L"$\log \kappa$"; L"$\log \gamma$"; L"$\log c$"; L"$\log d$"]
+    title_vec = [ L"$\kappa$"; L"Gamma"; "c"; "d"]
 elseif N == 4
     title_vec_log = [ L"$\log c$"; L"$\log d$" ]
     title_vec = [ "c"; "d" ];
@@ -90,14 +93,14 @@ elseif N == 8
     title_vec_log = [ L"$\log A$"; L"$\log c$"; L"$\log d$"; L"$\log p_1$"; L"$\log p_2$"; L"$\log sigma$"]
     title_vec = [  "A    "; "c    "; "d    "; "p_1  "; "p_1  "; "sigma"]
 elseif N == 7
-    title_vec_log = [ L"$\log Kappa$"; L"$\log Gamma$"; L"$\log c$"; L"$\log d$"; L"$\log sigma$"];
-    title_vec = [ "Kappa"; "Gamma"; "c"; "d"; "sigma"]
+    title_vec_log = [ L"$\log \kappa$"; L"$\log Gamma$"; L"$\log c$"; L"$\log d$"; L"$\log sigma$"];
+    title_vec = [ L"$\kappa$"; "Gamma"; "c"; "d"; "sigma"]
 elseif N == 9
-    title_vec_log = [ L"$\log Kappa$"; L"$\log Gamma$"; L"$\log c$"; L"$\log d$"; L"$\log p_1$"; L"$\log p_2$"; L"$\log sigma$"]
-    title_vec = [  "Kappa"; "Gamma"; "c"; "d"; "p_1  "; "p_1  "; "sigma"]
+    title_vec_log = [ L"$\log \kappa$"; L"$\log \gamma$"; L"$\log c$"; L"$\log d$"; L"$\log p_1$"; L"$\log p_2$"; L"$\log \sigma$"]
+    title_vec = [  L"$\kappa$"; L"$\gamma$"; L"$c$"; L"$d$"; L"$p_1$"; L"$p_1$"; L"$\sigma$"]
 else
-    title_vec_log = [ L"$\log Kappa$"; L"$\log Gamma$"; L"$\log A$"; L"$\log c$"; L"$\log d$"; L"$\log g$"; L"$\log p_1$"; L"$\log p_2$"; L"$\log sigma$"]
-    title_vec = [ "Kappa"; "Gamma"; "A"; "c"; "d"; "g"; "p_1"; "p_1"; "sigma"]
+    title_vec_log = [ L"$\log \kappa$"; L"$\log Gamma$"; L"$\log A$"; L"$\log c$"; L"$\log d$"; L"$\log g$"; L"$\log p_1$"; L"$\log p_2$"; L"$\log sigma$"]
+    title_vec = [ L"$\kappa$"; "Gamma"; "A"; "c"; "d"; "g"; "p_1"; "p_1"; "sigma"]
 end
 
 acceptance_rate = sum(accept_vec[burn_in:end])/length(accept_vec[burn_in:end])
