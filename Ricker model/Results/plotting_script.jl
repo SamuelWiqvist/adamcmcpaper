@@ -13,11 +13,13 @@ include("plotting.jl")
 
 # add this information when I do the final simulations
 
-# MCWM: Job_id=??; Runtime: ??
+# MCWM: Job_id=527458; Runtime: ??
 
-# PMCMC: Job_id=??; Runtime: ??
+# PMCMC: Job_id=527461; Runtime: ??
 
-# DA/ADA: Job_id=??; Runtime: ??
+# DA/ADA biasedcoin: Job_id=527464; Runtime: ??
+
+# ADA dt: Job_id=??; Runtime: ??
 
 ################################################################################
 ###   Results for PMCMC, MCWM, DA-GP-MCMC, and ADA-GP-MCMC                          ###
@@ -29,10 +31,6 @@ jobname = "pmcmc"
 jobname = "_training"
 jobname = "_dagpmcmc"
 jobname = "_adagmcmcp"
-
-# path to folder with data
-savepath = "C:\\Users\\samuel\\Dropbox\\Phd Education\\Projects\\project 1 accelerated DA and DWP SDE\\results\\ricker model\\"
-savepath = "C:\\Users\\samue\\Dropbox\\Phd Education\\Projects\\project 1 accelerated DA and DWP SDE\\results\\ricker model\\"
 
 # or use if we are loading results from the Results folder
 savepath = ""
