@@ -6,6 +6,19 @@ using DataFrames
 # load plotting function
 include("plotting.jl")
 
+try
+  cd("Ricker model")
+catch
+  warn("Already in the Ricker model folder")
+end
+
+try
+  cd("Results")
+catch
+  warn("Already in the Results folder")
+end
+
+
 
 ################################################################################
 ###   Notes regarding the different job in Lunarc                            ###
@@ -30,7 +43,9 @@ jobname = "mcwm"
 jobname = "pmcmc"
 jobname = "_training"
 jobname = "_dagpmcmc"
-jobname = "_adagmcmcp"
+jobname = "_adagpmcmc_biasedcoin"
+jobname = "_adagpmcmc_dt"
+
 
 # or use if we are loading results from the Results folder
 savepath = ""

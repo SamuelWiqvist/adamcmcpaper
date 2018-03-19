@@ -131,24 +131,9 @@ else
 
   #@load "gp_training_2_par_training_and_test_data_test_new_code_structure.jld"
 
-  @load "gp_training_7_par_training_and_test_lunarc.jld"
+  @load "gp_training_7_par_training_and_test_lunarc_realdata.jld"
 
-  #@load "gp_training_7_par_training_and_test_data_multiple_cores.jld"
   #@load "gp_training_7_par_training_and_test_lunarc.jld"
-
-  #@load "gp_training_$(set_nbr_params)_par.jld"
-  #@load "gp_training_$(set_nbr_params)_par.jld"
-  #@load "gp_training_$(set_nbr_params)_par_training_and_test_data.jld"
-
-  #=
-  if set_nbr_params == 7
-    @load "gp_training_7_par_training_and_test_data_multiple_cores_fix_logsumexp.jld"
-  else
-    @load "gp_training_$(set_nbr_params)_par_training_and_test_data.jld"
-    #@load "gp_training_7_par_training_and_test_data_multiple_cores_fix_logsumexp.jld"
-  end
-  =#
-
 
 end
 

@@ -35,7 +35,7 @@ label_size = 15
 
 load_data_from_files = true # load data from files or form some  workspace
 dagp = "_dagp" #  set to _dagp to load ER-GP file  o.w. use ""
-jobname = "lunarc_mcwm" # set to jobname string
+jobname = "mcwm_7_para_realdata" # set to jobname string
 
 if load_data_from_files
 
@@ -62,7 +62,7 @@ else
 
 end
 
-if dagp = "_dagp"
+if dagp == "_dagp"
   burn_in = 1
 end
 
