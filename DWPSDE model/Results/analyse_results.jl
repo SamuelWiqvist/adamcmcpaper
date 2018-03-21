@@ -35,15 +35,19 @@ label_size = 15
 
 load_data_from_files = true # load data from files or form some  workspace
 dagp = true #  set to _dagp to load ER-GP file  o.w. use ""
-jobname = "_dagpest7da_gp_mcmcMCWM" # set to jobname string
+jobname = "_dagpest7_real_dataada_gp_mcmc_dt" # set to jobname string
 
 # results:
 # gp_training_7_par
 # mcwm_7_para_realdata
 # gp_training_7_par_realdata
 
-# _dagpest7_real_dataada_gp_mcmc
-# _dagpest7_real_datada_gp_mcmc_biased_coin
+# res:
+#_dagpest7_real_dataada_gp_mcmc_dt
+#_dagpest7_real_datada_gp_mcmcMCWM
+
+#_dagpest7ada_gp_mcmc_dt
+#_dagpest7da_gp_mcmcMCWM
 
 if load_data_from_files
 
