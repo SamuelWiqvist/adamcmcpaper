@@ -42,7 +42,7 @@ end
 jobname = "mcwm"
 jobname = "pmcmc"
 jobname = "_training"
-jobname = "_dagpmcmc"
+jobname = "_dagpmcmcMCWM"
 jobname = "_adagpmcmc_biasedcoin"
 jobname = "_adagpmcmc_dt"
 
@@ -72,10 +72,10 @@ analyse_results(Theta, loglik, accept_vec, prior_vec,theta_true, burn_in, prior_
 ################################################################################
 
 jobname_mcwm = "mcwm"
-jobname_da = "_dagp"
-jobname_ada = "_adagp"
+jobname_da = "_dagpmcmcMCWM"
+jobname_ada = "_adagpmcmc_biasedcoin"
 
-savepath = "C:\\Users\\samuel\\Dropbox\\Phd Education\\Projects\\project 1 accelerated DA and DWP SDE\\results\\ricker model\\"
+savepath = ""
 
 Theta_mcwm = Array(readtable(savepath*"Theta"*jobname_mcwm*".csv"))
 loklik_avec_priorv_mcwm = Array(readtable(savepath*"loglik_avec_priorvec"*jobname_mcwm*".csv"))
@@ -177,10 +177,10 @@ PyPlot.ylabel(L"Density",fontsize=text_size)
 
 jobname_pmcmc = "pmcmc"
 jobname_mcwm = "mcwm"
-jobname_da = "_dagp"
-jobname_ada = "_adagp"
+jobname_da = "_dagpmcmcMCWM"
+jobname_ada = "_adagpmcmc_biasedcoin"
 
-savepath = "C:\\Users\\samuel\\Dropbox\\Phd Education\\Projects\\project 1 accelerated DA and DWP SDE\\results\\ricker model\\"
+savepath = ""
 
 
 Theta_pmcmc = Array(readtable(savepath*"Theta"*jobname_pmcmc*".csv"))
@@ -296,4 +296,4 @@ PyPlot.plot(h3_ada.x,h3_ada.density, "r--")
 PyPlot.plot(x_c3,priordens_c3, "g")
 PyPlot.plot((theta_true[3], theta_true[3]), (0, maximum([maximum(h3_pmcmc.density); maximum(h3_mcwm.density);maximum(h3_da.density); maximum(h3_ada.density)]) ), "k")
 PyPlot.ylabel(L"log $\sigma$",fontsize=text_size)
-ax[:tick_params]("both",labelsize=label_size)
+#ax[:tick_params]("both",labelsize=label_size)

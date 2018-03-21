@@ -211,13 +211,12 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
   accept = true
   MH_direct = false
   nbr_ordinary_mh = 0
-  nbr_split_accaptance_region = 0
-  nbr_split_accaptance_region_early_accept = 0
+  nbr_ordinary_mh_accapte = 0
+  nbr_run_DA = 0
   assumption_list = []
   loglik_list = []
   nbr_second_stage_accepted = 0
   nbr_second_stage = 0
-
 
   # starting values for times:
   time_pre_er = 0
@@ -236,13 +235,13 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
   # non-adaptive RW for both kernels
 
   # prop kernl for DA-GP-MCMC
-  problem.adaptive_update = noAdaptation(cov_matrix)
+  xi = 1
+  problem.adaptive_update = noAdaptation(xi^2*cov_matrix)
 
   adaptive_update_params = set_adaptive_alg_params(problem.adaptive_update, length(theta_0),Theta[:,1], R)
 
   # prop kernl for secound_stage_direct
-  xi = 1.2
-  kernel_MH_direct = noAdaptation(xi^2*cov_matrix)
+  kernel_MH_direct = noAdaptation(cov_matrix)
   adaptive_update_params_MH_direct = set_adaptive_alg_params(kernel_MH_direct, length(theta_0),Theta[:,1], R)
 
   @printf "Starting DA-GP-MCMC with adaptive RW estimating %d parameters\n" length(theta_true)
@@ -264,6 +263,12 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
   # first iteration
   Theta[:,1] = theta_0
   loglik[1]  = pf(y, Theta[:,1],theta_known,N,true)
+
+  if alg == "MCWM"
+    # do nothing
+  else
+    loglik_gp_old = predict(Theta[:,1], gp, pred_method,est_method,noisy_est)[1]
+  end
 
   # print start loglik
   @printf "Loglik: %.4f \n" loglik[1]
@@ -319,6 +324,7 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
       accept = log(rand()) < a_log
 
       if accept # the proposal is accapted
+        nbr_ordinary_mh_accapte +=  1
         Theta[:,r] = theta_star # update chain with new values
         loglik[r] = loglik_star
         accept_vec[r] = 1
@@ -331,6 +337,7 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
     else
 
       # first stage
+      nbr_run_DA +=  1
 
       # set proposal
       (theta_star, ) = gaussian_random_walk(problem.adaptive_update, adaptive_update_params, Theta[:,r-1], r)
@@ -346,11 +353,12 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
       jacobian_log_star = jacobian(theta_star)
       jacobian_log_old = jacobian(Theta[:,r-1])
 
-      # should we recompute the loglik_gp_old value here?
-      # we currently recompute loglik_gp_old here!
-      loglik_gp_old = predict(Theta[:,r-1], gp, pred_method,est_method,noisy_est)[1]
-
-      a_gp = loglik_gp_new + prior_log_star +  jacobian_log_star -  (loglik_gp_old - prior_log_old - jacobian_log_old)
+      if alg == "MCWM"
+        loglik_gp_old = predict(Theta[:,r-1], gp, pred_method,est_method,noisy_est)[1]
+        a_gp = loglik_gp_new + prior_log_star +  jacobian_log_star -  (loglik_gp_old - prior_log_old - jacobian_log_old)
+      else
+        a_gp = loglik_gp_new + prior_log_star +  jacobian_log_star -  (loglik_gp_old - prior_log_old - jacobian_log_old)
+      end
 
       accept = log(rand()) < a_gp # calc accept
 
@@ -387,6 +395,11 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
           Theta[:,r] = theta_star # update chain with proposal
           loglik[r] = loglik_star
           accept_vec[r] = 1
+          if alg == "MCWM"
+            # do nothing
+          else
+            loglik_gp_old = loglik_gp_new
+          end
         else
           Theta[:,r] = Theta[:,r-1] # keep old values
           loglik[r] = loglik[r-1]
@@ -406,11 +419,20 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
   @printf "Time pre-er:  %.0f\n" time_pre_er
   @printf "Time fit GP model:  %.0f\n" time_fit_gp
   @printf "Time er-part:  %.0f\n" time_da_part
+
   @printf "Number early-rejections: %.d\n"  nbr_early_rejections
+
   @printf "Number of cases directly to ordinary MH: %d\n"  nbr_ordinary_mh
+  @printf "Number of cases directly to ordinary MH accapted: %d\n"  nbr_ordinary_mh_accapte
+
   @printf "Number cases in secound stage: %d\n"  nbr_second_stage
   @printf "Number accepted in secound stage: %d\n"  nbr_second_stage_accepted
 
+  @printf "Accaptace rate for ordinary MH accapted: %.4f\n"  nbr_ordinary_mh_accapte/nbr_ordinary_mh*100
+  @printf "Accaptace rate a_1: %.4f\n"  nbr_second_stage/nbr_run_DA*100
+  @printf "Accaptace rate a_2: %.4f\n"  nbr_second_stage_accepted/nbr_second_stage*100
+  @printf "Accaptace rate a_1*a_2: %.4f\n"  (nbr_second_stage/nbr_run_DA)*(nbr_second_stage_accepted/nbr_second_stage)*100
+  @printf "Accaptace rate a (for entier algorithm): %.4f\n" sum(accept_vec)/R*100
 
   # return resutls
   return return_da_results(gp, Theta,loglik,accept_vec,prior_vec, compare_GP_PF, data_gp_pf,nbr_early_rejections, problem, adaptive_update_params,accept_prob_log,times), res_training, theta_training, loglik_training,assumption_list,loglik_list
@@ -475,9 +497,11 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, ca
   accept = true
   MH_direct = false
   nbr_ordinary_mh = 0
+  nbr_ordinary_mh_accapte = 0
   nbr_split_accaptance_region = 0
   nbr_split_accaptance_region_early_accept = 0
   nbr_split_accaptance_region_early_reject = 0
+  nbr_run_DA = 0
   assumption_list = []
   loglik_list = []
   nbr_second_stage_accepted = 0
@@ -502,13 +526,13 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, ca
   # non-adaptive RW for both kernels
 
   # prop kernl for DA-GP-MCMC
-  problem.adaptive_update = noAdaptation(cov_matrix)
+  xi = 1
+  problem.adaptive_update = noAdaptation(xi^2*cov_matrix)
 
   adaptive_update_params = set_adaptive_alg_params(problem.adaptive_update, length(theta_0),Theta[:,1], R)
 
   # prop kernl for secound_stage_direct
-  xi = 1.2
-  kernel_MH_direct = noAdaptation(xi^2*cov_matrix)
+  kernel_MH_direct = noAdaptation(cov_matrix)
   adaptive_update_params_MH_direct = set_adaptive_alg_params(kernel_MH_direct, length(theta_0),Theta[:,1], R)
 
   @printf "Covariance - kernel_secound_stage_direct:\n"
@@ -531,6 +555,12 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, ca
   # first iteration
   Theta[:,1] = theta_0
   loglik[1]  = pf(y, Theta[:,1],theta_known,N,true)
+
+  if alg == "MCWM"
+    # do nothing
+  else
+    loglik_gp_old = predict(Theta[:,1], gp, pred_method,est_method,noisy_est)[1]
+  end
 
   # print start loglik
   @printf "Loglik: %.4f \n" loglik[1]
@@ -591,6 +621,7 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, ca
         Theta[:,r] = theta_star # update chain with new values
         loglik[r] = loglik_star
         accept_vec[r] = 1
+        nbr_ordinary_mh_accapte += 1
       else
         Theta[:,r] = Theta[:,r-1] # keep old values
         loglik[r] = loglik[r-1]
@@ -600,6 +631,7 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, ca
     else
 
       # stage 1
+      nbr_run_DA +=  1
 
       # set proposal
       (theta_star, ) = gaussian_random_walk(problem.adaptive_update, adaptive_update_params, Theta[:,r-1], r)
@@ -797,7 +829,9 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, ca
   @printf "Time fit GP model:  %.0f\n" time_fit_gp
   @printf "Time er-part:  %.0f\n" time_da_part
   @printf "Number early-rejections: %d\n"  nbr_early_rejections
+
   @printf "Number of cases directly to ordinary MH: %d\n"  nbr_ordinary_mh
+  @printf "Number of cases directly to ordinary MH accapted: %d\n"  nbr_ordinary_mh_accapte
 
   @printf "Number split accaptance region early-accept: %d\n"  nbr_split_accaptance_region_early_accept
   @printf "Number split accaptance region early-reject: %d\n"  nbr_split_accaptance_region_early_reject
@@ -805,6 +839,11 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, ca
   @printf "Number cases in secound stage: %d\n"  nbr_second_stage
   @printf "Number accepted in secound stage: %d\n"  nbr_second_stage_accepted
 
+  @printf "Accaptace rate for ordinary MH accapted: %.4f\n"  nbr_ordinary_mh_accapte/nbr_ordinary_mh*100
+  @printf "Accaptace rate a_1: %.4f\n"  nbr_second_stage/nbr_run_DA*100
+  @printf "Accaptace rate a_2: %.4f\n"  nbr_second_stage_accepted/nbr_second_stage*100
+  @printf "Accaptace rate a_1*a_2: %.4f\n"  (nbr_second_stage/nbr_run_DA)*(nbr_second_stage_accepted/nbr_second_stage)*100
+  @printf "Accaptace rate a (for entier algorithm): %.4f\n" sum(accept_vec)/R*100
 
   if length(assumption_list) > 0
     @printf "Nbr assumtion correct: %.f\n"  sum(assumption_list)

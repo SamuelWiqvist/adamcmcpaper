@@ -4,11 +4,11 @@ library(readr)
 
 
 # MCWM/PMCMC 
-output <- read_csv("C:/Users/samuel/Dropbox/Phd Education/LUNARC/DWPSDE model/Results/output_resgp_training_7_par.csv")
+output <- read_csv("output_resmcwm_7_para_realdata.csv")
 View(output)
 
 X = (output)[10000:20000,1:7]
-t =  203.5073*10
+t =  74795.716796139/2/60
 
 
 ess = ess(X)
@@ -19,12 +19,27 @@ print(ess_min_per_sec)
 
 
 
-# DA/ADA
-output <- read_csv("C:/Users/samuel/Dropbox/Phd Education/LUNARC/DWPSDE model/Results/output_res_ergpest7_betamh_01ada_gp_mcmc.csv")
+# DA
+output <- read_csv("output_res_dagpest7_real_datada_gp_mcmc_biased_coin")
 View(output)
 
 X = (output)[1:10000,1:7]
-t =  39.7483*10
+t =  9474.373923259/60
+
+
+ess = ess(X)
+ess_min = min(ess)
+ess_min_per_sec = ess_min/t
+print(ess_min_per_sec)
+
+
+
+# ADA
+output <- read_csv("_dagpest7_real_dataada_gp_mcmc")
+View(output)
+
+X = (output)[1:10000,1:7]
+t =  6053.148903795/60
 
 
 ess = ess(X)

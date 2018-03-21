@@ -34,26 +34,34 @@ label_size = 15
 
 
 load_data_from_files = true # load data from files or form some  workspace
-dagp = "_dagp" #  set to _dagp to load ER-GP file  o.w. use ""
-jobname = "mcwm_7_para_realdata" # set to jobname string
+dagp = true #  set to _dagp to load ER-GP file  o.w. use ""
+jobname = "_dagpest7da_gp_mcmcMCWM" # set to jobname string
+
+# results:
+# gp_training_7_par
+# mcwm_7_para_realdata
+# gp_training_7_par_realdata
+
+# _dagpest7_real_dataada_gp_mcmc
+# _dagpest7_real_datada_gp_mcmc_biased_coin
 
 if load_data_from_files
 
-    data_res = convert(Array,readtable("output_res"*dagp*jobname*".csv"))
+    data_res = convert(Array,readtable("output_res"*jobname*".csv"))
 
     M, N = size(data_res)
 
-    data_param = convert(Array,readtable("output_param"*dagp*jobname*".csv"))
+    data_param = convert(Array,readtable("output_param"*jobname*".csv"))
 
     theta_true = data_param[1:N-2]
     burn_in = Int64(data_param[N-2+1])
 
-    data_prior_dist = convert(Array,readtable("output_prior_dist"*dagp*jobname*".csv"))
+    data_prior_dist = convert(Array,readtable("output_prior_dist"*jobname*".csv"))
 
-    data_prior_dist_type = convert(Array,readtable("output_prior_dist_type"*dagp*jobname*".csv"))
+    data_prior_dist_type = convert(Array,readtable("output_prior_dist_type"*jobname*".csv"))
     data_prior_dist_type = data_prior_dist_type[2]
 
-    Z = convert(Array,readtable("data_used"*dagp*jobname*".csv"))
+    Z = convert(Array,readtable("data_used"*jobname*".csv"))
     Z = Z[:,1]
 
 else
@@ -62,7 +70,7 @@ else
 
 end
 
-if dagp == "_dagp"
+if dagp
   burn_in = 1
 end
 

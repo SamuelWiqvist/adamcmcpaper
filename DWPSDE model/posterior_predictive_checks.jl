@@ -132,26 +132,30 @@ problem_training.adaptive_update =  AMUpdate_gen(eye(set_nbr_params), 1/sqrt(set
 
 load_data_from_files = true # load data from files or form some  workspace
 #dagp = "_dagp" #  set to _dagp to load ER-GP file  o.w. use ""
-dagp = ""
-jobname = "mcwm_7_para_realdata" # set to jobname string
+dagp = true
+jobname = "_dagpest7_real_datada_gp_mcmc_biased_coin" # set to jobname string
+
+# mcwm_7_para_realdata
+# _dagpest7_real_dataada_gp_mcmc
+# _dagpest7_real_datada_gp_mcmc_biased_coin
 
 if load_data_from_files
 
-    data_res = convert(Array,readtable("Results/output_res"*dagp*jobname*".csv"))
+    data_res = convert(Array,readtable("Results/output_res"*jobname*".csv"))
 
     M, N = size(data_res)
 
-    data_param = convert(Array,readtable("Results/output_param"*dagp*jobname*".csv"))
+    data_param = convert(Array,readtable("Results/output_param"*jobname*".csv"))
 
     theta_true = data_param[1:N-2]
     burn_in = Int64(data_param[N-2+1])
 
-    data_prior_dist = convert(Array,readtable("Results/output_prior_dist"*dagp*jobname*".csv"))
+    data_prior_dist = convert(Array,readtable("Results/output_prior_dist"*jobname*".csv"))
 
-    data_prior_dist_type = convert(Array,readtable("Results/output_prior_dist_type"*dagp*jobname*".csv"))
+    data_prior_dist_type = convert(Array,readtable("Results/output_prior_dist_type"*jobname*".csv"))
     data_prior_dist_type = data_prior_dist_type[2]
 
-    Z = convert(Array,readtable("Results/data_used"*dagp*jobname*".csv"))
+    Z = convert(Array,readtable("Results/data_used"*jobname*".csv"))
     Z = Z[:,1]
 
 else
@@ -160,11 +164,9 @@ else
 
 end
 
-if dagp == "_dagp"
+if dagp
   burn_in = 1
 end
-
-burn_in = 5000
 
 Theta = data_res[:,1:N-2]' # stor data in column-major order
 Theta = Theta[:, burn_in:end]
@@ -303,3 +305,5 @@ writetable("./Results/post_pred_data.csv", convert(DataFrame, posterior_pred_sam
 nbr_cp_real_data = length(readdlm("Results/cp_data_real_data.txt")[2:end])
 
 nbr_cp_post_pred = readdlm("Results/cp_data_post_pred.txt")[2:end]
+
+# all 15 for mcwm

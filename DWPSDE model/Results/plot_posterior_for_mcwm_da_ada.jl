@@ -33,26 +33,27 @@ end
 load_data_from_files = true # load data from files or form some workspace
 
 # load data for MCWM
-dagp = "" #  set to _dagp to load ER-GP file  o.w. use ""
-jobname_mcwm = "est7_test_new_code_lunarcda_gp_mcmc" # jobname for mcwm
+dagp = false #  set to _dagp to load ER-GP file  o.w. use ""
+jobname_mcwm = "mcwm_7_para_realdata" # jobname for mcwm
+
 
 if load_data_from_files
 
-    data_res = convert(Array,readtable("output_res"*dagp*jobname_mcwm*".csv"))
+    data_res = convert(Array,readtable("output_res"*jobname_mcwm*".csv"))
 
     M, N = size(data_res)
 
-    data_param = convert(Array,readtable("output_param"*dagp*jobname_mcwm*".csv"))
+    data_param = convert(Array,readtable("output_param"*jobname_mcwm*".csv"))
 
     theta_true = data_param[1:N-2]
     burn_in = Int64(data_param[N-2+1])
 
-    data_prior_dist = convert(Array,readtable("output_prior_dist"*dagp*jobname_mcwm*".csv"))
+    data_prior_dist = convert(Array,readtable("output_prior_dist"*jobname_mcwm*".csv"))
 
-    data_prior_dist_type = convert(Array,readtable("output_prior_dist_type"*dagp*jobname_mcwm*".csv"))
+    data_prior_dist_type = convert(Array,readtable("output_prior_dist_type"*jobname_mcwm*".csv"))
     data_prior_dist_type = data_prior_dist_type[2]
 
-    Z = convert(Array,readtable("data_used"*dagp*jobname_mcwm*".csv"))
+    Z = convert(Array,readtable("data_used"*jobname_mcwm*".csv"))
     Z = Z[:,1]
 
 else
@@ -61,33 +62,32 @@ else
 
 end
 
-burn_in = 1
-warn("change burn-in when loading real mcwm data")
 
 Theta = data_res[:,1:N-2]' # stor data in column-major order
 Theta_mcwm = Theta[:,burn_in:end]
 
 
-dagp = "_dagp" #  set to _dagp to load ER-GP file  o.w. use ""
-jobname_da = "est7_test_new_code_1000iter_localda_gp_mcmc" # jobname for da
+dagp = true #  set to _dagp to load ER-GP file  o.w. use ""
+jobname_da = "_dagpest7_real_datada_gp_mcmc_biased_coin" # jobname for da
+
 
 if load_data_from_files
 
-    data_res = convert(Array,readtable("output_res"*dagp*jobname_da*".csv"))
+    data_res = convert(Array,readtable("output_res"*jobname_da*".csv"))
 
     M, N = size(data_res)
 
-    data_param = convert(Array,readtable("output_param"*dagp*jobname_da*".csv"))
+    data_param = convert(Array,readtable("output_param"*jobname_da*".csv"))
 
     theta_true = data_param[1:N-2]
     burn_in = Int64(data_param[N-2+1])
 
-    data_prior_dist = convert(Array,readtable("output_prior_dist"*dagp*jobname_da*".csv"))
+    data_prior_dist = convert(Array,readtable("output_prior_dist"*jobname_da*".csv"))
 
-    data_prior_dist_type = convert(Array,readtable("output_prior_dist_type"*dagp*jobname_da*".csv"))
+    data_prior_dist_type = convert(Array,readtable("output_prior_dist_type"*jobname_da*".csv"))
     data_prior_dist_type = data_prior_dist_type[2]
 
-    Z = convert(Array,readtable("data_used"*dagp*jobname_da*".csv"))
+    Z = convert(Array,readtable("data_used"*jobname_da*".csv"))
     Z = Z[:,1]
 
 else
@@ -101,26 +101,26 @@ Theta = data_res[:,1:N-2]' # stor data in column-major order
 Theta_da = Theta[:,1:end]
 
 
-dagp = "_dagp" #  set to _dagp to load ER-GP file  o.w. use ""
-jobname_ada = "est7_test_new_code_1000iter_localada_gp_mcmc" # jobname for da
+dagp = true #  set to _dagp to load ER-GP file  o.w. use ""
+jobname_ada = "_dagpest7_real_dataada_gp_mcmc" # jobname for da
 
 if load_data_from_files
 
-    data_res = convert(Array,readtable("output_res"*dagp*jobname_ada*".csv"))
+    data_res = convert(Array,readtable("output_res"*jobname_ada*".csv"))
 
     M, N = size(data_res)
 
-    data_param = convert(Array,readtable("output_param"*dagp*jobname_ada*".csv"))
+    data_param = convert(Array,readtable("output_param"*jobname_ada*".csv"))
 
     theta_true = data_param[1:N-2]
     burn_in = Int64(data_param[N-2+1])
 
-    data_prior_dist = convert(Array,readtable("output_prior_dist"*dagp*jobname_ada*".csv"))
+    data_prior_dist = convert(Array,readtable("output_prior_dist"*jobname_ada*".csv"))
 
-    data_prior_dist_type = convert(Array,readtable("output_prior_dist_type"*dagp*jobname_ada*".csv"))
+    data_prior_dist_type = convert(Array,readtable("output_prior_dist_type"*jobname_ada*".csv"))
     data_prior_dist_type = data_prior_dist_type[2]
 
-    Z = convert(Array,readtable("data_used"*dagp*jobname_ada*".csv"))
+    Z = convert(Array,readtable("data_used"*jobname_ada*".csv"))
     Z = Z[:,1]
 
 else
