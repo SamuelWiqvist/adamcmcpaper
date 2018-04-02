@@ -217,14 +217,15 @@ function set_up_problem(;use_sim_data::Bool=true,nbr_of_unknown_parameters::Int6
         end
       end
 
+      # Thinn data
+      idx_thinned = 1:thinning:length(Z_data)
+      Z_data = Z_data[idx_thinned]
+
       # linear transformation of data to obtain a scaling where it is easier to
       # construct the dwp model
       Z_data = 50*Z_data
 
-      # thinned data
-      thinning = 100
-      idx_thinned = 1:thinning:length(Z_data)
-      Z = zeros(Float64, idx_thinned)
+      Z = Z_data
     end
   end
 
