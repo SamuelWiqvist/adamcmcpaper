@@ -48,7 +48,6 @@ hist(Z, 100)
 
 % load data 
 load_new_data_set
-index = 1:length(Z); 
 
 % set parameters 
 kappa = 0.7;
@@ -68,17 +67,18 @@ sigma =  2.6;
 % linear transformation of data to obtain a scaling where it is easier to 
 % construct the dwp model 
 
-%Z = 50*Z; 
+Z = 50*Z; 
+
+Z = Z(1:100:length(Z)); 
+
+index = 1:length(Z);
 
 % plot data 
 figure
-subplot(121)
 plot(index, Z)
-axis([0 length(Z), -inf inf])
-title('Data')
-subplot(122)
+
+figure
 hist(Z, 100)
-title('Histogram of data')
 
 %%
 % define functions 

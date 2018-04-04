@@ -1,8 +1,19 @@
+
+# set correct path
 try
   cd("DWPSDE model")
 catch
- warn("Already in the DWPSDE model folder")
+  warn("Already in the DWP-SDE folder.")
 end
+
+# load case models
+cd("..")
+include(pwd()*"\\select case\\selectcase.jl")
+cd("DWPSDE model")
+
+# load files and functions
+include("set_up.jl")
+
 
 using PyPlot
 using StatsBase

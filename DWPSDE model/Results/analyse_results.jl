@@ -34,8 +34,11 @@ label_size = 15
 
 
 load_data_from_files = true # load data from files or form some  workspace
-dagp = true #  set to _dagp to load ER-GP file  o.w. use ""
-jobname = "_dagpest7_real_dataada_gp_mcmc_dt" # set to jobname string
+dagp = false # was true #  set to _dagp to load ER-GP file  o.w. use ""
+jobname = "mcwm_4_par_real_data_2" # was "_dagpest7_real_dataada_gp_mcmc_dt" # set to jobname string
+
+
+plot_theta_true = false
 
 # results:
 # gp_training_7_par
@@ -148,7 +151,9 @@ PyPlot.figure()
 for i = 1:N-2
     PyPlot.subplot(N-2,1,i)
     PyPlot.plot(Theta[i,:])
-    PyPlot.plot(ones(size(Theta,2),1)*theta_true[i], "k")
+    if plot_theta_true
+      PyPlot.plot(ones(size(Theta,2),1)*theta_true[i], "k")
+    end
     PyPlot.ylabel(title_vec_log[i],fontsize=text_size)
 end
 PyPlot.xlabel("Iteration")
@@ -158,7 +163,9 @@ PyPlot.figure()
 for i = 1:N-2
     PyPlot.subplot(N-2,1,i)
     PyPlot.plot(exp.(Theta[i,:]))
-    PyPlot.plot(ones(size(Theta,2),1)*exp(theta_true[i]), "k")
+    if plot_theta_true
+      PyPlot.plot(ones(size(Theta,2),1)*exp(theta_true[i]), "k")
+    end
     PyPlot.ylabel(title_vec[i],fontsize=text_size)
 end
 PyPlot.xlabel("Iteration")
@@ -171,7 +178,9 @@ x_axis = burn_in+1:size(Theta,2)
 for i = 1:N-2
     PyPlot.subplot(N-2,1,i)
     PyPlot.plot(x_axis, Theta[i,burn_in+1:end])
-    PyPlot.plot(x_axis, ones(length(x_axis),1)*theta_true[i], "k")
+    if plot_theta_true
+      PyPlot.plot(x_axis, ones(length(x_axis),1)*theta_true[i], "k")
+    end
     PyPlot.ylabel(title_vec_log[i])
 end
 PyPlot.xlabel("Iteration")
@@ -182,7 +191,9 @@ x_axis = burn_in+1:size(Theta,2)
 for i = 1:N-2
     PyPlot.subplot(N-2,1,i)
     PyPlot.plot(x_axis, exp.(Theta[i,burn_in+1:end]))
-    PyPlot.plot(x_axis, ones(length(x_axis),1)*exp(theta_true[i]), "k")
+    if plot_theta_true
+      PyPlot.plot(x_axis, ones(length(x_axis),1)*exp(theta_true[i]), "k")
+    end
     PyPlot.ylabel(title_vec[i])
 end
 PyPlot.xlabel("Iteration")
@@ -208,7 +219,9 @@ for i = 1:N-2
     h = kde(Theta[i,burn_in+1:end])
     PyPlot.plot(h.x,h.density, "b")
 
-    PyPlot.plot((theta_true[i], theta_true[i]), (0, maximum(h.density)), "k")
+    if plot_theta_true
+      PyPlot.plot((theta_true[i], theta_true[i]), (0, maximum(h.density)), "k")
+    end
 
     if data_prior_dist_type == "Uniform"
         error("Uniform priors are not not implemented.")
@@ -226,7 +239,9 @@ for i = 1:N-2
     PyPlot.subplot(N-2,1,i)
     h = kde(exp.(Theta[i,burn_in+1:end]))
     PyPlot.plot(h.x,h.density, "b")
-    PyPlot.plot((exp(theta_true[i]), exp(theta_true[i])), (0, maximum(h.density)), "k")
+    if plot_theta_true
+      PyPlot.plot((exp(theta_true[i]), exp(theta_true[i])), (0, maximum(h.density)), "k")
+    end
     PyPlot.ylabel(title_vec[i])
 end
 

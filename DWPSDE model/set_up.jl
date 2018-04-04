@@ -218,6 +218,7 @@ function set_up_problem(;use_sim_data::Bool=true,nbr_of_unknown_parameters::Int6
       end
 
       # Thinn data
+      thinning = 100 
       idx_thinned = 1:thinning:length(Z_data)
       Z_data = Z_data[idx_thinned]
 
@@ -540,12 +541,11 @@ Sets the parameters for the prior dist. and the model parameters theta.
 
   else
 
-    #=
-    Κ = 0.5
-    Γ = 0.9
+    Κ = 0.7
+    Γ = 2.1
     B = 1.
     c = 22.5
-    d =  13
+    d =  13.
     A = 0.0025
     A_sign = -1
     f = 0.
@@ -553,21 +553,8 @@ Sets the parameters for the prior dist. and the model parameters theta.
     power1 = 1.3
     power2 = 1.3
     sigma =  2.6
-    =#
 
-    Κ = .7;
-    Γ = 2.1;
-    B = 1.;
-    c = 22.5;
-    d =  13;
-    A = 0.0025;
-    f = 0.;
-    g = 0.;
-    power1 = 1.3;
-    power2 = 1.3;
-    sigma =  2.6;
-    A_sign = -1
-
+    # not here we have only updated the case with Normal priors
 
     if nbr_of_unknown_parameters == 2 # set parameters for estimating 2 parameters
 
@@ -582,7 +569,7 @@ Sets the parameters for the prior dist. and the model parameters theta.
         prior_parameters =  [log(10) log(40); 0 log(20)]
       elseif prior_dist == "Normal"
         # normal prior dist
-        prior_parameters = [3.34 0.173; 2 0.4]
+        prior_parameters = [3.34 0.173; 2.3 0.4]
       elseif prior_dist == "nonlog"
         # prior distribution on non-log scale
         prior_parameters = [28 2; 4 1]
@@ -627,7 +614,7 @@ Sets the parameters for the prior dist. and the model parameters theta.
         prior_parameters =  [-10 2; -10 2;-10 0;0 log(10);log(1) log(4)]
       elseif prior_dist == "Normal"
         # normal prior dist
-        prior_parameters = [-0.7 0.5;-0.7 0.5;3.34 0.173; 1.15 0.2]
+        prior_parameters = [-0.7 0.8;-0.7 0.8;3.34 0.173; 2.3 0.4]
       elseif prior_dist == "nonlog"
         # prior distribution on non-log scale
         prior_parameters = [3 1.5; 3 1.5; 28 2; 4 1]
@@ -687,13 +674,13 @@ Sets the parameters for the prior dist. and the model parameters theta.
         prior_parameters =  [-10 2; -10 2;log(20) log(40);  0 log(10); -10 0.7; -10 0.7; log(1) log(4)]
       elseif prior_dist == "Normal"
         # normal prior dist
-        prior_parameters = [-0.7 0.5;-0.7 0.5;3.34 0.173; 2 0.4;;0 0.5;0 0.5;log(2) 0.5]
+        prior_parameters = [-0.7 0.8;-0.7 0.8;3.34 0.173; 2.3 0.4;0 0.5;0 0.5;log(2) 0.5]
       elseif prior_dist == "nonlog"
         # prior distribution on non-log scale
         prior_parameters = [3 1.5; 3 1.5; 28 2; 4 1; 2 2; 2 2; 2 2]
       end
 
-      theta_0 = theta_true# [log(2) log(2) log(30) log(10) log(2) log(2) log(2)] #[log(1) log(1) log(30) log(5) log(2) log(2) log(1)] #theta_true #[log(1) log(30) log(4) log(2) log(2) log(2)]  #log([0.0001, 1, 1, 0.0001, 0.0001, 0.01]) # start values
+      theta_0 = [log(2) log(2) log(30) log(10) log(2) log(2) log(2)]# [log(2) log(2) log(30) log(10) log(2) log(2) log(2)] #[log(1) log(1) log(30) log(5) log(2) log(2) log(1)] #theta_true #[log(1) log(30) log(4) log(2) log(2) log(2)]  #log([0.0001, 1, 1, 0.0001, 0.0001, 0.01]) # start values
 
 
     elseif nbr_of_unknown_parameters == 8  # set parameters for estimating all (9) parameters

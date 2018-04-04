@@ -1,9 +1,21 @@
 # load files and functions
+try
+  cd("DWPSDE model")
+catch
+  warn("Already in the DWP-SDE folder.")
+end
+
+
+cd("..")
+include(pwd()*"\\select case\\selectcase.jl")
+cd("DWPSDE model")
+
+# load files and functions
 include("set_up.jl")
+
 using PyPlot
 using KernelDensity
 using Distributions
-# scritp
 
 # true parameter valuse
 #Κ = 0.3
@@ -37,7 +49,7 @@ h1 = PyPlot.plt[:hist](Z_data',bins)
 
 
 
-# parameter values to test
+# parameter values for old data
 Κ = 0.3
 Γ = 0.9
 B = 1.
@@ -51,20 +63,20 @@ power1 = 1.5
 power2 = 1.8
 sigma =  1.9
 
-# new parameter values
-#=
-B = 1.;
-c = 28.5;
-d =  4.2;
-A = 0.0052;
-f = 0.;
-g = 0.0610;
-power1 = 1.5;
-power2 = 1.8;
-sigma =  1.9;
-=#
 
-
+# parameter values for new data
+Κ = 0.7
+Γ = 2.1
+B = 1.
+c = 22.5
+d =  13.
+A = 0.0025
+A_sign = -1
+f = 0.
+g = 0.
+power1 = 1.3
+power2 = 1.3
+sigma =  2.6
 
 
 # two unknown parameters

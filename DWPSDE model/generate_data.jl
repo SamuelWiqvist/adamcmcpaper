@@ -27,7 +27,8 @@ function generate_data(theta, theta_known, scale_grid)
   T = 1*scale_grid
   N = convert(Int64, scale_grid*length_of_data)
   dt_hat = T/N
-  dt = dt_hat*(1/4)*10^3*3.5
+  #dt = dt_hat*(1/4)*10^3*3.5
+  dt = .35
   diff_dt = 1 #convert(Int64, round(10^-2. / dt))
   x_grid = 0:dt_hat:T
 
