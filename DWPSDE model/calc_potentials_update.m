@@ -71,6 +71,8 @@ Z = 50*Z;
 
 Z = Z(1:100:length(Z)); 
 
+Z = Z(1:24800);
+
 index = 1:length(Z);
 
 % plot data 

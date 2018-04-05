@@ -218,7 +218,7 @@ function set_up_problem(;use_sim_data::Bool=true,nbr_of_unknown_parameters::Int6
       end
 
       # Thinn data
-      thinning = 100 
+      thinning = 100
       idx_thinned = 1:thinning:length(Z_data)
       Z_data = Z_data[idx_thinned]
 
@@ -680,8 +680,7 @@ Sets the parameters for the prior dist. and the model parameters theta.
         prior_parameters = [3 1.5; 3 1.5; 28 2; 4 1; 2 2; 2 2; 2 2]
       end
 
-      theta_0 = [log(2) log(2) log(30) log(10) log(2) log(2) log(2)]# [log(2) log(2) log(30) log(10) log(2) log(2) log(2)] #[log(1) log(1) log(30) log(5) log(2) log(2) log(1)] #theta_true #[log(1) log(30) log(4) log(2) log(2) log(2)]  #log([0.0001, 1, 1, 0.0001, 0.0001, 0.01]) # start values
-
+      theta_0 = [log(10) log(10) log(100) log(40) log(2) log(2) log(2)]# [log(2) log(2) log(30) log(10) log(2) log(2) log(2)] #[log(1) log(1) log(30) log(5) log(2) log(2) log(1)] #theta_true #[log(1) log(30) log(4) log(2) log(2) log(2)]  #log([0.0001, 1, 1, 0.0001, 0.0001, 0.01]) # start values
 
     elseif nbr_of_unknown_parameters == 8  # set parameters for estimating all (9) parameters
 
