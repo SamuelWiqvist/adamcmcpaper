@@ -26,13 +26,11 @@ end
 
 # add this information when I do the final simulations
 
-# MCWM: Job_id=527458; Runtime: ??
+# MCWM: Job_id=576929; Runtime: ??
 
-# PMCMC: Job_id=527461; Runtime: ??
+# PMCMC: Job_id=576932; Runtime: ??
 
-# DA/ADA biasedcoin: Job_id=527464; Runtime: ??
-
-# ADA dt: Job_id=??; Runtime: ??
+# DA/ADA dt: Job_id=577315; Runtime: ??
 
 ################################################################################
 ###   Results for PMCMC, MCWM, DA-GP-MCMC, and ADA-GP-MCMC                          ###
@@ -178,7 +176,7 @@ PyPlot.ylabel(L"Density",fontsize=text_size)
 jobname_pmcmc = "pmcmc"
 jobname_mcwm = "mcwm"
 jobname_da = "_dagpmcmcMCWM"
-jobname_ada = "_adagpmcmc_biasedcoin"
+jobname_ada = "_adagpmcmc_dt"
 
 savepath = ""
 
@@ -277,7 +275,8 @@ PyPlot.plot(h1_da.x,h1_da.density, "r")
 PyPlot.plot(h1_ada.x,h1_ada.density, "r--")
 PyPlot.plot(x_c1,priordens_c1, "g")
 PyPlot.plot((theta_true[1], theta_true[1]), (0, maximum([maximum(h1_pmcmc.density); maximum(h1_mcwm.density);maximum(h1_da.density); maximum(h1_ada.density)]) ), "k")
-PyPlot.ylabel(L"log $r$",fontsize=text_size)
+PyPlot.xlabel(L"log $r$",fontsize=text_size)
+PyPlot.ylabel(L"Density",fontsize=text_size)
 PyPlot.figure()
 PyPlot.plot(h2_pmcmc.x,h2_pmcmc.density, "b")
 PyPlot.plot(h2_mcwm.x,h2_mcwm.density, "b--")
@@ -286,7 +285,8 @@ PyPlot.plot(h2_da.x,h2_da.density, "r")
 PyPlot.plot(h2_ada.x,h2_ada.density, "r--")
 PyPlot.plot(x_c2,priordens_c2, "g")
 PyPlot.plot((theta_true[2], theta_true[2]), (0, maximum([maximum(h2_pmcmc.density); maximum(h2_mcwm.density);maximum(h2_da.density); maximum(h2_ada.density)]) ), "k")
-PyPlot.ylabel(L"log $\phi$",fontsize=text_size)
+PyPlot.xlabel(L"log $\phi$",fontsize=text_size)
+PyPlot.ylabel(L"Density",fontsize=text_size)
 PyPlot.figure()
 PyPlot.plot(h3_pmcmc.x,h3_pmcmc.density, "b")
 PyPlot.plot(h3_mcwm.x,h3_mcwm.density, "b--")
@@ -295,5 +295,7 @@ PyPlot.plot(h3_da.x,h3_da.density, "r")
 PyPlot.plot(h3_ada.x,h3_ada.density, "r--")
 PyPlot.plot(x_c3,priordens_c3, "g")
 PyPlot.plot((theta_true[3], theta_true[3]), (0, maximum([maximum(h3_pmcmc.density); maximum(h3_mcwm.density);maximum(h3_da.density); maximum(h3_ada.density)]) ), "k")
-PyPlot.ylabel(L"log $\sigma$",fontsize=text_size)
+PyPlot.xlabel(L"log $\sigma$",fontsize=text_size)
+PyPlot.ylabel(L"Density",fontsize=text_size)
+
 #ax[:tick_params]("both",labelsize=label_size)

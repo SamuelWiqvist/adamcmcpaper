@@ -7,7 +7,6 @@ catch
   warn("Already in the Ricker model folder")
 end
 
-include("rickermodel.jl")
 
 using JLD
 using HDF5
@@ -17,7 +16,10 @@ cd("..")
 include(pwd()*"\\utilities\\featurescaling.jl")
 include(pwd()*"\\utilities\\normplot.jl")
 include(pwd()*"\\utilities\\posteriorinference.jl")
+include(pwd()*"\\select case\\selectcase.jl")
 cd("Ricker model")
+
+include("rickermodel.jl")
 
 
 ################################################################################
@@ -45,11 +47,8 @@ problem.alg_param.alg = "MCWM" # we should only! use the MCWM algorithm
 problem.alg_param.compare_GP_and_PF = false
 problem.alg_param.noisy_est = false
 problem.alg_param.pred_method = "sample"
-problem.alg_param.nbr_predictions = 1
 problem.alg_param.print_interval = 10000 # problem.alg_param.R#
-problem.alg_param.selection_method = "max_loglik"  # "local_loglik_approx" # "max_loglik"
 problem.alg_param.beta_MH = 0.1 # "local_loglik_approx" # "max_loglik"
-problem.alg_param.std_limit = 1
 
 #problem.data.y = Array(readtable("y.csv"))[:,1]
 #problem.data.y = Array(readtable("y_data_set_1.csv"))[:,1]
@@ -143,7 +142,7 @@ if !load_tranining_data
 
     data_training = [theta_training; loglik_training']
 
-    save("gp_training_and_test_data_ricker_gen_local.jld", "res_training", res_training, "theta_training", theta_training, "loglik_training", loglik_training, "theta_test", theta_test, "loglik_test", loglik_test,"cov_matrix",cov_matrix)
+    save("gp_training_and_test_data_ricker_gen_lunarc.jld", "res_training", res_training, "theta_training", theta_training, "loglik_training", loglik_training, "theta_test", theta_test, "loglik_test", loglik_test,"cov_matrix",cov_matrix)
 
 
 else
@@ -151,7 +150,7 @@ else
   #@load "gp_training_$(set_nbr_params)_par.jld"
   #@load "gp_training_$(set_nbr_params)_par.jld"
 
-  @load "gp_training_and_test_data_ricker_gen_local.jld"
+  @load "gp_training_and_test_data_ricker_gen_lunarc.jld"
 
 end
 
@@ -166,7 +165,7 @@ end
 using PyPlot
 
 
-
+# plot chains for tranining
 text_size = 15
 
 PyPlot.figure(figsize=(10,20))
@@ -189,6 +188,28 @@ PyPlot.plot(problem.model_param.theta_true[3]*ones(size(res_training[1].Theta_es
 PyPlot.ylabel(L"$\log \sigma$",fontsize=text_size)
 PyPlot.xlabel("Iteration",fontsize=text_size)
 
+# plot chains after burn-in for tranining
+text_size = 15
+
+PyPlot.figure(figsize=(10,20))
+
+ax1 = PyPlot.subplot(311)
+PyPlot.plot(res_training[1].Theta_est[1,burn_in:end])
+PyPlot.plot(problem.model_param.theta_true[1]*ones(size(res_training[1].Theta_est[:,burn_in:end])[2]), "k")
+PyPlot.ylabel(L"$\log r$",fontsize=text_size)
+ax1[:axes][:get_xaxis]()[:set_ticks]([])
+
+ax2 = PyPlot.subplot(312)
+PyPlot.plot(res_training[1].Theta_est[2,burn_in:end])
+PyPlot.plot(problem.model_param.theta_true[2]*ones(size(res_training[1].Theta_est[:,burn_in:end])[2]), "k")
+PyPlot.ylabel(L"$\log \phi$",fontsize=text_size)
+ax2[:axes][:get_xaxis]()[:set_ticks]([])
+
+PyPlot.subplot(313)
+PyPlot.plot(res_training[1].Theta_est[3,burn_in:end])
+PyPlot.plot(problem.model_param.theta_true[3]*ones(size(res_training[1].Theta_est[:,burn_in:end])[2]), "k")
+PyPlot.ylabel(L"$\log \sigma$",fontsize=text_size)
+PyPlot.xlabel("Iteration",fontsize=text_size)
 
 
 for i = 1:3
@@ -251,7 +272,7 @@ if true #problem.alg_param.est_method == "ml"
   #perc_outlier = 0.1 # used when using PMCMC for trainig data 0.05
   #tail_rm = "left"
 
-  perc_outlier = 0.05
+  perc_outlier = 0.1
   tail_rm = "left"
   lasso = false # was true test fitting without lassa. No loss when using lasso!
 

@@ -45,7 +45,7 @@ function analyse_results(Theta, loglik, accept_vec, prior_vec,
   @printf "Nbr outside of prior: %d  \n" nbr_out_side_prior
 
   @printf "Posterior mean:\n"
-  Base.showarray(STDOUT,mean(Theta[:,burn_in+1:end],2),false)
+  Base.showarray(STDOUT,round(mean(Theta[:,burn_in+1:end],2),2),false)
   @printf "\n"
 
   @printf "Posterior standard deviation:\n"
@@ -53,7 +53,7 @@ function analyse_results(Theta, loglik, accept_vec, prior_vec,
   @printf "\n"
 
   @printf "Posterior quantile intervals (2.5th and 97.5th quantiles as default):\n"
-  Base.showarray(STDOUT,calcquantileint(Theta[:,burn_in+1:end],lower_q_int_limit,upper_q_int_limit),false)
+  Base.showarray(STDOUT,round(calcquantileint(Theta[:,burn_in+1:end],lower_q_int_limit,upper_q_int_limit),2),false)
   @printf "\n"
 
   @printf "RMSE for parameter estimations:\n"

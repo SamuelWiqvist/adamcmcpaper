@@ -6,8 +6,9 @@ library(data.table) # to read large csv files fast
 
 # PMCMC/MCWM
 
-output <- fread("./Results/Thetascaling_mcwm_50.csv")
+output <- fread("Thetapmcmc.csv")
 
+output <- fread("Thetamcwm.csv")
 
 
 output <- t(output)
@@ -15,9 +16,13 @@ View(output)
 
 X = output 
 X = output[2001:nrow(output),]
+View(X)
 
+# time for pmcmc 
+t = 859*(50/52)
 
-t = 14.1118*50 
+# time for mcwm 
+t = 1589*(50/52)
 
 
 ess = ess(X)
@@ -28,8 +33,9 @@ print(ess_min_per_sec)
 
 # DA/ADA
 
-output <- fread("./Results/Theta_ergpaccelerated.csv")
+output <- fread("Theta_dagpmcmcMCWM.csv")
 
+output <- fread("Theta_adagpmcmc_dt.csv")
 
 
 output <- t(output)
@@ -38,7 +44,13 @@ View(output)
 X = output 
 
 
-t = 21.5205*50 
+# time DA 
+t = 507
+
+
+# time ADA 
+t = 507
+
 
 
 ess = ess(X)
