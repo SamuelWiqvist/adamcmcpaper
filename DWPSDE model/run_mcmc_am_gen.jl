@@ -24,13 +24,13 @@ nbr_iterations = 2000
 nbr_particels = 25
 burn_in = 1000
 nbr_of_cores = 4
-sim_data = true
+sim_data = false
 set_nbr_params = 2
 log_scale_prior = false
 mcmc_alg = "MCWM"  # set MCWM or PMCMC
 data_set = "old"
 dt = 0.035 # new = 0.35 old = 0.035
-dt_U = 1. # new = 1 old = 1
+dt_U = 0.035 # new = 1 old = 1
 
 ################################################################################
 ##                         set model parameters                               ##

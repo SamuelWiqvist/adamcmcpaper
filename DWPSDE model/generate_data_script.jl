@@ -63,6 +63,8 @@ power1 = 1.5
 power2 = 1.8
 sigma =  1.9
 
+dt = 0.035
+dt_U = 0.035
 
 # parameter values for new data
 Κ = 0.7
@@ -88,7 +90,7 @@ theta_known = [Κ, Γ, A, A_sign, B, f, g, power1, power2, sigma] # set vector w
 #theta_known = [A,B,f,g] # set vector with known parameters
 
 
-(Z_sim, dt, diff_dt, X_thinned) = generate_data(theta, theta_known,1)
+Z_sim, N_dt = generate_data(theta, theta_known,1,dt,dt_U)
 
 PyPlot.figure()
 PyPlot.plot(X_thinned)
@@ -99,6 +101,18 @@ PyPlot.plot(Z_sim)
 bins = 100
 PyPlot.figure()
 h1 = PyPlot.plt[:hist](Z_sim,bins)
+
+
+# test
+N = 100
+dt_U = 1
+U_sim = zeros(N+1)
+for i = 1:N # numerical integration of the X process
+  U_sim[i+1] = rand(Normal( U_sim[i]*exp(-Κ*dt_U), sqrt( Γ^2*( 1 - exp( -2*Κ*dt_U ) ) ) ),1)[1]
+end
+
+PyPlot.figure()
+PyPlot.plot(U_sim)
 
 # compare kernel densities for real data and simulated data
 Z_data_m = zeros(2,max(length(Z_data), length(Z_sim)))

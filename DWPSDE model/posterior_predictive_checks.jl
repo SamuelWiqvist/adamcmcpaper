@@ -132,8 +132,8 @@ problem_training.adaptive_update =  AMUpdate_gen(eye(set_nbr_params), 1/sqrt(set
 
 load_data_from_files = true # load data from files or form some  workspace
 #dagp = "_dagp" #  set to _dagp to load ER-GP file  o.w. use ""
-dagp = true
-jobname = "_dagpest7_real_datada_gp_mcmc_biased_coin" # set to jobname string
+dagp = false
+jobname = "mcwm_7_par_real_data_2" # set to jobname string
 
 # mcwm_7_para_realdata
 # _dagpest7_real_dataada_gp_mcmc
@@ -179,7 +179,7 @@ Theta = Theta[:, burn_in:end]
 # generate samples from the posterior pred distribtuion
 include("run_pf_paralell.jl")
 
-N = 200
+N = 500
 
 N_sample_from_posterior = 100
 

@@ -189,7 +189,7 @@ function set_up_problem(;use_sim_data::Bool=true,nbr_of_unknown_parameters::Int6
     if data_set == "old"
       # load simulated data from "data.csv"
       #Z_df = readtable("data.csv")
-      Z_df = readtable("data_old_new_dt.csv")
+      Z_df = readtable("data_old_new_new_dt.csv")
       Z = convert(Array, Z_df)
     else
       # load simulated data from "data.csv"
