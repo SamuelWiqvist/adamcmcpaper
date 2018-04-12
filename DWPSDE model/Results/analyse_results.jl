@@ -34,11 +34,11 @@ label_size = 15
 
 
 load_data_from_files = true # load data from files or form some  workspace
-dagp = false # was true #  set to _dagp to load ER-GP file  o.w. use ""
-jobname = "mcwm_7_par_real_data_2" # was "_dagpest7_real_dataada_gp_mcmc_dt" # set to jobname string
+dagp = true # was true #  set to _dagp to load ER-GP file  o.w. use ""
+jobname = "_dagpest7da_gp_mcmcMCWM" # was "_dagpest7_real_dataada_gp_mcmc_dt" # set to jobname string
 
 
-plot_theta_true = false
+plot_theta_true = true
 
 # results:
 # gp_training_7_par
@@ -48,9 +48,17 @@ plot_theta_true = false
 # res:
 #_dagpest7_real_dataada_gp_mcmc_dt
 #_dagpest7_real_datada_gp_mcmcMCWM
+# mcwm_7_par_real_data_2
 
 #_dagpest7ada_gp_mcmc_dt
 #_dagpest7da_gp_mcmcMCWM
+
+#
+
+# results for sim data
+#_dagpest7ada_gp_mcmc_dt
+#_dagpest7da_gp_mcmcMCWM
+# gp_training_7_par
 
 if load_data_from_files
 

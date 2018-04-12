@@ -28,13 +28,34 @@ else
     include("C:\\Users\\samue\\OneDrive\\Documents\\GitHub\\adamcmcpaper\\utilities\\posteriorinference.jl")
 end
 
-
-
 load_data_from_files = true # load data from files or form some workspace
 
 # load data for MCWM
 dagp = false #  set to _dagp to load ER-GP file  o.w. use ""
-jobname_mcwm = "mcwm_7_para_realdata" # jobname for mcwm
+
+dataset = "sim_data" # select simdata or realdata (i.e the new dataset)
+
+if dataset == "sim_data"
+
+  # results for sim data
+  # important! These files should be update later on!!!
+  #_dagpest7ada_gp_mcmc_dt
+  #_dagpest7da_gp_mcmcMCWM
+  # gp_training_7_par
+
+  jobname_mcwm = "gp_training_7_par" # jobname for mcwm
+  jobname_da = "_dagpest7da_gp_mcmcMCWM"
+  jobname_ada = "_dagpest7ada_gp_mcmc_dt"
+
+elseif dataset == "realdata"
+
+  # select res for real data
+  # important! These files should be update later on!!!
+  jobname_mcwm = "mcwm_7_par_real_data_2" # jobname for mcwm
+  jobname_da = "mcwm_7_par_real_data_2"
+  jobname_ada = "mcwm_7_par_real_data_2"
+
+end
 
 
 if load_data_from_files
@@ -56,82 +77,24 @@ if load_data_from_files
     Z = convert(Array,readtable("data_used"*jobname_mcwm*".csv"))
     Z = Z[:,1]
 
-else
+    Theta_mcwm = data_res[burn_in:end,1:N-2]' # stor data in column-major order
 
-    # this option should be used to load from stored .jld files
-
-end
-
-
-Theta = data_res[:,1:N-2]' # stor data in column-major order
-Theta_mcwm = Theta[:,burn_in:end]
-
-
-dagp = true #  set to _dagp to load ER-GP file  o.w. use ""
-jobname_da = "_dagpest7_real_datada_gp_mcmc_biased_coin" # jobname for da
-
-
-if load_data_from_files
+    burn_in = 1
 
     data_res = convert(Array,readtable("output_res"*jobname_da*".csv"))
-
     M, N = size(data_res)
-
-    data_param = convert(Array,readtable("output_param"*jobname_da*".csv"))
-
-    theta_true = data_param[1:N-2]
-    burn_in = Int64(data_param[N-2+1])
-
-    data_prior_dist = convert(Array,readtable("output_prior_dist"*jobname_da*".csv"))
-
-    data_prior_dist_type = convert(Array,readtable("output_prior_dist_type"*jobname_da*".csv"))
-    data_prior_dist_type = data_prior_dist_type[2]
-
-    Z = convert(Array,readtable("data_used"*jobname_da*".csv"))
-    Z = Z[:,1]
-
-else
-
-    # this option should be used to load from stored .jld files
-
-end
-
-
-Theta = data_res[:,1:N-2]' # stor data in column-major order
-Theta_da = Theta[:,1:end]
-
-
-dagp = true #  set to _dagp to load ER-GP file  o.w. use ""
-jobname_ada = "_dagpest7_real_dataada_gp_mcmc" # jobname for da
-
-if load_data_from_files
+    Theta_da = data_res[burn_in:end,1:N-2]' # stor data in column-major order
 
     data_res = convert(Array,readtable("output_res"*jobname_ada*".csv"))
-
     M, N = size(data_res)
+    Theta_ada = data_res[burn_in:end,1:N-2]' # stor data in column-major order
 
-    data_param = convert(Array,readtable("output_param"*jobname_ada*".csv"))
-
-    theta_true = data_param[1:N-2]
-    burn_in = Int64(data_param[N-2+1])
-
-    data_prior_dist = convert(Array,readtable("output_prior_dist"*jobname_ada*".csv"))
-
-    data_prior_dist_type = convert(Array,readtable("output_prior_dist_type"*jobname_ada*".csv"))
-    data_prior_dist_type = data_prior_dist_type[2]
-
-    Z = convert(Array,readtable("data_used"*jobname_ada*".csv"))
-    Z = Z[:,1]
 
 else
 
     # this option should be used to load from stored .jld files
 
 end
-
-
-Theta = data_res[:,1:N-2]' # stor data in column-major order
-Theta_ada = Theta[:,1:end]
 
 
 if N == 6
@@ -187,6 +150,12 @@ for i = 1:N-2
     PyPlot.ylabel(L"Density",fontsize=text_size)
 
 end
+
+
+# plot data
+PyPlot.figure()
+PyPlot.plot(1:length(Z),Z)
+PyPlot.xlabel("Index")
 
 #=
 # plot posterior, non-log scale
