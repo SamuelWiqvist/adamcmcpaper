@@ -372,7 +372,7 @@ Runs each of the nbr_pf_proc estiamtions of log-likelihood for the parallel part
 
   # backwards prop. method. Code inspired by the SMC filter at  https://github.com/umbertopicchini/SAEM-ABC/blob/master/nonlinear-gaussian/SAEM-SMC/smc_filter.m
   Z_star = zeros(T)
-  id_selected = stratresample(w[:,end], 1)[1] # sample a single index from the last set of probabilities
+  id_selected = stratresample(ones(N), 1)[1] # sample a single index from the last set of probabilities
 
   # now start filling  the selected vector backwards
   Z_star[end] = genealogy_states[id_selected,end]

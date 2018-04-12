@@ -213,6 +213,11 @@ end
 dist_post_pred = Categorical(1/N_sample_from_posterior*ones(N_sample_from_posterior))
 samples_dist_post_pred = rand(dist_post_pred,8)
 
+
+text_size = 15
+label_size = 15
+
+
 PyPlot.figure()
 PyPlot.subplot(331)
 PyPlot.plot(posterior_pred_samples[:,samples_dist_post_pred[1]])
@@ -228,14 +233,18 @@ PyPlot.subplot(336)
 PyPlot.plot(posterior_pred_samples[:,samples_dist_post_pred[6]])
 PyPlot.subplot(337)
 PyPlot.plot(posterior_pred_samples[:,samples_dist_post_pred[7]])
+PyPlot.xlabel("Index",fontsize=text_size)
 PyPlot.subplot(338)
 PyPlot.plot(posterior_pred_samples[:,samples_dist_post_pred[8]])
+PyPlot.xlabel("Index",fontsize=text_size)
 PyPlot.subplot(339)
 PyPlot.plot(Z, "k")
+PyPlot.xlabel("Index",fontsize=text_size)
 
 PyPlot.figure()
 PyPlot.subplot(331)
 PyPlot.plt[:hist](posterior_pred_samples[:,samples_dist_post_pred[1]],50)
+PyPlot.ylabel("Freq",fontsize=text_size)
 PyPlot.subplot(332)
 PyPlot.plt[:hist](posterior_pred_samples[:,samples_dist_post_pred[2]],50)
 PyPlot.subplot(333)

@@ -34,11 +34,11 @@ label_size = 15
 
 
 load_data_from_files = true # load data from files or form some  workspace
-dagp = true # was true #  set to _dagp to load ER-GP file  o.w. use ""
-jobname = "_dagpest7da_gp_mcmcMCWM" # was "_dagpest7_real_dataada_gp_mcmc_dt" # set to jobname string
+dagp = false # was true #  set to _dagp to load ER-GP file  o.w. use ""
+jobname = "mcwm_7_para_realdata" # was "_dagpest7_real_dataada_gp_mcmc_dt" # set to jobname string
 
 
-plot_theta_true = true
+plot_theta_true = false
 
 # results:
 # gp_training_7_par
@@ -295,10 +295,11 @@ PyPlot.xlabel("Iteration")
 # plot data
 PyPlot.figure()
 PyPlot.plot(1:length(Z),Z)
-PyPlot.xlabel("Index")
+PyPlot.xlabel("Index", fontsize=text_size)
 
 PyPlot.figure()
 PyPlot.plt[:hist](Z,50)
+PyPlot.ylabel("Freq.", fontsize=text_size)
 
 # leave results folder
 cd("..")
