@@ -21,44 +21,82 @@ using HDF5
 ##      parameters                                      					            ##
 ################################################################################
 
-# nbr of iterations
-nbr_iterations = 1000 # should be 10000
+# set parameters for all jobs
 
 # nbr parameters
-set_nbr_params = 7  # should be 7
-
-# nbr particels
-nbr_particels = 200 # should be 200
+set_nbr_params = 7
 
 # nbr cores
-nbr_of_cores= 4 # should be > 8
+nbr_of_cores = 4 # was 10
 
-# brun-in
+# length burn-in
 burn_in = 1
 
-# data
-sim_data = true
-log_scale_prior = false
-
-# beta_MH
-beta_MH = 0.1 # should be 0.1
-
-# algorithm
-mcmc_alg = "MCWM"  # set MCWM or PMCMC
-
-# data
-data_set = "old"
-dt = 0.035 # new = 0.5 old = 0.03
-dt_U = 1. # new = 1 old = 1
+# nbr iterations
+nbr_iterations = 500 # should be 20000
 
 # length training data
 length_training_data = 5000 # thid should ne 5000
 
-# job name
-global_jobname = "est7_test_new_code_1000iter_local"
+# log-scale priors
+log_scale_prior = false
 
-# load stored data
+# algorithm
+mcmc_alg = "MCWM"  # set MCWM or PMCMC
+
+# prob run MH update
+beta_MH = 0.15 # should be 0.1
+
+# load training data
 load_tranining_data = true
+
+# type of job
+job = "simdata" # set work to simdata or new_data
+
+# set jod dep. parameters
+if job == "simdata"
+
+	# jobname
+	global_jobname = "est7"*job
+
+	# nbr particels
+	nbr_particels = 200
+
+	# use simulated data
+	sim_data = true # set to true to use sim data
+
+	# data set
+	data_set = "old" # was "old"
+
+	# dt
+	dt = 0.035 # new = 0.35 old = 0.035
+
+	# dt_U
+	dt_U = 1. # new = 1 old = 1
+
+elseif job == "new_data"
+
+	# jobname
+	global_jobname = "est7"*job
+
+	# nbr particels
+	nbr_particels = 500
+
+	# use simulated data
+	sim_data = false # set to true to use sim data
+
+	# data set
+	data_set = "new" # was "old"
+
+	# dt
+	dt = 0.35 # new = 0.35 old = 0.035
+
+	# dt_U
+	dt_U = 1. # new = 1 old = 1
+
+end
+
+
 
 
 ################################################################################
@@ -140,22 +178,12 @@ if !load_tranining_data
 
 else
 
-  #@load "gp_training_2_par_training_and_test_data_test_new_code_structure.jld"
-
-  @load "gp_training_7_par_training_and_test_lunarc.jld"
-
-  #@load "gp_training_$(set_nbr_params)_par_test_new_code.jld"
-
-	#=
-	gp_training_2_par_training_and_test_data_test_new_code.jld
-	if set_nbr_params == 7
-		@load "gp_training_7_par_training_and_test_data_multiple_cores_fix_logsumexp.jld"
-	else
-  		@load "gp_training_$(set_nbr_params)_par_training_and_test_data.jld"
+	if job == "simdata"
+		@load "gp_training_7_par_training_and_test_lunarc.jld"
+	job == "new_data"
+		@load "gp_training_7_par_training_and_test_new_data.jld"
 	end
-	=#
 
-  #save("gp_training_$(set_nbr_params)_par.jld", "res_training", res_training, "theta_training", theta_training, "loglik_training", loglik_training,"cov_matrix",cov_matrix)
 
 end
 
@@ -232,9 +260,10 @@ time_fit_gp = toc()
 ##      DA-GP-MCMC                                                            ##
 ################################################################################
 
+
 accelerated_da = false
 
-jobname = global_jobname*"da_gp_mcmc"
+jobname = global_jobname*"da_gp_mcmc"*problem.alg_param.alg
 
 problem.model_param.theta_0 = mean(res_training[1].Theta_est[:,end-size(data_training,2)-size(data_test,2):end],2)[:]
 
@@ -259,13 +288,15 @@ else
 end
 
 
+
+
 ################################################################################
 ##                         set A-DA problem                               ##
 ################################################################################
 
 accelerated_da = true
 
-jobname = global_jobname*"ada_gp_mcmc"
+jobname = global_jobname*"ada_gp_mcmc_dt"
 
 problem.model_param.theta_0 = mean(res_training[1].Theta_est[:,end-size(data_training,2)-size(data_test,2):end],2)[:]
 
@@ -352,19 +383,22 @@ targets_case_2_and_4 = convert(Array{Float64,1}, targets_case_2_and_4)
 ##   set case model                                                          ###
 ################################################################################
 
-select_case_model = "dt" # logisticregression or dt
+select_case_model = "biasedcoin" # logisticregression or dt
+
+# fit model, i.e. est probabilities
+nbr_GP_star_led_GP_old = n-nbr_GP_star_geq_GP_old
+
+prob_case_1 = nbr_case_1/nbr_GP_star_geq_GP_old
+prob_case_2 = (nbr_GP_star_led_GP_old-nbr_case_4)/nbr_GP_star_led_GP_old
+prob_case_3 = 1-prob_case_1
+prob_case_4 = nbr_case_4/nbr_GP_star_led_GP_old
+prob_cases = [prob_case_1;prob_case_2;prob_case_3;prob_case_4]
+
+println("Est prob:")
+println(prob_cases)
 
 if select_case_model == "biasedcoin"
 
-
-  # fit model, i.e. est probabilities
-  nbr_GP_star_led_GP_old = n-nbr_GP_star_geq_GP_old
-
-  prob_case_1 = nbr_case_1/nbr_GP_star_geq_GP_old
-  prob_case_2 = (nbr_GP_star_led_GP_old-nbr_case_4)/nbr_GP_star_led_GP_old
-  prob_case_3 = 1-prob_case_1
-  prob_case_4 = nbr_case_4/nbr_GP_star_led_GP_old
-  prob_cases = [prob_case_1;prob_case_2;prob_case_3;prob_case_4]
 
   casemodel = BiaseCoin(prob_cases)
 
@@ -511,5 +545,6 @@ else
 end
 
 
+
 # analyse results
-include("./Results/analyse_results.jl")
+#include("./Results/analyse_results.jl")

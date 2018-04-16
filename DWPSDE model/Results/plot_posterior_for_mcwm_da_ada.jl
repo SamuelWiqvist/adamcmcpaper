@@ -37,13 +37,7 @@ dataset = "sim_data" # select simdata or realdata (i.e the new dataset)
 
 if dataset == "sim_data"
 
-  # results for sim data
-  # important! These files should be update later on!!!
-  #_dagpest7ada_gp_mcmc_dt
-  #_dagpest7da_gp_mcmcMCWM
-  # gp_training_7_par
-
-  jobname_mcwm = "gp_training_7_par" # jobname for mcwm
+  jobname_mcwm = "mcwm_7_par_sim_data" # jobname for mcwm
   jobname_da = "_dagpest7da_gp_mcmcMCWM"
   jobname_ada = "_dagpest7ada_gp_mcmc_dt"
 
@@ -129,7 +123,8 @@ label_size = 15
 #PyPlot.figure()
 for i = 1:N-2
     #PyPlot.subplot(N-2,1,i)
-    PyPlot.figure()
+    PyPlot.figure(figsize=(10,10))
+    ax = axes()
     h_mcwm = kde(Theta_mcwm[i,:])
     PyPlot.plot(h_mcwm.x,h_mcwm.density, "b")
     h_da = kde(Theta_da[i,:])
@@ -142,20 +137,33 @@ for i = 1:N-2
     if data_prior_dist_type == "Uniform"
         error("Uniform priors are not not implemented.")
     elseif data_prior_dist_type == "Normal"
-        x_grid = (data_prior_dist[i,1]-4*data_prior_dist[i,2]):0.001:(data_prior_dist[i,1]+4*data_prior_dist[i,2])
+        #x_grid = (data_prior_dist[i,1]-3*data_prior_dist[i,2]):0.001:(data_prior_dist[i,1]+3*data_prior_dist[i,2])
+        x_grid = (minimum(h_mcwm.x)-1*data_prior_dist[i,2]):0.001:(maximum(h_mcwm.x)+1*data_prior_dist[i,2])
+
         PyPlot.plot(x_grid, pdf(Normal(data_prior_dist[i,1],data_prior_dist[i,2]), x_grid) ,"g")
     end
 
-    PyPlot.xlabel(title_vec_log[i],fontsize=text_size)
-    PyPlot.ylabel(L"Density",fontsize=text_size)
+    #PyPlot.xlabel(title_vec_log[i],fontsize=text_size)
+    #PyPlot.ylabel(L"Density",fontsize=text_size)
+    ax[:tick_params]("both",labelsize = label_size)
 
 end
 
 
 # plot data
-PyPlot.figure()
+PyPlot.figure(figsize=(12,10))
+ax = axes()
 PyPlot.plot(1:length(Z),Z)
-PyPlot.xlabel("Index")
+#PyPlot.xlabel("Index")
+ax[:tick_params]("both",labelsize = label_size)
+
+PyPlot.figure(figsize=(10,10))
+ax = axes()
+PyPlot.plt[:hist](Z,50)
+#PyPlot.ylabel("Freq.", fontsize=text_size)
+ax[:tick_params]("both",labelsize = label_size)
+
+
 
 #=
 # plot posterior, non-log scale

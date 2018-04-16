@@ -131,7 +131,7 @@ else
 
   #@load "gp_training_2_par_training_and_test_data_test_new_code_structure.jld"
 
-  @load "gp_training_7_par_training_and_test_lunarc_realdata.jld"
+  @load "gp_training_7_par_training_and_test_new_data.jld"
 
   #@load "gp_training_7_par_training_and_test_lunarc.jld"
 
@@ -144,6 +144,8 @@ end
 
 #export_data(problem_training, res_training[1],"dagpMCMC_training_data"*jobname)
 
+plot_theta_true = false
+
 
 using PyPlot
 
@@ -153,35 +155,33 @@ PyPlot.figure(figsize=(10,20))
 
 ax1 = PyPlot.subplot(711)
 PyPlot.plot(res_training[1].Theta_est[1,:])
-PyPlot.plot(problem.model_param.theta_true[1]*ones(size(res_training[1].Theta_est)[2]), "k")
+plot_theta_true == true ? PyPlot.plot(problem.model_param.theta_true[1]*ones(size(res_training[1].Theta_est)[2]), "k") :
 PyPlot.ylabel(L"$\log \kappa$",fontsize=text_size)
 ax1[:axes][:get_xaxis]()[:set_ticks]([])
-
 ax2 = PyPlot.subplot(712)
 PyPlot.plot(res_training[1].Theta_est[2,:])
-PyPlot.plot(problem.model_param.theta_true[2]*ones(size(res_training[1].Theta_est)[2]), "k")
+plot_theta_true == true ? PyPlot.plot(problem.model_param.theta_true[2]*ones(size(res_training[1].Theta_est)[2]), "k") :
 PyPlot.ylabel(L"$\log \gamma$",fontsize=text_size)
 ax2[:axes][:get_xaxis]()[:set_ticks]([])
-
 PyPlot.subplot(713)
 PyPlot.plot(res_training[1].Theta_est[3,:])
-PyPlot.plot(problem.model_param.theta_true[3]*ones(size(res_training[1].Theta_est)[2]), "k")
+plot_theta_true == true ? PyPlot.plot(problem.model_param.theta_true[3]*ones(size(res_training[1].Theta_est)[2]), "k") :
 PyPlot.ylabel(L"$\log c$",fontsize=text_size)
 PyPlot.subplot(714)
 PyPlot.plot(res_training[1].Theta_est[4,:])
-PyPlot.plot(problem.model_param.theta_true[4]*ones(size(res_training[1].Theta_est)[2]), "k")
+plot_theta_true == true ? PyPlot.plot(problem.model_param.theta_true[4]*ones(size(res_training[1].Theta_est)[2]), "k") :
 PyPlot.ylabel(L"$\log d$",fontsize=text_size)
 PyPlot.subplot(715)
 PyPlot.plot(res_training[1].Theta_est[5,:])
-PyPlot.plot(problem.model_param.theta_true[5]*ones(size(res_training[1].Theta_est)[2]), "k")
+plot_theta_true == true ? PyPlot.plot(problem.model_param.theta_true[5]*ones(size(res_training[1].Theta_est)[2]), "k") :
 PyPlot.ylabel(L"$\log p_1$",fontsize=text_size)
 PyPlot.subplot(716)
 PyPlot.plot(res_training[1].Theta_est[6,:])
-PyPlot.plot(problem.model_param.theta_true[6]*ones(size(res_training[1].Theta_est)[2]), "k")
+plot_theta_true == true ? PyPlot.plot(problem.model_param.theta_true[6]*ones(size(res_training[1].Theta_est)[2]), "k") :
 PyPlot.ylabel(L"$\log p_2$",fontsize=text_size)
 PyPlot.subplot(717)
 PyPlot.plot(res_training[1].Theta_est[7,:])
-PyPlot.plot(problem.model_param.theta_true[7]*ones(size(res_training[1].Theta_est)[2]), "k")
+plot_theta_true == true ? PyPlot.plot(problem.model_param.theta_true[7]*ones(size(res_training[1].Theta_est)[2]), "k") :
 PyPlot.ylabel(L"$\log \sigma$",fontsize=text_size)
 PyPlot.xlabel("Iteration",fontsize=text_size)
 

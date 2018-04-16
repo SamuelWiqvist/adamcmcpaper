@@ -44,7 +44,7 @@ problem.alg_param.compare_GP_and_PF = false
 problem.alg_param.noisy_est = false
 problem.alg_param.pred_method = "sample"
 problem.alg_param.print_interval = 1000 # problem.alg_param.R#
-problem.alg_param.beta_MH = 0.1 # "local_loglik_approx" # "max_loglik"
+problem.alg_param.beta_MH = 0 # "local_loglik_approx" # "max_loglik"
 problem.alg_param.lasso = false
 
 #problem.data.y = Array(readtable("y.csv"))[:,1]
@@ -311,18 +311,20 @@ targets_case_2_and_4 = convert(Array{Float64,1}, targets_case_2_and_4)
 ##   set case model                                                          ###
 ################################################################################
 
-select_case_model = "biasedcoin" # logisticregression or dt
+select_case_model = "dt" # logisticregression or dt
+
+nbr_GP_star_led_GP_old = n-nbr_GP_star_geq_GP_old
+
+prob_case_1 = nbr_case_1/nbr_GP_star_geq_GP_old
+prob_case_2 = (nbr_GP_star_led_GP_old-nbr_case_4)/nbr_GP_star_led_GP_old
+prob_case_3 = 1-prob_case_1
+prob_case_4 = nbr_case_4/nbr_GP_star_led_GP_old
+prob_cases = [prob_case_1;prob_case_2;prob_case_3;prob_case_4]
+
+println("Est prob:")
+println(prob_cases)
 
 if select_case_model == "biasedcoin"
-
-  # fit model, i.e. est probabilities
-  nbr_GP_star_led_GP_old = n-nbr_GP_star_geq_GP_old
-
-  prob_case_1 = nbr_case_1/nbr_GP_star_geq_GP_old
-  prob_case_2 = (nbr_GP_star_led_GP_old-nbr_case_4)/nbr_GP_star_led_GP_old
-  prob_case_3 = 1-prob_case_1
-  prob_case_4 = nbr_case_4/nbr_GP_star_led_GP_old
-  prob_cases = [prob_case_1;prob_case_2;prob_case_3;prob_case_4]
 
   casemodel = BiaseCoin(prob_cases)
 

@@ -1,5 +1,3 @@
-# set correct folder
-
 # running the MCMC algorithm using the adaptive AM algorithm for the adaptation
 
 # set correct path
@@ -17,20 +15,71 @@ cd("DWPSDE model")
 # load files and functions
 include("set_up.jl")
 
-jobname = "test_new_code_structure"
+# set parameters for all jobs
 
-# set parameters
-nbr_iterations = 2000
-nbr_particels = 25
-burn_in = 1000
-nbr_of_cores = 4
-sim_data = false
-set_nbr_params = 2
+# nbr iterations
+nbr_iterations = 30000 # was 30000
+
+# burn-in
+burn_in = 10000 # was 10000
+
+# nbr cores
+nbr_of_cores = 10
+
+# nbr parameters
+set_nbr_params = 7
+
+# log-scale prior
 log_scale_prior = false
+
+# algorithm
 mcmc_alg = "MCWM"  # set MCWM or PMCMC
-data_set = "old"
-dt = 0.035 # new = 0.35 old = 0.035
-dt_U = 0.035 # new = 1 old = 1
+
+# type of job
+job = "simdata" # set work to simdata or new_data
+
+# set jod dep. parameters
+if job == "simdata"
+
+	# jobname
+	jobname = "mcwm_7_par"*job
+
+	# nbr particels
+	nbr_particels = 200
+
+	# use simulated data
+	sim_data = true # set to true to use sim data
+
+	# data set
+	data_set = "old" # was "old"
+
+	# dt
+	dt = 0.035 # new = 0.35 old = 0.035
+
+	# dt_U
+	dt_U = 1. # new = 1 old = 1
+
+elseif job == "new_data"
+
+	# jobname
+	jobname = "mcwm_7_par"*job
+
+	# nbr particels
+	nbr_particels = 500
+
+	# use simulated data
+	sim_data = false # set to true to use sim data
+
+	# data set
+	data_set = "new" # was "old"
+
+	# dt
+	dt = 0.35 # new = 0.35 old = 0.035
+
+	# dt_U
+	dt_U = 1. # new = 1 old = 1
+
+end
 
 ################################################################################
 ##                         set model parameters                               ##
@@ -54,15 +103,6 @@ problem_nonlog_prior_est_AM_gen.alg_param.N = nbr_particels
 problem_nonlog_prior_est_AM_gen.alg_param.burn_in = burn_in
 problem_nonlog_prior_est_AM_gen.alg_param.nbr_of_cores = nbr_of_cores
 problem_nonlog_prior_est_AM_gen.adaptive_update =  AMUpdate_gen(eye(set_nbr_params), 1/sqrt(set_nbr_params), 0.2, 1, 0.8, 25)
-
-
-################################################################################
-###               Plot data                                                  ###
-################################################################################
-
-#using PyPlot
-
-#PyPlot.plot(problem_normal_prior_est_AM_gen.data.Z)
 
 ################################################################################
 ##                Run MCMC and export results                                 ##

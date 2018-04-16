@@ -34,11 +34,11 @@ label_size = 15
 
 
 load_data_from_files = true # load data from files or form some  workspace
-dagp = false # was true #  set to _dagp to load ER-GP file  o.w. use ""
-jobname = "mcwm_7_para_realdata" # was "_dagpest7_real_dataada_gp_mcmc_dt" # set to jobname string
+dagp = true # was true #  set to _dagp to load ER-GP file  o.w. use ""
+jobname = "_dagpest7ada_gp_mcmc_dt" # was "_dagpest7_real_dataada_gp_mcmc_dt" # set to jobname string
 
 
-plot_theta_true = false
+plot_theta_true = true
 
 # results:
 # gp_training_7_par
@@ -53,12 +53,20 @@ plot_theta_true = false
 #_dagpest7ada_gp_mcmc_dt
 #_dagpest7da_gp_mcmcMCWM
 
+# results for old data
+# mcwm_7_para_realdata
+
+# results for new data
+# gp_training_7_par_training_and_test_new_data
 #
+#
+# mcwm_7_par_real_data_2
 
 # results for sim data
-#_dagpest7ada_gp_mcmc_dt
-#_dagpest7da_gp_mcmcMCWM
-# gp_training_7_par
+# gp_training_7_par_training_and_test_lunarc
+#_dagpest7ada_gp_mcmc_dt at 2018-4-13 09:33:17
+#_dagpest7da_gp_mcmcMCWM at 2018-4-13 02:38:22
+# mcwm_7_par_sim_data at 2018-4-13 17:44:39
 
 if load_data_from_files
 
@@ -130,27 +138,24 @@ acceptance_rate = sum(accept_vec[burn_in:end])/length(accept_vec[burn_in:end])
 
 # print info
 
-@printf "Accept rate: %.4f %% \n" acceptance_rate*100
+@printf "Accept rate: %.4f %% \n" round(acceptance_rate*100,2)
 
 @printf "True parameter values:\n"
-Base.showarray(STDOUT,theta_true,false)
+Base.showarray(STDOUT,round(theta_true,2),false)
 @printf "\n"
 
 @printf "Posterior mean:\n"
-Base.showarray(STDOUT,mean(Theta[:,burn_in+1:end],2),false)
+Base.showarray(STDOUT,round(mean(Theta[:,burn_in+1:end],2),2),false)
 @printf "\n"
 
 @printf "Posterior standard deviation:\n"
-Base.showarray(STDOUT,std(Theta[:,burn_in+1:end],2),false)
+Base.showarray(STDOUT,round(std(Theta[:,burn_in+1:end],2),2),false)
 @printf "\n"
 
 @printf "Posterior quantile intervals (2.5th and 97.5th quantiles as default):\n"
-Base.showarray(STDOUT,calcquantileint(Theta[:,burn_in+1:end],lower_q_int_limit,upper_q_int_limit),false)
+Base.showarray(STDOUT,round(calcquantileint(Theta[:,burn_in+1:end],lower_q_int_limit,upper_q_int_limit),2),false)
 @printf "\n"
 
-@printf "RMSE for parameter estimations:\n"
-Base.showarray(STDOUT,RMSE(theta_true, Theta[:,burn_in+1:end]),false)
-@printf "\n"
 
 # plot trace plots
 
@@ -159,9 +164,7 @@ PyPlot.figure()
 for i = 1:N-2
     PyPlot.subplot(N-2,1,i)
     PyPlot.plot(Theta[i,:])
-    if plot_theta_true
-      PyPlot.plot(ones(size(Theta,2),1)*theta_true[i], "k")
-    end
+    plot_theta_true == true ? PyPlot.plot(ones(size(Theta,2),1)*theta_true[i], "k") :
     PyPlot.ylabel(title_vec_log[i],fontsize=text_size)
 end
 PyPlot.xlabel("Iteration")
@@ -171,9 +174,7 @@ PyPlot.figure()
 for i = 1:N-2
     PyPlot.subplot(N-2,1,i)
     PyPlot.plot(exp.(Theta[i,:]))
-    if plot_theta_true
-      PyPlot.plot(ones(size(Theta,2),1)*exp(theta_true[i]), "k")
-    end
+    plot_theta_true == true ? PyPlot.plot(ones(size(Theta,2),1)*exp(theta_true[i]), "k") :
     PyPlot.ylabel(title_vec[i],fontsize=text_size)
 end
 PyPlot.xlabel("Iteration")
@@ -186,9 +187,7 @@ x_axis = burn_in+1:size(Theta,2)
 for i = 1:N-2
     PyPlot.subplot(N-2,1,i)
     PyPlot.plot(x_axis, Theta[i,burn_in+1:end])
-    if plot_theta_true
-      PyPlot.plot(x_axis, ones(length(x_axis),1)*theta_true[i], "k")
-    end
+    plot_theta_true == true ? PyPlot.plot(x_axis, ones(length(x_axis),1)*theta_true[i], "k") :
     PyPlot.ylabel(title_vec_log[i])
 end
 PyPlot.xlabel("Iteration")
@@ -199,9 +198,7 @@ x_axis = burn_in+1:size(Theta,2)
 for i = 1:N-2
     PyPlot.subplot(N-2,1,i)
     PyPlot.plot(x_axis, exp.(Theta[i,burn_in+1:end]))
-    if plot_theta_true
-      PyPlot.plot(x_axis, ones(length(x_axis),1)*exp(theta_true[i]), "k")
-    end
+    plot_theta_true == true ? PyPlot.plot(x_axis, ones(length(x_axis),1)*exp(theta_true[i]), "k") :
     PyPlot.ylabel(title_vec[i])
 end
 PyPlot.xlabel("Iteration")
@@ -227,16 +224,14 @@ for i = 1:N-2
     h = kde(Theta[i,burn_in+1:end])
     PyPlot.plot(h.x,h.density, "b")
 
-    if plot_theta_true
-      PyPlot.plot((theta_true[i], theta_true[i]), (0, maximum(h.density)), "k")
-    end
-
     if data_prior_dist_type == "Uniform"
         error("Uniform priors are not not implemented.")
     elseif data_prior_dist_type == "Normal"
         x_grid = (data_prior_dist[i,1]-4*data_prior_dist[i,2]):0.001:(data_prior_dist[i,1]+4*data_prior_dist[i,2])
         PyPlot.plot(x_grid, pdf(Normal(data_prior_dist[i,1],data_prior_dist[i,2]), x_grid) ,"g")
     end
+
+    plot_theta_true == true ? PyPlot.plot((theta_true[i], theta_true[i]), (0, maximum(h.density)), "k") :
 
     PyPlot.ylabel(title_vec_log[i])
 end
@@ -247,9 +242,7 @@ for i = 1:N-2
     PyPlot.subplot(N-2,1,i)
     h = kde(exp.(Theta[i,burn_in+1:end]))
     PyPlot.plot(h.x,h.density, "b")
-    if plot_theta_true
-      PyPlot.plot((exp(theta_true[i]), exp(theta_true[i])), (0, maximum(h.density)), "k")
-    end
+    plot_theta_true == true ? PyPlot.plot((exp(theta_true[i]), exp(theta_true[i])), (0, maximum(h.density)), "k") :
     PyPlot.ylabel(title_vec[i])
 end
 
@@ -292,14 +285,19 @@ PyPlot.bar(1:length(accept_vec_k),accept_vec_k)
 PyPlot.ylabel("Acceptance rate")
 PyPlot.xlabel("Iteration")
 
-# plot data
-PyPlot.figure()
-PyPlot.plot(1:length(Z),Z)
-PyPlot.xlabel("Index", fontsize=text_size)
 
-PyPlot.figure()
+# plot data
+PyPlot.figure(figsize=(12,10))
+ax = axes()
+PyPlot.plot(1:length(Z),Z)
+#PyPlot.xlabel("Index")
+ax[:tick_params]("both",labelsize = label_size)
+
+PyPlot.figure(figsize=(10,10))
+ax = axes()
 PyPlot.plt[:hist](Z,50)
-PyPlot.ylabel("Freq.", fontsize=text_size)
+#PyPlot.ylabel("Freq.", fontsize=text_size)
+ax[:tick_params]("both",labelsize = label_size)
 
 # leave results folder
 cd("..")
