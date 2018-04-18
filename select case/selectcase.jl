@@ -6,7 +6,7 @@ using DecisionTree
 using GLM
 
 # types for the models
-type BiaseCoin <: CaseModel
+type BiasedCoin <: CaseModel
   p::Vector # vector with the probabilites for selecting case 1,2,3, and 4
 end
 
@@ -23,11 +23,11 @@ end
 
 # functions for selecting case 1 or 3
 """
-    selectcase1or3(model::BiaseCoin)
+    selectcase1or3(model::BiasedCoin)
 
 Returns 1 if case 1 is selected.
 """
-function selectcase1or3(model::BiaseCoin, theta::Vector, prediction_sample_ml_star::Real, prediction_sample_ml_old::Real)
+function selectcase1or3(model::BiasedCoin, theta::Vector, prediction_sample_ml_star::Real, prediction_sample_ml_old::Real)
 
   if rand(Bernoulli(model.p[1])) == 1
     return 1
@@ -85,11 +85,11 @@ end
 
 # functions for selecting case 2 or 4
 """
-    selectcase2or4(model::BiaseCoin)
+    selectcase2or4(model::BiasedCoin)
 
 Returns 1 if case 2 is selected.
 """
-function selectcase2or4(model::BiaseCoin, theta::Vector, prediction_sample_ml_star::Real, prediction_sample_ml_old::Real)
+function selectcase2or4(model::BiasedCoin, theta::Vector, prediction_sample_ml_star::Real, prediction_sample_ml_old::Real)
 
   if rand(Bernoulli(model.p[2])) == 1
     return 1

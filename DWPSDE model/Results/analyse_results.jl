@@ -35,7 +35,7 @@ label_size = 15
 
 load_data_from_files = true # load data from files or form some  workspace
 dagp = true # was true #  set to _dagp to load ER-GP file  o.w. use ""
-jobname = "_dagpest7ada_gp_mcmc_dt" # was "_dagpest7_real_dataada_gp_mcmc_dt" # set to jobname string
+jobname = "_dagpest7simdatada_gp_mcmcMCWM" # was "_dagpest7_real_dataada_gp_mcmc_dt" # set to jobname string
 
 
 plot_theta_true = true

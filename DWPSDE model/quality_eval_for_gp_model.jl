@@ -56,6 +56,7 @@ if set_nbr_params == 2
 	length_training_data = 2000
 end
 
+job = "simdata" #or "new_data"
 
 ################################################################################
 ##                         set DA problem                               ##
@@ -131,9 +132,14 @@ else
 
   #@load "gp_training_2_par_training_and_test_data_test_new_code_structure.jld"
 
-  @load "gp_training_7_par_training_and_test_new_data.jld"
+  #@load "gp_training_7_par_training_and_test_new_data.jld"
 
   #@load "gp_training_7_par_training_and_test_lunarc.jld"
+  if job == "simdata"
+		@load "gp_training_7_par_training_and_test_lunarc.jld"
+	elseif job == "new_data"
+		@load "gp_training_7_par_training_and_test_new_data.jld"
+	end
 
 end
 
@@ -144,7 +150,7 @@ end
 
 #export_data(problem_training, res_training[1],"dagpMCMC_training_data"*jobname)
 
-plot_theta_true = false
+plot_theta_true = true
 
 
 using PyPlot

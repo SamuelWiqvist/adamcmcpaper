@@ -735,97 +735,95 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, ca
               end
             end
 
-        else
-
-          # case 3
-          nbr_case_3 = nbr_case_3 + 1
-
-          if u_log_hat > loglik_gp_old - loglik_gp_new
-
-            # early-reject
-            nbr_split_accaptance_region_early_reject = nbr_split_accaptance_region_early_reject+1
-            Theta[:,r] = Theta[:,r-1] # keep old values
-            loglik[r] = loglik[r-1]
-            accept_vec[r] = 1
-
           else
 
-            # run ordinary stage 2
-            loglik_star = pf(y, theta_star,theta_known,N,print_on)
+            # case 3
+            nbr_case_3 = nbr_case_3 + 1
 
-            # calc accaptance probability using PF
-            # can only run MCWM in this case
-            loglik_old = pf(y, Theta[:,r-1],theta_known,N,print_on)
-            a_log = (loglik_star + loglik_gp_old)  -  (loglik_old + loglik_gp_new)
-            accept = u_log_hat < a_log # calc accaptance decision
-            accept_prob_log[2, r] = a_log # store data
+            if u_log_hat > loglik_gp_old - loglik_gp_new
 
-            nbr_eval_pf += 1
-
-            if accept # the proposal is accapted
-              nbr_second_stage_accepted = nbr_second_stage_accepted+1
-              Theta[:,r] = theta_star # update chain with proposal
-              loglik[r] = NaN
-              accept_vec[r] = 1
-            else
+              # early-reject
+              nbr_split_accaptance_region_early_reject = nbr_split_accaptance_region_early_reject+1
               Theta[:,r] = Theta[:,r-1] # keep old values
               loglik[r] = loglik[r-1]
-            end
+              accept_vec[r] = 1
+
+            else
+
+              # run ordinary stage 2
+              loglik_star = pf(y, theta_star,theta_known,N,print_on)
+
+              # calc accaptance probability using PF
+              # can only run MCWM in this case
+              loglik_old = pf(y, Theta[:,r-1],theta_known,N,print_on)
+              a_log = (loglik_star + loglik_gp_old)  -  (loglik_old + loglik_gp_new)
+              accept = u_log_hat < a_log # calc accaptance decision
+              accept_prob_log[2, r] = a_log # store data
+
+              nbr_eval_pf += 1
+
+              if accept # the proposal is accapted
+                nbr_second_stage_accepted = nbr_second_stage_accepted+1
+                Theta[:,r] = theta_star # update chain with proposal
+                loglik[r] = NaN
+                accept_vec[r] = 1
+              else
+                Theta[:,r] = Theta[:,r-1] # keep old values
+                loglik[r] = loglik[r-1]
+              end
+          end
         end
 
-      end
-
-
-  else
-
-    # select case 2 or 4
-    nbr_case_24 = nbr_case_24 + 1
-
-    if selectcase2or4(casemodel, theta_star, loglik_gp_new, loglik_gp_old) == 1
-
-      # case 2
-
-      nbr_case_2 = nbr_case_2 + 1
-
-      # run ordinary stage 2
-
-      loglik_star = pf(y, theta_star,theta_known,N,print_on)
-
-      # calc accaptance probability using PF
-      # can only run MCWM in this case
-      loglik_old = pf(y, Theta[:,r-1],theta_known,N,print_on)
-      a_log = (loglik_star + loglik_gp_old)  -  (loglik_old + loglik_gp_new)
-      accept = u_log_hat < a_log # calc accaptance decision
-      accept_prob_log[2, r] = a_log # store data
-
-      nbr_eval_pf += 1
-
-      if accept # the proposal is accapted
-        nbr_second_stage_accepted = nbr_second_stage_accepted+1
-        Theta[:,r] = theta_star # update chain with proposal
-        loglik[r] = NaN
-        accept_vec[r] = 1
       else
-        Theta[:,r] = Theta[:,r-1] # keep old values
-        loglik[r] = loglik[r-1]
+
+        # select case 2 or 4
+        nbr_case_24 = nbr_case_24 + 1
+
+        if selectcase2or4(casemodel, theta_star, loglik_gp_new, loglik_gp_old) == 1
+
+          # case 2
+
+          nbr_case_2 = nbr_case_2 + 1
+
+          # run ordinary stage 2
+
+          loglik_star = pf(y, theta_star,theta_known,N,print_on)
+
+          # calc accaptance probability using PF
+          # can only run MCWM in this case
+          loglik_old = pf(y, Theta[:,r-1],theta_known,N,print_on)
+          a_log = (loglik_star + loglik_gp_old)  -  (loglik_old + loglik_gp_new)
+          accept = u_log_hat < a_log # calc accaptance decision
+          accept_prob_log[2, r] = a_log # store data
+
+          nbr_eval_pf += 1
+
+          if accept # the proposal is accapted
+            nbr_second_stage_accepted = nbr_second_stage_accepted+1
+            Theta[:,r] = theta_star # update chain with proposal
+            loglik[r] = NaN
+            accept_vec[r] = 1
+          else
+            Theta[:,r] = Theta[:,r-1] # keep old values
+            loglik[r] = loglik[r-1]
+          end
+
+        else
+
+           # case 4
+           nbr_case_4 = nbr_case_4 + 1
+
+           # accept directly
+           nbr_split_accaptance_region_early_accept = nbr_split_accaptance_region_early_accept+1
+
+           Theta[:,r] = theta_star # update chain with proposal
+           loglik[r] = NaN
+           accept_vec[r] = 1
+
+         end
+       end
       end
-
-    else
-
-       # case 4
-       nbr_case_4 = nbr_case_4 + 1
-
-       # accept directly
-       nbr_split_accaptance_region_early_accept = nbr_split_accaptance_region_early_accept+1
-
-       Theta[:,r] = theta_star # update chain with proposal
-       loglik[r] = NaN
-       accept_vec[r] = 1
-
-     end
-   end
-  end
-  end
+    end
   end
 
   time_da_part = toc()

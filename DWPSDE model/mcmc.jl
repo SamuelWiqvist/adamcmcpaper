@@ -199,7 +199,7 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
   alg = problem.alg_param.alg # use PMCMC or MCWM
   #print_interval = problem.alg_param.print_interval # print the accaptance rate every print_interval:th iteration
   lasso = problem.alg_param.lasso # use Lasso
-  beta_mh = problem.alg_param.beta_MH
+  beta_MH = problem.alg_param.beta_MH
 
   nbr_of_cores = problem.alg_param.nbr_of_cores
   nbr_x0  = problem.alg_param.nbr_x0
@@ -273,9 +273,8 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
   @printf "MCMC algorithm: %s\n" alg
   @printf "Adaptation algorithm: %s\n" typeof(problem.adaptive_update)
   @printf "Prior distribution: %s\n" problem.prior_dist.dist
-  @printf "Particel filter: %s, on %d cores\n" pf_alg nbr_of_cores
-  @printf "Nbr particles for particel filter: %d\n" N
-
+  @printf "Particle filter: %s, on %d cores\n" pf_alg nbr_of_cores
+  @printf "Nbr particles for particle filter: %d\n" N
 
   @printf "Covariance - kernel_MH_direct:\n"
   print_covariance(kernel_MH_direct,adaptive_update_params_MH_direct, 1)
@@ -345,11 +344,11 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
       (theta_star, ) = gaussian_random_walk(kernel_MH_direct, adaptive_update_params_MH_direct, Theta[:,r-1], r)
 
       # calc loglik using proposed parameters
-      loglik_star = pf_paralell(Z, theta_star,theta_known, N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,print_on,false, nbr_of_proc,loglik_vec)
+      loglik_star = pf_paralell(Z, theta_star,theta_known, N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,false,false, nbr_of_proc,loglik_vec)
 
       # run MCWM or PMCMC
       if alg == "MCWM"
-        loglik_current =  pf_paralell(Z, Theta[:,r-1],theta_known, N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,print_on, false, nbr_of_proc,loglik_vec)
+        loglik_current =  pf_paralell(Z, Theta[:,r-1],theta_known, N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,false, false, nbr_of_proc,loglik_vec)
       else
         loglik_current = loglik[r-1]
       end
@@ -422,7 +421,7 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
 
         nbr_second_stage += 1
 
-        loglik_star = pf_paralell(Z, theta_star,theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,print_on,false, nbr_of_proc,loglik_vec)
+        loglik_star = pf_paralell(Z, theta_star,theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,false,false, nbr_of_proc,loglik_vec)
 
         if alg == "MCWM"
           loglik_current =  pf_paralell(Z, Theta[:,r-1],theta_known, N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,false, false, nbr_of_proc,loglik_vec)
@@ -463,7 +462,7 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
   @printf "Algorithm: %s\n" alg
   @printf "Adaptation algorithm: %s\n" typeof(problem.adaptive_update)
   @printf "Prior distribution: %s\n" problem.prior_dist.dist
-  @printf "Particel filter: %s\n" pf_alg
+  @printf "Particle filter: %s\n" pf_alg
   @printf "Time pre-er:  %.0f\n" time_pre_er
   @printf "Time fit GP model:  %.0f\n" time_fit_gp
   @printf "Time er-part:  %.0f\n" time_da_part
@@ -471,14 +470,15 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
   @printf "Number early-rejections: %.d\n"  nbr_early_rejections
 
   @printf "Number of cases directly to ordinary MH: %d\n"  nbr_ordinary_mh
-  @printf "Number of cases directly to ordinary MH accapted: %d\n"  nbr_ordinary_mh_accapte
+  @printf "Number of cases directly to ordinary MH accepted: %d\n"  nbr_ordinary_mh_accapte
 
-  @printf "Number cases in secound stage: %d\n"  nbr_second_stage
-  @printf "Number accepted in secound stage: %d\n"  nbr_second_stage_accepted
+  @printf "Number cases in in DA part: %d\n"  nbr_run_DA
+  @printf "Number cases in second stage: %d\n"  nbr_second_stage
+  @printf "Number accepted in second stage: %d\n"  nbr_second_stage_accepted
 
   @printf "Total number of evaluations of the particle filter: %d\n" nbr_eval_pf
 
-  @printf "Acceptance rate for ordinary MH accapted: %.4f\n"  nbr_ordinary_mh_accapte/nbr_ordinary_mh*100
+  @printf "Acceptance rate for ordinary MH accepted: %.4f\n"  nbr_ordinary_mh_accapte/nbr_ordinary_mh*100
   @printf "Acceptance rate a_1: %.4f\n"  nbr_second_stage/nbr_run_DA*100
   @printf "Acceptance rate a_2: %.4f\n"  nbr_second_stage_accepted/nbr_second_stage*100
   @printf "Acceptance rate a_1*a_2: %.4f\n"  (nbr_second_stage/nbr_run_DA)*(nbr_second_stage_accepted/nbr_second_stage)*100
@@ -521,7 +521,7 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, ca
   alg = problem.alg_param.alg # use PMCMC or MCWM
   #print_interval = problem.alg_param.print_interval # print the accaptance rate every print_interval:th iteration
   lasso = problem.alg_param.lasso # use Lasso
-  beta_mh = problem.alg_param.beta_MH
+  beta_MH = problem.alg_param.beta_MH
 
   nbr_of_cores = problem.alg_param.nbr_of_cores
   nbr_x0  = problem.alg_param.nbr_x0
@@ -559,7 +559,6 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, ca
   MH_direct = false
   nbr_ordinary_mh = 0
   nbr_ordinary_mh_accapte = 0
-  nbr_split_accaptance_region = 0
   nbr_run_DA = 0
   nbr_split_accaptance_region_early_accept = 0
   nbr_split_accaptance_region_early_reject = 0
@@ -610,8 +609,8 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, ca
   @printf "Adaptation algorithm: %s\n" typeof(problem.adaptive_update)
   @printf "Select case model: %s\n" typeof(casemodel)
   @printf "Prior distribution: %s\n" problem.prior_dist.dist
-  @printf "Particel filter: %s, on %d cores\n" pf_alg nbr_of_cores
-  @printf "Nbr particles for particel filter: %d\n" N
+  @printf "Particle filter: %s, on %d cores\n" pf_alg nbr_of_cores
+  @printf "Nbr particles for particle filter: %d\n" N
 
   @printf "Covariance - kernel_MH_direct:\n"
   print_covariance(kernel_MH_direct,adaptive_update_params_MH_direct, 1)
@@ -666,17 +665,17 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, ca
     if MH_direct
 
       # secound stage direct
-      nbr_ordinary_mh = nbr_ordinary_mh + 1
+      nbr_ordinary_mh += 1
 
       # Gaussian random walk using secound stage direct kernel
       (theta_star, ) = gaussian_random_walk(kernel_MH_direct, adaptive_update_params_MH_direct, Theta[:,r-1], r)
 
       # calc loglik using proposed parameters
-      loglik_star = pf_paralell(Z, theta_star,theta_known, N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,print_on,false, nbr_of_proc,loglik_vec)
+      loglik_star = pf_paralell(Z, theta_star,theta_known, N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,false,false, nbr_of_proc,loglik_vec)
 
       # run MCWM or PMCMC
       if alg == "MCWM"
-        loglik_current =  pf_paralell(Z, Theta[:,r-1],theta_known, N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,print_on, false, nbr_of_proc,loglik_vec)
+        loglik_current =  pf_paralell(Z, Theta[:,r-1],theta_known, N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,false, false, nbr_of_proc,loglik_vec)
       else
         loglik_current = loglik[r-1]
       end
@@ -747,23 +746,21 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, ca
 
         # stage 2 usign A-DA
 
-        nbr_second_stage = nbr_second_stage+1
+        nbr_second_stage += 1
 
         # A-DA
         u_log_hat = log(rand())
 
         if loglik_gp_old < loglik_gp_new #&& loglik_gp_new_std < std_limit && loglik_gp_old_std < std_limit
 
-          nbr_split_accaptance_region = nbr_split_accaptance_region+1
-
-          nbr_case_13 = nbr_case_13 + 1
+          nbr_case_13 += 1
 
           # select case 1 or 3
           if selectcase1or3(casemodel, theta_star, loglik_gp_new, loglik_gp_old) == 1
 
             # case 1
 
-            nbr_case_1 = nbr_case_1 + 1
+            nbr_case_1 += 1
 
             if u_log_hat < loglik_gp_old - loglik_gp_new
               nbr_second_stage_accepted = nbr_second_stage_accepted+1
@@ -773,8 +770,8 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, ca
               accept_vec[r] = 1
             else
 
-              loglik_star = pf_paralell(Z, theta_star,theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,print_on,false, nbr_of_proc,loglik_vec)
-              loglik_old = pf_paralell(Z, Theta[:,r-1],theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,print_on,false, nbr_of_proc,loglik_vec)
+              loglik_star = pf_paralell(Z, theta_star,theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,false,false, nbr_of_proc,loglik_vec)
+              loglik_old = pf_paralell(Z, Theta[:,r-1],theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,false,false, nbr_of_proc,loglik_vec)
 
               nbr_eval_pf += 1
 
@@ -792,28 +789,58 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, ca
                 loglik[r] = loglik[r-1]
               end
             end
-
-        else
-
-          nbr_case_3 = nbr_case_3 + 1
-
-          # run case 3
-          if u_log_hat > loglik_gp_old - loglik_gp_new
-
-            nbr_split_accaptance_region_early_reject = nbr_split_accaptance_region_early_reject+1
-            Theta[:,r] = Theta[:,r-1] # keep old values
-            loglik[r] = loglik[r-1]
-            accept_vec[r] = 1
-
           else
 
-            loglik_star = pf_paralell(Z, theta_star,theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,print_on,false, nbr_of_proc,loglik_vec)
-            loglik_old = pf_paralell(Z, Theta[:,r-1],theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,print_on,false, nbr_of_proc,loglik_vec)
+            nbr_case_3 += 1
+
+            # run case 3
+            if u_log_hat > loglik_gp_old - loglik_gp_new
+
+              nbr_split_accaptance_region_early_reject = nbr_split_accaptance_region_early_reject+1
+              Theta[:,r] = Theta[:,r-1] # keep old values
+              loglik[r] = loglik[r-1]
+              accept_vec[r] = 1
+
+            else
+
+              loglik_star = pf_paralell(Z, theta_star,theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,false,false, nbr_of_proc,loglik_vec)
+              loglik_old = pf_paralell(Z, Theta[:,r-1],theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,false,false, nbr_of_proc,loglik_vec)
+
+              nbr_eval_pf += 1
+
+              a_log = (loglik_star + loglik_gp_old)  -  (loglik_old + loglik_gp_new)
+              accept = u_log_hat < a_log # calc accaptance decision
+
+              if accept # the proposal is accapted
+                nbr_second_stage_accepted = nbr_second_stage_accepted+1
+                Theta[:,r] = theta_star # update chain with proposal
+                loglik[r] = NaN
+                accept_vec[r] = 1
+              else
+                Theta[:,r] = Theta[:,r-1] # keep old values
+                loglik[r] = loglik[r-1]
+              end
+            end
+          end
+        else
+
+          # select case 2 or 4
+          nbr_case_24 += 1
+
+          if selectcase2or4(casemodel, theta_star, loglik_gp_new, loglik_gp_old) == 1
+
+            # case 2
+            nbr_case_2 += 1
+
+
+            loglik_star = pf_paralell(Z, theta_star,theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,false,false, nbr_of_proc,loglik_vec)
+            loglik_old = pf_paralell(Z, Theta[:,r-1],theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,false,false, nbr_of_proc,loglik_vec)
 
             nbr_eval_pf += 1
 
             a_log = (loglik_star + loglik_gp_old)  -  (loglik_old + loglik_gp_new)
             accept = u_log_hat < a_log # calc accaptance decision
+
 
             if accept # the proposal is accapted
               nbr_second_stage_accepted = nbr_second_stage_accepted+1
@@ -824,51 +851,19 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, ca
               Theta[:,r] = Theta[:,r-1] # keep old values
               loglik[r] = loglik[r-1]
             end
-          end
-        end
 
-      else
-
-        # select case 2 or 4
-        nbr_case_24 = nbr_case_24 + 1
-
-        if selectcase2or4(casemodel, theta_star, loglik_gp_new, loglik_gp_old) == 1
-
-          # case 2
-          nbr_case_2 = nbr_case_2 + 1
-
-
-          loglik_star = pf_paralell(Z, theta_star,theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,print_on,false, nbr_of_proc,loglik_vec)
-          loglik_old = pf_paralell(Z, Theta[:,r-1],theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,print_on,false, nbr_of_proc,loglik_vec)
-
-          nbr_eval_pf += 1
-
-          a_log = (loglik_star + loglik_gp_old)  -  (loglik_old + loglik_gp_new)
-          accept = u_log_hat < a_log # calc accaptance decision
-
-
-          if accept # the proposal is accapted
-            nbr_second_stage_accepted = nbr_second_stage_accepted+1
-            Theta[:,r] = theta_star # update chain with proposal
-            loglik[r] = NaN
-            accept_vec[r] = 1
           else
-            Theta[:,r] = Theta[:,r-1] # keep old values
-            loglik[r] = loglik[r-1]
-          end
 
-        else
+           # case 4
+           nbr_case_4 += 1
 
-         # case 4
-         nbr_case_4 = nbr_case_4 + 1
-
-         # accept directly
-         nbr_second_stage_accepted = nbr_second_stage_accepted+1
-         Theta[:,r] = theta_star # update chain with proposal
-         loglik[r] = NaN
-         accept_vec[r] = 1
-       end
-      end
+           # accept directly
+           nbr_second_stage_accepted = nbr_second_stage_accepted+1
+           Theta[:,r] = theta_star # update chain with proposal
+           loglik[r] = NaN
+           accept_vec[r] = 1
+         end
+        end
       end
     end
   end
@@ -888,15 +883,16 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, ca
   @printf "Number early-rejections: %d\n"  nbr_early_rejections
   @printf "Number of cases directly to ordinary MH: %d\n"  nbr_ordinary_mh
 
-  @printf "Number split accaptance region early-accept: %d\n"  nbr_split_accaptance_region_early_accept
-  @printf "Number split accaptance region early-reject: %d\n"  nbr_split_accaptance_region_early_reject
+  @printf "Number split acceptance region early-accept: %d\n"  nbr_split_accaptance_region_early_accept
+  @printf "Number split acceptance region early-reject: %d\n"  nbr_split_accaptance_region_early_reject
 
-  @printf "Number cases in secound stage: %d\n"  nbr_second_stage
-  @printf "Number accepted in secound stage: %d\n"  nbr_second_stage_accepted
+  @printf "Number cases in DA part: %d\n"  nbr_run_DA
+  @printf "Number cases in second stage: %d\n"  nbr_second_stage
+  @printf "Number accepted in second stage: %d\n"  nbr_second_stage_accepted
 
   @printf "Total number of evaluations of the particle filter: %d\n" nbr_eval_pf
 
-  @printf "Acceptance rate for ordinary MH accapted: %.4f\n"  nbr_ordinary_mh_accapte/nbr_ordinary_mh*100
+  @printf "Acceptance rate for ordinary MH accepted: %.4f\n"  nbr_ordinary_mh_accapte/nbr_ordinary_mh*100
   @printf "Acceptance rate a_1: %.4f\n"  nbr_second_stage/nbr_run_DA*100
   @printf "Acceptance rate a_2: %.4f\n"  nbr_second_stage_accepted/nbr_second_stage*100
   @printf "Acceptance rate a_1*a_2: %.4f\n"  (nbr_second_stage/nbr_run_DA)*(nbr_second_stage_accepted/nbr_second_stage)*100

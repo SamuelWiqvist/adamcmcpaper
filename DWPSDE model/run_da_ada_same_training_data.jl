@@ -27,7 +27,7 @@ using HDF5
 set_nbr_params = 7
 
 # nbr cores
-nbr_of_cores = 4 # was 10
+nbr_of_cores = 10 # was 10
 
 # length burn-in
 burn_in = 1
@@ -180,7 +180,7 @@ else
 
 	if job == "simdata"
 		@load "gp_training_7_par_training_and_test_lunarc.jld"
-	job == "new_data"
+	elseif job == "new_data"
 		@load "gp_training_7_par_training_and_test_new_data.jld"
 	end
 
@@ -287,9 +287,6 @@ else
   #export_parameters(mcmc_results[2],jobname)
 end
 
-
-
-
 ################################################################################
 ##                         set A-DA problem                               ##
 ################################################################################
@@ -383,7 +380,7 @@ targets_case_2_and_4 = convert(Array{Float64,1}, targets_case_2_and_4)
 ##   set case model                                                          ###
 ################################################################################
 
-select_case_model = "biasedcoin" # logisticregression or dt
+select_case_model = "dt" # logisticregression or dt
 
 # fit model, i.e. est probabilities
 nbr_GP_star_led_GP_old = n-nbr_GP_star_geq_GP_old
@@ -400,7 +397,7 @@ println(prob_cases)
 if select_case_model == "biasedcoin"
 
 
-  casemodel = BiaseCoin(prob_cases)
+  casemodel = BiasedCoin(prob_cases)
 
 elseif select_case_model == "logisticregression"
 
