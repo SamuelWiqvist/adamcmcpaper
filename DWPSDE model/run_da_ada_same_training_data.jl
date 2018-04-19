@@ -27,13 +27,13 @@ using HDF5
 set_nbr_params = 7
 
 # nbr cores
-nbr_of_cores = 10 # was 10
+nbr_of_cores = 4 # was 10
 
 # length burn-in
 burn_in = 1
 
 # nbr iterations
-nbr_iterations = 500 # should be 20000
+nbr_iterations = 100 # should be 20000
 
 # length training data
 length_training_data = 5000 # thid should ne 5000
@@ -180,6 +180,7 @@ else
 
 	if job == "simdata"
 		@load "gp_training_7_par_training_and_test_lunarc.jld"
+    @load "fited_gp_simdata.jld"
 	elseif job == "new_data"
 		@load "gp_training_7_par_training_and_test_new_data.jld"
 	end
@@ -267,9 +268,14 @@ jobname = global_jobname*"da_gp_mcmc"*problem.alg_param.alg
 
 problem.model_param.theta_0 = mean(res_training[1].Theta_est[:,end-size(data_training,2)-size(data_test,2):end],2)[:]
 
+Profile.clear()
+Profile.clear_malloc_data()
+Profile.init(n = 10^7, delay = 0.01)
+#srand(1234)
+
 if !log_scale_prior
   # run adaptive PMCMC
-  res = dagpmcmc(problem_training, problem, gp, cov_matrix)
+  res = @profile dagpmcmc(problem_training, problem, gp, cov_matrix)
 
   mcmc_results = Result(res[1][1].Theta_est, res[1][1].loglik_est, res[1][1].accept_vec, res[1][1].prior_vec)
 
@@ -286,6 +292,35 @@ else
   export_data(problem_nonlog, mcmc_results,jobname)
   #export_parameters(mcmc_results[2],jobname)
 end
+
+# plot profiler results
+
+using PyPlot
+using ProfileView
+ProfileView.view()
+ProfileView.view(colorgc=false)
+
+# save results
+
+li, lidict = Profile.retrieve()
+@save  "da_profiler_res.jlprof"  li lidict
+
+# load results
+
+try
+  cd("DWPSDE model")
+catch
+  warn("Already in the DWPSDE model folder")
+end
+
+using JLD
+using HDF5
+using ProfileView
+
+@load "da_profiler_res.jlprof"
+
+ProfileView.view(li, lidict=lidict)
+ProfileView.view(li, lidict=lidict, colorgc=false)
 
 ################################################################################
 ##                         set A-DA problem                               ##
@@ -380,7 +415,7 @@ targets_case_2_and_4 = convert(Array{Float64,1}, targets_case_2_and_4)
 ##   set case model                                                          ###
 ################################################################################
 
-select_case_model = "dt" # logisticregression or dt
+select_case_model = "biasedcoin" # logisticregression or dt
 
 # fit model, i.e. est probabilities
 nbr_GP_star_led_GP_old = n-nbr_GP_star_geq_GP_old
@@ -393,6 +428,8 @@ prob_cases = [prob_case_1;prob_case_2;prob_case_3;prob_case_4]
 
 println("Est prob:")
 println(prob_cases)
+
+prob_cases = [0.193407; 0.859626; 0.806593; 0.140374]
 
 if select_case_model == "biasedcoin"
 
@@ -520,10 +557,12 @@ elseif select_case_model == "dt"
 
 end
 
+Profile.clear()
+Profile.init(n = 10^7, delay = 0.01)
 
 if !log_scale_prior
   # run adaptive PMCMC
-  res = adagpmcmc(problem_training, problem, gp, casemodel, cov_matrix)
+  res = @profile adagpmcmc(problem_training, problem, gp, casemodel, cov_matrix)
 
   mcmc_results = Result(res[1][1].Theta_est, res[1][1].loglik_est, res[1][1].accept_vec, res[1][1].prior_vec)
 
@@ -541,6 +580,37 @@ else
   #export_parameters(mcmc_results[2],jobname)
 end
 
+
+# plot profiler results
+
+using PyPlot
+using ProfileView
+ProfileView.view()
+ProfileView.view(colorgc=false)
+
+# save results
+
+li, lidict = Profile.retrieve()
+@save  "ada_slow_prob_profiler_res.jlprof"  li lidict
+@save  "ada_fast_prob_profiler_res.jlprof"  li lidict
+
+# load results
+
+try
+  cd("DWPSDE model")
+catch
+  warn("Already in the DWPSDE model folder")
+end
+
+using JLD
+using HDF5
+using ProfileView
+
+@load "ada_slow_prob_profiler_res.jlprof"
+@load "ada_fast_prob_profiler_res.jlprof"
+
+ProfileView.view(li, lidict=lidict)
+ProfileView.view(li, lidict=lidict, colorgc=false)
 
 
 # analyse results
