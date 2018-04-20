@@ -56,8 +56,8 @@ function analyse_results(Theta, loglik, accept_vec, prior_vec,
   Base.showarray(STDOUT,round(calcquantileint(Theta[:,burn_in+1:end],lower_q_int_limit,upper_q_int_limit),2),false)
   @printf "\n"
 
-  @printf "RMSE for parameter estimations:\n"
-  Base.showarray(STDOUT,RMSE(theta_true, Theta[:,burn_in+1:end]),false)
+  @printf "Loss for parameter estimations:\n"
+  Base.showarray(STDOUT,loss(theta_true, Theta[:,burn_in+1:end]),false)
   @printf "\n"
 
 

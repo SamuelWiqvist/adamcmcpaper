@@ -37,6 +37,9 @@ end
 ################################################################################
 
 # set job name
+jobname = "_dagpmcmc_local"
+jobname = "_adagpmcmc_local"
+
 jobname = "mcwm"
 jobname = "pmcmc"
 jobname = "_training"

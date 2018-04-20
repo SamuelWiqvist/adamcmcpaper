@@ -52,3 +52,17 @@ function calcquantileint(data::Vector, lower::Real=2.5,upper::Real=97.5)
     return intervals
 
 end
+
+# calc loss
+
+doc"""
+    loss(theta_true::Vector, theta_est::Matrix)
+Computes the root mean square error for the parameter estimations.
+"""
+function loss(theta_true::Vector, Theta_est::Matrix)
+  rmse = copy(theta_true)
+  for i = 1:length(rmse)
+    rmse[i] = sqrt(mean((theta_true[i]-Theta_est[i,:]).^2))
+  end
+  return rmse
+end

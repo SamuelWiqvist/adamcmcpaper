@@ -45,11 +45,14 @@ function mcmc(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=
   theta_star = zeros(length(theta_0),1)
   loglik_star = zeros(Float64)
   a_log = zero(Float64)
+  nbr_eval_pf = 0
 
   # pre-allocate matricies and vectors for storing data
   if store_data
-    Theta_val = zeros(length(theta_0),R-burn_in)
-    loglik_val = zeros(R-burn_in)
+    Theta_star_store = zeros(length(theta_0),R-burn_in)
+    loglik_star_store = zeros(R-burn_in)
+    Theta_old_store = zeros(length(theta_0),R-burn_in)
+    loglik_old_store = zeros(R-burn_in)
   end
 
   # parameters for adaptive update
@@ -113,11 +116,15 @@ function mcmc(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=
       a_log = loglik_star + prior_log_star +  jacobian_log_star - (loglik[r-1] +  prior_log_old + jacobian_log_old)
     end
 
+    nbr_eval_pf += 1
+
     accept = log(rand()) < a_log # calc accaptace decision
 
     if store_data && r > burn_in # store data
-      Theta_val[:,r-burn_in] = theta_star
-      loglik_val[r-burn_in] = loglik_star
+      Theta_star_store[:,r-burn_in] = theta_star
+      loglik_star_store[r-burn_in] = loglik_star
+      Theta_old_store[:,r-burn_in]  = Theta[:,r-1]
+      loglik_old_store[r-burn_in] = loglik[r-1]
     end
 
     if accept # the proposal is accapted
@@ -139,13 +146,14 @@ function mcmc(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=
   @printf "Adaptation algorithm: %s\n" typeof(problem.adaptive_update)
   @printf "Prior distribution: %s\n" problem.prior_dist.dist
   @printf "Particel filter: %s\n" pf_alg
+  @printf "Total number of evaluations of the particle filter: %d\n" nbr_eval_pf
 
   # return results
   if store_data && return_cov_matrix
     cov_prop_kernel = get_covariance(problem.adaptive_update,adaptive_update_params, R)
-    return return_results(Theta,loglik,accept_vec,prior_vec, problem,adaptive_update_params), Theta_val, loglik_val, cov_prop_kernel
+    return return_results(Theta,loglik,accept_vec,prior_vec, problem,adaptive_update_params), Theta_star_store, loglik_star_store,Theta_old_store, loglik_old_store, cov_prop_kernel
   elseif store_data
-    return return_results(Theta,loglik,accept_vec,prior_vec, problem,adaptive_update_params), Theta_val, loglik_val
+    return return_results(Theta,loglik,accept_vec,prior_vec, problem,adaptive_update_params), Theta_star_store, loglik_star_store,Theta_old_store, loglik_old_store
 
   else
     return_results(Theta,loglik,accept_vec,prior_vec, problem,adaptive_update_params)
@@ -444,7 +452,7 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
   loglik_list = []
 
   # return resutls
-  return return_da_results(gp, Theta,loglik,accept_vec,prior_vec, compare_GP_PF, data_gp_pf,nbr_early_rejections, problem, adaptive_update_params,accept_prob_log,times), res_training, theta_training, loglik_training,assumption_list,loglik_list
+  return return_da_results(gp, Theta,loglik,accept_vec,prior_vec, compare_GP_PF, data_gp_pf,nbr_early_rejections, problem, adaptive_update_params,accept_prob_log,times)
 
 end
 
@@ -527,6 +535,11 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, ca
   nbr_case_2 = 0
   nbr_case_3 = 0
   nbr_case_4 = 0
+
+  nbr_case_pf_1 = 0
+  nbr_case_pf_2 = 0
+  nbr_case_pf_3 = 0
+  nbr_case_pf_4 = 0
 
   # parameters for prior dist
   dist_type = problem.prior_dist.dist
@@ -723,6 +736,7 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, ca
               accept_prob_log[2, r] = a_log # store data
 
               nbr_eval_pf += 1
+              nbr_case_pf_1 += 1
 
               if accept # the proposal is accapted
                 nbr_second_stage_accepted = nbr_second_stage_accepted+1
@@ -761,6 +775,7 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, ca
               accept_prob_log[2, r] = a_log # store data
 
               nbr_eval_pf += 1
+              nbr_case_pf_3 += 1
 
               if accept # the proposal is accapted
                 nbr_second_stage_accepted = nbr_second_stage_accepted+1
@@ -771,57 +786,58 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, ca
                 Theta[:,r] = Theta[:,r-1] # keep old values
                 loglik[r] = loglik[r-1]
               end
-          end
-        end
-
-      else
-
-        # select case 2 or 4
-        nbr_case_24 = nbr_case_24 + 1
-
-        if selectcase2or4(casemodel, theta_star, loglik_gp_new, loglik_gp_old) == 1
-
-          # case 2
-
-          nbr_case_2 = nbr_case_2 + 1
-
-          # run ordinary stage 2
-
-          loglik_star = pf(y, theta_star,theta_known,N,print_on)
-
-          # calc accaptance probability using PF
-          # can only run MCWM in this case
-          loglik_old = pf(y, Theta[:,r-1],theta_known,N,print_on)
-          a_log = (loglik_star + loglik_gp_old)  -  (loglik_old + loglik_gp_new)
-          accept = u_log_hat < a_log # calc accaptance decision
-          accept_prob_log[2, r] = a_log # store data
-
-          nbr_eval_pf += 1
-
-          if accept # the proposal is accapted
-            nbr_second_stage_accepted = nbr_second_stage_accepted+1
-            Theta[:,r] = theta_star # update chain with proposal
-            loglik[r] = NaN
-            accept_vec[r] = 1
-          else
-            Theta[:,r] = Theta[:,r-1] # keep old values
-            loglik[r] = loglik[r-1]
+            end
           end
 
         else
 
-           # case 4
-           nbr_case_4 = nbr_case_4 + 1
+          # select case 2 or 4
+          nbr_case_24 = nbr_case_24 + 1
 
-           # accept directly
-           nbr_split_accaptance_region_early_accept = nbr_split_accaptance_region_early_accept+1
+          if selectcase2or4(casemodel, theta_star, loglik_gp_new, loglik_gp_old) == 1
 
-           Theta[:,r] = theta_star # update chain with proposal
-           loglik[r] = NaN
-           accept_vec[r] = 1
+            # case 2
 
-         end
-       end
+            nbr_case_2 = nbr_case_2 + 1
+
+            # run ordinary stage 2
+
+            loglik_star = pf(y, theta_star,theta_known,N,print_on)
+
+            # calc accaptance probability using PF
+            # can only run MCWM in this case
+            loglik_old = pf(y, Theta[:,r-1],theta_known,N,print_on)
+            a_log = (loglik_star + loglik_gp_old)  -  (loglik_old + loglik_gp_new)
+            accept = u_log_hat < a_log # calc accaptance decision
+            accept_prob_log[2, r] = a_log # store data
+
+            nbr_eval_pf += 1
+            nbr_case_pf_2 += 1
+
+            if accept # the proposal is accapted
+              nbr_second_stage_accepted = nbr_second_stage_accepted+1
+              Theta[:,r] = theta_star # update chain with proposal
+              loglik[r] = NaN
+              accept_vec[r] = 1
+            else
+              Theta[:,r] = Theta[:,r-1] # keep old values
+              loglik[r] = loglik[r-1]
+            end
+
+          else
+
+            # case 4
+            nbr_case_4 = nbr_case_4 + 1
+
+            # accept directly
+            nbr_split_accaptance_region_early_accept = nbr_split_accaptance_region_early_accept+1
+
+            Theta[:,r] = theta_star # update chain with proposal
+            loglik[r] = NaN
+            accept_vec[r] = 1
+
+          end
+        end
       end
     end
   end
@@ -860,16 +876,22 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, ca
   @printf "Number case 1 or 3: %d\n"  nbr_case_13
   @printf "Number case 2 or 4: %d\n"  nbr_case_24
 
-  @printf "Number case 1: %d, %.4f %% of all cases\n"  nbr_case_1 nbr_case_1/nbr_case_13
-  @printf "Number case 2: %d, %.4f %% of all cases\n"  nbr_case_2 nbr_case_2/nbr_case_24
-  @printf "Number case 3: %d, %.4f %% of all cases\n"  nbr_case_3 nbr_case_3/nbr_case_13
-  @printf "Number case 4: %d, %.4f %% of all cases\n"  nbr_case_4 nbr_case_4/nbr_case_24
+  @printf "Number case 1: %d, %.4f %% of all cases\n"  nbr_case_1 nbr_case_1/nbr_case_13*100
+  @printf "Number case 2: %d, %.4f %% of all cases\n"  nbr_case_2 nbr_case_2/nbr_case_24*100
+  @printf "Number case 3: %d, %.4f %% of all cases\n"  nbr_case_3 nbr_case_3/nbr_case_13*100
+  @printf "Number case 4: %d, %.4f %% of all cases\n"  nbr_case_4 nbr_case_4/nbr_case_24*100
+
+  @printf "Number pf runs in case 1: %d, prob pf given case 1 %.4f %%\n"  nbr_case_pf_1 nbr_case_pf_1/nbr_case_1*100
+  @printf "Number pf runs in case 2: %d, prob pf given case 2 %.4f %%\n"  nbr_case_pf_2 nbr_case_pf_2/nbr_case_2*100
+  @printf "Number pf runs in case 3: %d, prob pf given case 3 %.4f %%\n"  nbr_case_pf_3 nbr_case_pf_3/nbr_case_3*100
+  @printf "Number pf runs in case 4: %d, prob pf given case 4 %.4f %%\n"  nbr_case_pf_4 nbr_case_pf_4/nbr_case_4*100
+
 
   assumption_list = []
   loglik_list = []
 
   # return resutls
-  return return_da_results(gp, Theta,loglik,accept_vec,prior_vec, compare_GP_PF, data_gp_pf,nbr_early_rejections, problem, adaptive_update_params,accept_prob_log,times), res_training, theta_training, loglik_training,assumption_list,loglik_list
+  return return_da_results(gp, Theta,loglik,accept_vec,prior_vec, compare_GP_PF, data_gp_pf,nbr_early_rejections, problem, adaptive_update_params,accept_prob_log,times)
 
 end
 

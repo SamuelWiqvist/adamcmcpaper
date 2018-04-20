@@ -33,12 +33,12 @@ problem.alg_param.print_interval = 1000 #problem.alg_param.R
 #problem.model_param.theta_0 = problem.model_param.theta_true
 
 # MCWM
-jobname = "test_new_code_structure"
+jobname = "profileing"
 problem.alg_param.alg = "MCWM"
 problem.adaptive_update = AMUpdate_gen(eye(3), 2.4/sqrt(3), 0.4, 1., 0.8, 25)
 
 # PMCMC
-jobname = "test_new_code_structure"
+jobname = "profileing"
 problem.alg_param.alg = "PMCMC"
 problem.adaptive_update = AMUpdate_gen(eye(3), 2.4/sqrt(3), 0.2, 1., 0.8, 25)
 
@@ -53,16 +53,48 @@ problem.adaptive_update = AMUpdate_gen(eye(3), 2.4/sqrt(3), 0.2, 1., 0.8, 25)
 #problem.adaptive_update = AMUpdate_gen(eye(3), 2.4/sqrt(3), 0.2, 1., 0.8, 25)
 
 # run adaptive PMCMC
+
+
+Profile.clear()
+Profile.clear_malloc_data()
+Profile.init(n = 10^7, delay = 0.01)
+
 tic()
 res_MCMC = mcmc(problem)
 time_MCMC = toc()
-@printf "Run time (s): %.4f \n" time_MCMC
+@printf "Run time (s): %.4f \n" time_MCM
 
-# profiling
-#using ProfileView
-#Profile.clear()
-#res_MCMC = @profile MCMC(problem)
-#ProfileView.view()
+
+# plot profiler results
+
+using PyPlot
+using ProfileView
+ProfileView.view()
+ProfileView.view(colorgc=false)
+
+# save results
+
+li, lidict = Profile.retrieve()
+@save  "mcwm_profiler_res.jlprof"  li lidict
+
+# load results
+
+try
+  cd("DWPSDE model")
+catch
+  warn("Already in the DWPSDE model folder")
+end
+
+using JLD
+using HDF5
+using ProfileView
+
+@load "da_profiler_res.jlprof"
+
+ProfileView.view(li, lidict=lidict)
+ProfileView.view(li, lidict=lidict, colorgc=false)
+
+
 
 
 # write outputs
