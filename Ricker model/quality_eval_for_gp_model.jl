@@ -48,7 +48,7 @@ problem.alg_param.compare_GP_and_PF = false
 problem.alg_param.noisy_est = false
 problem.alg_param.pred_method = "sample"
 problem.alg_param.print_interval = 10000 # problem.alg_param.R#
-problem.alg_param.beta_MH = 0.1 # "local_loglik_approx" # "max_loglik"
+problem.alg_param.beta_MH = 0.15 # "local_loglik_approx" # "max_loglik"
 
 #problem.data.y = Array(readtable("y.csv"))[:,1]
 #problem.data.y = Array(readtable("y_data_set_1.csv"))[:,1]
@@ -58,30 +58,23 @@ problem.data.y = Array(readtable("y_data_set_2.csv"))[:,1]
 ##                         training data                                      ##
 ################################################################################
 
-load_tranining_data = true
-
-# set up training problem
-
-#accelerated_da = true
-
-problem_traning = set_up_problem(ploton = false)
+problem_training = set_up_problem(ploton = false)
 
 length_training_data = 2000
 length_test_data = 2000
 burn_in = 2000
 
-problem_traning.alg_param.N = 1000 # nbr particels
-problem_traning.alg_param.R = length_training_data + length_test_data + burn_in # nbr iterations
-problem_traning.alg_param.burn_in = burn_in # burn_in
-problem_traning.data.y = Array(readtable("y_data_set_2.csv"))[:,1] #Array(readtable("y.csv"))[:,1]
-problem_traning.alg_param.print_interval = 1000
+problem_training.alg_param.N = 1000 # nbr particels
+problem_training.alg_param.R = length_training_data + length_test_data + burn_in # nbr iterations
+problem_training.alg_param.burn_in = burn_in # burn_in
+problem_training.data.y = Array(readtable("y_data_set_2.csv"))[:,1] #Array(readtable("y.csv"))[:,1]
+problem_training.alg_param.print_interval = 1000
 
 # test starting at true parameters
 #problem.model_param.theta_0 = problem.model_param.theta_true
 
 # PMCMC
-problem_traning.alg_param.alg = "MCWM"
-
+problem_training.alg_param.alg = "MCWM"
 
 # use AM alg for adaptive updating
 #problem.adaptive_update = AMUpdate(eye(3), 2.4/sqrt(3), 1., 0.7, 25)
@@ -89,68 +82,82 @@ problem_traning.alg_param.alg = "MCWM"
 #problem.adaptive_update = noAdaptation(2.4/sqrt(3)*eye(3))
 
 # or, use AM gen alg for adaptive updating
-#problem_traning.adaptive_update = AMUpdate_gen(eye(3), 2.4/sqrt(3), 0.2, 1., 0.8, 25)
-problem_traning.adaptive_update = AMUpdate_gen(eye(3), 2.4/sqrt(3), 0.4, 1., 0.8, 25)
+#problem_training.adaptive_update = AMUpdate_gen(eye(3), 2.4/sqrt(3), 0.2, 1., 0.8, 25)
+problem_training.adaptive_update = AMUpdate_gen(eye(3), 2.4/sqrt(3), 0.4, 1., 0.8, 25)
 
+load_training_data = true
 
 ################################################################################
 ##                generate training data                                     ###
 ################################################################################
 
-if !load_tranining_data
+if !load_training_data
 
-    tic()
-    res_training, theta_training, loglik_training, cov_matrix = MCMC(problem_traning, true, true)
-    time_pre_er = toc()
-    #export_parameters(res_problem_normal_prior_est_AM_gen[2],jobname)
+  # generate training data
+  tic()
+  # collect data
+  res_training, Theta_star_training, loglik_star_training,Theta_old_training,loglik_old_training, cov_matrix = mcmc(problem_training, true, true)
 
+  time_pre_er = toc()
 
-    # write outputs
-    res = res_training[1]
+  # write outputs
+  res = res_training[1]
 
-    Theta = res.Theta_est
-    loglik = res.loglik_est
-    accept_vec = res.accept_vec
-    prior_vec = res.prior_vec
+  Theta = res.Theta_est
+  loglik = res.loglik_est
+  accept_vec = res.accept_vec
+  prior_vec = res.prior_vec
 
-    loglik_avec_priorvec = zeros(3, length(loglik))
-    loglik_avec_priorvec[1,:] = loglik
-    loglik_avec_priorvec[2,:] = accept_vec
-    loglik_avec_priorvec[3,:] = prior_vec
+  loglik_avec_priorvec = zeros(3, length(loglik))
+  loglik_avec_priorvec[1,:] = loglik
+  loglik_avec_priorvec[2,:] = accept_vec
+  loglik_avec_priorvec[3,:] = prior_vec
 
-    algorithm_parameters = zeros(10, 2)
+  algorithm_parameters = zeros(10, 2)
 
-    algorithm_parameters[1,1] = problem_traning.alg_param.burn_in
-    algorithm_parameters[2:4,1] = problem_traning.model_param.theta_true
-    algorithm_parameters[5:7,1] = problem_traning.model_param.theta_0
-    algorithm_parameters[8:end,:] = problem_traning.prior_dist.Theta_parameters
+  algorithm_parameters[1,1] = problem_training.alg_param.burn_in
+  algorithm_parameters[2:4,1] = problem_training.model_param.theta_true
+  algorithm_parameters[5:7,1] = problem_training.model_param.theta_0
+  algorithm_parameters[8:end,:] = problem_training.prior_dist.prior_parameters
 
-    writetable("Results/Theta_training.csv", convert(DataFrame, Theta))
-    writetable("Results/loglik_avec_priorvec_training.csv", convert(DataFrame, loglik_avec_priorvec))
-    writetable("Results/algorithm_parameters_training.csv", convert(DataFrame, algorithm_parameters))
+  writetable("Results/Theta_training.csv", convert(DataFrame, Theta))
+  writetable("Results/loglik_avec_priorvec_training.csv", convert(DataFrame, loglik_avec_priorvec))
+  writetable("Results/algorithm_parameters_training.csv", convert(DataFrame, algorithm_parameters))
 
+  # split tranining and test data
 
-    # split tranining and test data
+  Theta_test_star = Theta_star_training[:,(end-length_test_data+1):end]
+  loglik_test_star = loglik_star_training[(end-length_test_data+1):end]
 
-    theta_test = theta_training[:,(end-length_test_data+1):end]
-    loglik_test = loglik_training[(end-length_test_data+1):end]
+  Theta_test_old = Theta_old_training[:,(end-length_test_data+1):end]
+  loglik_test_old = loglik_old_training[(end-length_test_data+1):end]
 
-    data_test = [theta_test; loglik_test']
+  data_test_star = [Theta_test_star; loglik_test_star']
+  data_test_old = [Theta_test_old; loglik_test_old']
 
-    theta_training = theta_training[:,1:length_training_data]
-    loglik_training = loglik_training[1:length_training_data]
+  Theta_training_star = Theta_star_training[:,1:length_training_data]
+  loglik_training_star = loglik_star_training[1:length_training_data]
 
-    data_training = [theta_training; loglik_training']
+  Theta_training_old = Theta_old_training[:,1:length_training_data]
+  loglik_training_old = loglik_old_training[1:length_training_data]
 
-    save("gp_training_and_test_data_ricker_gen_lunarc.jld", "res_training", res_training, "theta_training", theta_training, "loglik_training", loglik_training, "theta_test", theta_test, "loglik_test", loglik_test,"cov_matrix",cov_matrix)
+  data_training_star = [Theta_training_star; loglik_training_star']
+  data_training_old = [Theta_training_old; loglik_training_old']
 
+  save("gp_training_and_test_data_ricker_gen_local.jld",
+        "res_training", res_training,
+        "data_training_star", data_training_star,
+        "data_training_old", data_training_old,
+        "data_test_star", data_test_star,
+        "data_test_old", data_test_old,
+        "cov_matrix",cov_matrix)
 
 else
 
   #@load "gp_training_$(set_nbr_params)_par.jld"
   #@load "gp_training_$(set_nbr_params)_par.jld"
 
-  @load "gp_training_and_test_data_ricker_gen_lunarc.jld"
+  @load "gp_training_and_test_data_ricker_gen_local.jld"
 
 end
 
@@ -220,28 +227,27 @@ end
 
 for i = 1:3
   PyPlot.figure()
-  PyPlot.plot(theta_training[i,:])
-  PyPlot.plot(problem.model_param.theta_true[i]*ones(size(theta_training,2)), "k")
+  PyPlot.plot(data_training_star[i,:])
+  PyPlot.plot(problem.model_param.theta_true[i]*ones(size(data_training_star,2)), "k")
 end
 
 for i = 1:3
   #PyPlot.figure()
   #PyPlot.plt[:hist](theta_training[i,:],100)
   PyPlot.figure()
-  h = PyPlot.plt[:hist](theta_training[i,:],100)
+  h = PyPlot.plt[:hist](data_training_star[i,:],100)
   PyPlot.plot((problem.model_param.theta_true[i], problem.model_param.theta_true[i]), (0, maximum(h[1])+5), "k");
-
 end
 
 PyPlot.figure()
-PyPlot.plt[:hist](loglik_training,100)
+PyPlot.plt[:hist](data_training_star[end,:],100)
 
 PyPlot.figure()
 PyPlot.plot(res_training[1].loglik_est)
 
 
-show(mean(theta_training,2))
-show(std(theta_training,2))
+show(mean(data_training_star[1:3,:],2))
+show(std(data_training_star[1:3,:],2))
 
 
 ################################################################################
@@ -253,30 +259,20 @@ gp = GPModel("est_method",zeros(6), zeros(4),
 eye(problem.alg_param.length_training_data-20), zeros(problem.alg_param.length_training_data-20),zeros(2,problem.alg_param.length_training_data-20),
 collect(1:10))
 
-
-# fit gp model
+data_training = data_training_star
+data_test = data_test_star
 
 tic()
 
-data_training = [theta_training; loglik_training']
-data_test = [theta_test; loglik_test']
-
-#data_test = data_training[:, Int(size(data_training)[2]/2+1):end]
-#data_training = data_training[:, 1:Int(size(data_training)[2]/2)]
-data_test = data_training
-data_training = data_training
-
 # fit GP model
-if true #problem.alg_param.est_method == "ml"
+if problem.alg_param.est_method == "ml"
   # fit GP model using ml
-  #perc_outlier = 0.1 # used when using PMCMC for trainig data 0.05
-  #tail_rm = "left"
 
-  perc_outlier = 0.1
+  perc_outlier = 0.1 # used when using PMCMC for trainig data 0.05
   tail_rm = "left"
-  lasso = false # was true test fitting without lassa. No loss when using lasso!
+  problem.alg_param.lasso = false
 
-  ml_est(gp, data_training,"SE", lasso,perc_outlier,tail_rm)
+  ml_est(gp, data_training,"SE", problem.alg_param.lasso,perc_outlier,tail_rm)
 else
   error("The two stage estimation method is not in use")
   #two_stage_est(gp, data_training)
@@ -380,6 +376,7 @@ N = 1000  #problem.alg_param.N
 prior_parameters = problem.prior_dist.prior_parameters
 
 include("pf.jl")
+
 N = 1000
 
 PyPlot.figure()
@@ -452,41 +449,31 @@ PyPlot.ylabel(L"$\ell$")
 # Create features for classification models                                                                            ##
 
 n = size(data_training,2)
-n_burn_in = problem_traning.alg_param.burn_in
-
-idx_training_start = n_burn_in+1
-idx_training_end = idx_training_start+n-1
-
-idx_test_start = idx_training_end+1
-idx_test_end = idx_test_start+n-1
-
-idx_training_old = idx_training_start-1:idx_training_end-1
-idx_test_old = idx_test_start-1:idx_test_end-1
-
-loglik_training_old = res_training[1].loglik_est[idx_training_old]
-loglik_test_old = res_training[1].loglik_est[idx_test_old]
+n_burn_in = problem_training.alg_param.burn_in
 
 
 dim = length(problem.model_param.theta_true)
-data_signs = zeros(4,n)
-data_signs[3,:] = data_training[dim+1,:]
-data_signs[4,:] = loglik_training_old
+data_gp_loglik_star_old = zeros(4,n)
+data_gp_loglik_star_old[3,:] = data_training_star[dim+1,:]
+data_gp_loglik_star_old[4,:] = data_training_old[dim+1,:]
+
+# data_gp_loglik_star_old = [gp_star, gp_old, ll_star, ll_old]
 
 std_pred_gp_star = zeros(n)
 
 noisy_pred = problem.alg_param.noisy_est
 
 for i = 1:n
-  (loglik_est_star, var_pred_ml_star, prediction_sample_ml_star) = predict(data_training[1:dim,i],gp,noisy_pred)
-  (loglik_est_old, var_pred_ml, prediction_sample_ml_old) = predict(res_training[1].Theta_est[:,idx_training_old[i]],gp,noisy_pred)
-  data_signs[1,i] = prediction_sample_ml_star[1]
-  data_signs[2,i] = prediction_sample_ml_old[1]
+  (loglik_est_star, var_pred_ml_star, prediction_sample_ml_star) = predict(data_training_star[1:dim,i],gp,noisy_pred)
+  (loglik_est_old, var_pred_ml, prediction_sample_ml_old) = predict(data_training_old[1:dim,i],gp,noisy_pred)
+  data_gp_loglik_star_old[1,i] = prediction_sample_ml_star[1]
+  data_gp_loglik_star_old[2,i] = prediction_sample_ml_old[1]
   std_pred_gp_star[i] = sqrt(var_pred_ml_star[1])
 end
 
 nbr_GP_star_geq_GP_old = zero(Int64)
 nbr_case_1 = zero(Int64)
-nbr_case_4 = zero(Int64)
+nbr_case_2 = zero(Int64)
 
 targets_case_1_and_3 = []
 data_case_1_and_3 = []
@@ -495,22 +482,23 @@ targets_case_2_and_4 = []
 data_case_2_and_4 = []
 
 for i = 1:n
-  if data_signs[1,i] > data_signs[2,i]
+  if data_gp_loglik_star_old[1,i] > data_gp_loglik_star_old[2,i]
     nbr_GP_star_geq_GP_old += 1
-    data_case_1_and_3 = vcat(data_case_1_and_3, [data_training[1:dim,i]; data_signs[1,i]/data_signs[2,i]; std_pred_gp_star[i]])
-    if data_signs[3,i] > data_signs[4,i]
+    data_case_1_and_3 = vcat(data_case_1_and_3, [data_training[1:dim,i]; data_gp_loglik_star_old[1,i]/data_gp_loglik_star_old[2,i]; std_pred_gp_star[i]])
+    if data_gp_loglik_star_old[3,i] > data_gp_loglik_star_old[4,i]
       append!(targets_case_1_and_3, 1)
       nbr_case_1 += 1
     else
       append!(targets_case_1_and_3, 0)
     end
-  elseif data_signs[3,i] > data_signs[4,i]
-    data_case_2_and_4 = vcat(data_case_2_and_4, [data_training[1:dim,i]; data_signs[1,i]/data_signs[2,i]; std_pred_gp_star[i]])
-    append!(targets_case_2_and_4, 0)
-    nbr_case_4 += 1
   else
-    data_case_2_and_4 = vcat(data_case_2_and_4, [data_training[1:dim,i]; data_signs[1,i]/data_signs[2,i]; std_pred_gp_star[i]])
-    append!(targets_case_2_and_4, 1)
+    data_case_2_and_4 = vcat(data_case_2_and_4, [data_training[1:dim,i]; data_gp_loglik_star_old[1,i]/data_gp_loglik_star_old[2,i]; std_pred_gp_star[i]])
+    if data_gp_loglik_star_old[3,i] < data_gp_loglik_star_old[4,i]
+      append!(targets_case_2_and_4, 1)
+      nbr_case_2 += 1
+    else
+      append!(targets_case_2_and_4, 0)
+    end
   end
 end
 
@@ -582,6 +570,33 @@ input_data_case_2_and_4[:,3] = sqrt((mean_posterior[3] - data_case_2_and_4[3,:])
 input_data_case_2_and_4[:,4] = sqrt(sum((repmat(mean_posterior', size(data_case_2_and_4,2))'-data_case_2_and_4[1:3,:]).^2,1))
 input_data_case_2_and_4[:,5] = data_case_2_and_4[4,:]
 input_data_case_2_and_4[:,end] = targets_case_2_and_4
+
+
+# features for the dt model
+
+
+
+#standardization!(data_case_1_and_3)
+
+input_data_case_1_and_3 = zeros(length(targets_case_1_and_3), dim+2)
+
+input_data_case_1_and_3[:,1] =  data_case_1_and_3[1,:]
+input_data_case_1_and_3[:,2] =  data_case_1_and_3[2,:]
+input_data_case_1_and_3[:,3] =  data_case_1_and_3[3,:]
+input_data_case_1_and_3[:,4] =  data_case_1_and_3[4,:]
+input_data_case_1_and_3[:,end] = targets_case_1_and_3
+
+#standardization!(data_case_2_and_4)
+
+
+input_data_case_2_and_4 = zeros(length(targets_case_2_and_4), dim+2)
+
+input_data_case_2_and_4[:,1] =  data_case_2_and_4[1,:]
+input_data_case_2_and_4[:,2] =  data_case_2_and_4[2,:]
+input_data_case_2_and_4[:,3] =  data_case_2_and_4[3,:]
+input_data_case_2_and_4[:,4] =  data_case_2_and_4[4,:]
+input_data_case_2_and_4[:,end] = targets_case_2_and_4
+
 
 
 # plot features in input data
@@ -945,13 +960,12 @@ PyPlot.zlabel(L"std gp pred")
 ##  Biased coin model                                                                          ##
 ################################################################################
 
-# fit model, i.e. est probabilities
 nbr_GP_star_led_GP_old = n-nbr_GP_star_geq_GP_old
 
 prob_case_1 = nbr_case_1/nbr_GP_star_geq_GP_old
-prob_case_2 = (nbr_GP_star_led_GP_old-nbr_case_4)/nbr_GP_star_led_GP_old
+prob_case_2 = (nbr_case_2)/nbr_GP_star_led_GP_old
 prob_case_3 = 1-prob_case_1
-prob_case_4 = nbr_case_4/nbr_GP_star_led_GP_old
+prob_case_4 = (nbr_GP_star_led_GP_old-nbr_case_2)/nbr_GP_star_led_GP_old
 prob_cases = [prob_case_1;prob_case_2;prob_case_3;prob_case_4]
 
 
@@ -970,7 +984,7 @@ nbr_case_4_correct = 0
 
 include("pf.jl")
 N = 1000
-y = problem_traning.data.y
+y = problem_training.data.y
 
 
 case_1_theta_val = []
@@ -987,14 +1001,14 @@ case_4_assumption_holds = []
 
 for i = 1:n
 
-  (loglik_est_star, var_pred_ml, prediction_sample_ml_star) = predict(data_test[1:dim,i],gp,noisy_pred)
-  (loglik_est_old, var_pred_ml, prediction_sample_ml_old) = predict(res_training[1].Theta_est[:,idx_test_old[i]],gp,noisy_pred)
+  theta_new = data_test_star[1:dim,i]
+  theta_old = data_test_old[1:dim,i]
 
-  theta_old = res_training[1].Theta_est[:,idx_test_old[i]]
-  loglik_pf_old = pf(y, theta_old,problem_traning.model_param.theta_known,N,false)
+  (loglik_est_star, var_pred_ml, prediction_sample_ml_star) = predict(theta_new,gp,noisy_pred)
+  (loglik_est_old, var_pred_ml, prediction_sample_ml_old) = predict(theta_old,gp,noisy_pred)
 
-  theta_new = data_test[1:dim,i] #res_training[1].Theta_est[:,i+n_burn_in+size(data_training,2)]
-  loglik_pf_new = pf(y, theta_new,problem_traning.model_param.theta_known,N,false)
+  loglik_pf_old = pf(y, theta_old,problem_training.model_param.theta_known,N,false)
+  loglik_pf_new = pf(y, theta_new,problem_training.model_param.theta_known,N,false)
 
   if prediction_sample_ml_star[1] > prediction_sample_ml_old[1]
     go_to_case_1 = rand() < prob_case_1
@@ -1449,14 +1463,14 @@ y = problem_traning.data.y
 
 for i = 1:n
 
-  (loglik_est_star, var_pred_gp_star, prediction_sample_ml_star) = predict(data_test[1:dim,i],gp,noisy_pred)
-  (loglik_est_old, var_pred_ml, prediction_sample_ml_old) = predict(res_training[1].Theta_est[:,idx_test_old[i]],gp,noisy_pred)
+  theta_new = data_test_star[1:dim,i]
+  theta_old = data_test_old[1:dim,i]
 
-  theta_old = res_training[1].Theta_est[:,idx_test_old[i]]
-  loglik_pf_old = pf(y, theta_old,problem_traning.model_param.theta_known,N,false)
+  (loglik_est_star, var_pred_ml, prediction_sample_ml_star) = predict(theta_new,gp,noisy_pred)
+  (loglik_est_old, var_pred_ml, prediction_sample_ml_old) = predict(theta_old,gp,noisy_pred)
 
-  theta_new = data_test[1:dim,i] #res_training[1].Theta_est[:,i+n_burn_in+size(data_training,2)]
-  loglik_pf_new = pf(y, theta_new,problem_traning.model_param.theta_known,N,false)
+  loglik_pf_old = pf(y, theta_old,problem_training.model_param.theta_known,N,false)
+  loglik_pf_new = pf(y, theta_new,problem_training.model_param.theta_known,N,false)
 
   # tansformation of theta_new
   # transform theta_new to euclidian distance space

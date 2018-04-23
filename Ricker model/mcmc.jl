@@ -169,7 +169,7 @@ doc"""
 
 Runs the DA-GP-MCMC algorithm for the Ricker model.
 """
-function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov_matrix::Matrix)
+function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov_matrix::Matrix, return_run_info::Bool=false)
 
   # data
   y = problem.data.y
@@ -452,7 +452,14 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
   loglik_list = []
 
   # return resutls
-  return return_da_results(gp, Theta,loglik,accept_vec,prior_vec, compare_GP_PF, data_gp_pf,nbr_early_rejections, problem, adaptive_update_params,accept_prob_log,times)
+  if return_run_info
+    run_info = [nbr_eval_pf;
+                nbr_ordinary_mh]
+    return return_da_results(gp, Theta,loglik,accept_vec,prior_vec, compare_GP_PF, data_gp_pf,nbr_early_rejections, problem, adaptive_update_params,accept_prob_log,times),
+            run_info
+  else
+    return return_da_results(gp, Theta,loglik,accept_vec,prior_vec, compare_GP_PF, data_gp_pf,nbr_early_rejections, problem, adaptive_update_params,accept_prob_log,times)
+  end
 
 end
 
@@ -464,7 +471,7 @@ doc"""
 
 Runs the ADA-GP-MCMC algorithm for the Ricker model.
 """
-function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, casemodel::CaseModel, cov_matrix::Matrix)
+function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, casemodel::CaseModel, cov_matrix::Matrix, return_run_info::Bool = false)
 
   # data
   y = problem.data.y
@@ -891,7 +898,23 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, ca
   loglik_list = []
 
   # return resutls
-  return return_da_results(gp, Theta,loglik,accept_vec,prior_vec, compare_GP_PF, data_gp_pf,nbr_early_rejections, problem, adaptive_update_params,accept_prob_log,times)
+  if return_run_info
+    run_info =  [nbr_eval_pf;
+                nbr_ordinary_mh;
+                nbr_case_13;
+                nbr_case_24;
+                nbr_case_1;
+                nbr_case_2;
+                nbr_case_3;
+                nbr_case_4;
+                nbr_case_pf_1;
+                nbr_case_pf_2;
+                nbr_case_pf_3;
+                nbr_case_pf_4]
+    return return_da_results(gp, Theta,loglik,accept_vec,prior_vec, compare_GP_PF, data_gp_pf,nbr_early_rejections, problem, adaptive_update_params,accept_prob_log,times), run_info
+  else
+    return return_da_results(gp, Theta,loglik,accept_vec,prior_vec, compare_GP_PF, data_gp_pf,nbr_early_rejections, problem, adaptive_update_params,accept_prob_log,times)
+  end
 
 end
 
