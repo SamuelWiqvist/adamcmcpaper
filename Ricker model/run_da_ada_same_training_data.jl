@@ -198,14 +198,7 @@ accelerated_da = false
 
 problem.model_param.theta_0 = mean(res_training[1].Theta_est[:,problem_training.alg_param.burn_in+1:problem_training.alg_param.burn_in+length_training_data],2)
 
-# time multiple runs
-run_times_da = zeros(10)
-
-for i = 1:10
-  println("Iterstion:")
-  println(i)
-  run_times_da[i] = @elapsed res = dagpmcmc(problem_training, problem, gp, cov_matrix)
-end
+res = @time dagpmcmc(problem_training, problem, gp, cov_matrix)
 
 # calc res
 mcmc_results = Result(res[1].Theta_est, res[1].loglik_est, res[1].accept_vec, res[1].prior_vec)
@@ -320,7 +313,7 @@ targets_case_2_and_4 = convert(Array{Float64,1}, targets_case_2_and_4)
 ##   set case model                                                          ###
 ################################################################################
 
-select_case_model = "biasedcoin" # logisticregression or dt
+select_case_model = "dt" # logisticregression or dt
 
 nbr_GP_star_led_GP_old = n-nbr_GP_star_geq_GP_old
 
@@ -443,18 +436,8 @@ elseif select_case_model == "dt"
 end
 
 # run ADA
-res = adagpmcmc(problem_training, problem, gp, casemodel, cov_matrix)
 
-
-# time multiple runs
-run_times_ada = zeros(10)
-
-for i = 1:10
-  println("Iterstion:")
-  println(i)
-  run_times_ada[i] = @elapsed res = adagpmcmc(problem_training, problem, gp, casemodel, cov_matrix)
-end
-
+res = @time adagpmcmc(problem_training, problem, gp, casemodel, cov_matrix)
 
 # write results
 mcmc_results = Result(res[1].Theta_est, res[1].loglik_est, res[1].accept_vec, res[1].prior_vec)
