@@ -180,7 +180,7 @@ doc"""
 
 Runs the DA-GP-MCMC algorithm.
 """
-function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov_matrix::Matrix)
+function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov_matrix::Matrix,return_run_info::Bool=false)
 
   # data
   Z = problem.data.Z
@@ -486,11 +486,16 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
 
   @printf "#####################################################################\n"
 
-  assumption_list = []
-  loglik_list = []
 
   # return resutls
-  return return_gp_results(gp, Theta,loglik,accept_vec,prior_vec, compare_GP_PF, data_gp_pf,nbr_early_rejections, problem, adaptive_update_params,accept_prob_log,times), res_training, theta_training, loglik_training,assumption_list,loglik_list
+  if return_run_info
+    run_info = [nbr_eval_pf;
+                nbr_ordinary_mh]
+    return return_gp_results(gp, Theta,loglik,accept_vec,prior_vec, compare_GP_PF, data_gp_pf,nbr_early_rejections, problem, adaptive_update_params,accept_prob_log,times), run_info
+  else
+    return return_gp_results(gp, Theta,loglik,accept_vec,prior_vec, compare_GP_PF, data_gp_pf,nbr_early_rejections, problem, adaptive_update_params,accept_prob_log,times)
+  end
+
 
 end
 
@@ -502,7 +507,7 @@ doc"""
 
 Runs the ADA-GP-MCMC algorithm.
 """
-function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, casemodel::CaseModel, cov_matrix::Matrix)
+function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, casemodel::CaseModel, cov_matrix::Matrix, return_run_info::Bool=false)
 
   # data
   Z = problem.data.Z
@@ -572,19 +577,24 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, ca
   time_fit_gp = zero(Float64)
   time_er_part = zero(Float64)
 
-  nbr_case_1 = 0
-  nbr_case_2 = 0
-  nbr_case_3 = 0
-  nbr_case_4 = 0
+  nbr_case_1 = zero(Int64)
+  nbr_case_2 = zero(Int64)
+  nbr_case_3 = zero(Int64)
+  nbr_case_4 = zero(Int64)
 
-  nbr_eval_pf = 0
-  nbr_case_13 = 0
-  nbr_case_24 = 0
+  nbr_eval_pf = zero(Int64)
+  nbr_case_13 = zero(Int64)
+  nbr_case_24 = zero(Int64)
+
+  nbr_case_pf_1 = zero(Int64)
+  nbr_case_pf_2 = zero(Int64)
+  nbr_case_pf_3 = zero(Int64)
+  nbr_case_pf_4 = zero(Int64)
 
   # da new
   loglik_gp_new_std = 0
 
-  #(~,std_loglik_traning) = predict(theta_training, gp, pred_method,est_method,noisy_est,true)
+  #(~,std_loglik_training) = predict(theta_training, gp, pred_method,est_method,noisy_est,true)
   loglik_gp_new_std = 0
 
   # parameters for prior dist
@@ -774,6 +784,7 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, ca
               loglik_old = pf_paralell(Z, Theta[:,r-1],theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,false,false, nbr_of_proc,loglik_vec)
 
               nbr_eval_pf += 1
+              nbr_case_pf_1 += 1
 
               a_log = (loglik_star + loglik_gp_old)  -  (loglik_old + loglik_gp_new)
               accept = u_log_hat < a_log # calc accaptance decision
@@ -807,6 +818,7 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, ca
               loglik_old = pf_paralell(Z, Theta[:,r-1],theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,false,false, nbr_of_proc,loglik_vec)
 
               nbr_eval_pf += 1
+              nbr_case_pf_3 += 1
 
               a_log = (loglik_star + loglik_gp_old)  -  (loglik_old + loglik_gp_new)
               accept = u_log_hat < a_log # calc accaptance decision
@@ -837,6 +849,7 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, ca
             loglik_old = pf_paralell(Z, Theta[:,r-1],theta_known,N,dt,dt_U,nbr_x0, nbr_x,subsample_interval,false,false, nbr_of_proc,loglik_vec)
 
             nbr_eval_pf += 1
+            nbr_case_pf_2 += 1
 
             a_log = (loglik_star + loglik_gp_old)  -  (loglik_old + loglik_gp_new)
             accept = u_log_hat < a_log # calc accaptance decision
@@ -906,13 +919,36 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, ca
   @printf "Number case 3: %d, %.4f %% of all cases\n"  nbr_case_3 nbr_case_3/nbr_case_13
   @printf "Number case 4: %d, %.4f %% of all cases\n"  nbr_case_4 nbr_case_4/nbr_case_24
 
+
+  @printf "Number pf runs in case 1: %d, prob pf given case 1 %.4f %%\n"  nbr_case_pf_1 nbr_case_pf_1/nbr_case_1*100
+  @printf "Number pf runs in case 2: %d, prob pf given case 2 %.4f %%\n"  nbr_case_pf_2 nbr_case_pf_2/nbr_case_2*100
+  @printf "Number pf runs in case 3: %d, prob pf given case 3 %.4f %%\n"  nbr_case_pf_3 nbr_case_pf_3/nbr_case_3*100
+  @printf "Number pf runs in case 4: %d, prob pf given case 4 %.4f %%\n"  nbr_case_pf_4 nbr_case_pf_4/nbr_case_4*100
+
+
   @printf "#####################################################################\n"
 
   assumption_list = []
   loglik_list = []
 
   # return resutls
-  return return_gp_results(gp, Theta,loglik,accept_vec,prior_vec, compare_GP_PF, data_gp_pf,nbr_early_rejections, problem, adaptive_update_params,accept_prob_log,times), res_training, theta_training, loglik_training,assumption_list,loglik_list
+  if return_run_info
+    run_info =  [nbr_eval_pf;
+                nbr_ordinary_mh;
+                nbr_case_13;
+                nbr_case_24;
+                nbr_case_1;
+                nbr_case_2;
+                nbr_case_3;
+                nbr_case_4;
+                nbr_case_pf_1;
+                nbr_case_pf_2;
+                nbr_case_pf_3;
+                nbr_case_pf_4]
+    return return_gp_results(gp, Theta,loglik,accept_vec,prior_vec, compare_GP_PF, data_gp_pf,nbr_early_rejections, problem, adaptive_update_params,accept_prob_log,times), run_info
+  else
+    return return_gp_results(gp, Theta,loglik,accept_vec,prior_vec, compare_GP_PF, data_gp_pf,nbr_early_rejections, problem, adaptive_update_params,accept_prob_log,times)
+  end
 
 end
 

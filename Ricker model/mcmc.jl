@@ -529,24 +529,24 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, ca
   nbr_second_stage_accepted = 0
   nbr_second_stage = 0
 
-  nbr_eval_pf = 0
-  nbr_case_13 = 0
-  nbr_case_24 = 0
+  nbr_eval_pf = zero(Int64)
+  nbr_case_13 = zero(Int64)
+  nbr_case_24 = zero(Int64)
 
   # starting values for times:
-  time_pre_er = 0
-  time_fit_gp = 0
-  time_er_part = 0
+  time_pre_er = zero(Float64)
+  time_fit_gp = zero(Float64)
+  time_er_part = zero(Float64)
 
-  nbr_case_1 = 0
-  nbr_case_2 = 0
-  nbr_case_3 = 0
-  nbr_case_4 = 0
+  nbr_case_1 = zero(Int64)
+  nbr_case_2 = zero(Int64)
+  nbr_case_3 = zero(Int64)
+  nbr_case_4 = zero(Int64)
 
-  nbr_case_pf_1 = 0
-  nbr_case_pf_2 = 0
-  nbr_case_pf_3 = 0
-  nbr_case_pf_4 = 0
+  nbr_case_pf_1 = zero(Int64)
+  nbr_case_pf_2 = zero(Int64)
+  nbr_case_pf_3 = zero(Int64)
+  nbr_case_pf_4 = zero(Int64)
 
   # parameters for prior dist
   dist_type = problem.prior_dist.dist
