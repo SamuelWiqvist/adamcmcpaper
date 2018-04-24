@@ -2,7 +2,9 @@
 
 This repository contains all code the draft paper *Accelerating delayed-acceptance Markov Chain Monte Carlo algorithms using Gaussian processes*.
 
-linked folders:
+Links to data and numerical results:
 
-* On desktop: "C:\\Users\\samuel\\Dropbox\\Phd Education\\Projects\\project 1 accelerated DA and DWP SDE\\code"
-* On laptop: "C:\\Users\\samue\\OneDrive\\Documents\\GitHub\\adamcmcpaper"
+* Data: Dropbox link to data folder
+* Simulated data: link to Dropbox folder with .jld files
+* Numerical results for the DWP model: link to the folder with the res for the DWP model
+* Numerical results for the Ricker model: link to the folder with the res for the Ricker model.  
