@@ -33,7 +33,7 @@ nbr_of_cores = 4 # was 10
 burn_in = 1
 
 # nbr iterations
-nbr_iterations = 200 # should be 20000
+nbr_iterations = 500 # should be 20000
 
 # length training data
 length_training_data = 5000 # thid should ne 5000
@@ -286,7 +286,7 @@ problem.alg_param.beta_MH = beta_MH
 
 
 
-nbr_alg_iter = 5
+nbr_alg_iter = 50
 
 ################################################################################
 ##               Run DA-GP-MCMC                                              ###
@@ -421,7 +421,7 @@ targets_case_2_and_4 = convert(Array{Float64,1}, targets_case_2_and_4)
 ##   set case model                                                          ###
 ################################################################################
 
-select_case_model = "dt" # logisticregression or dt
+select_case_model = "biasedcoin" # logisticregression or dt
 
 # fit model, i.e. est probabilities
 nbr_GP_star_led_GP_old = n-nbr_GP_star_geq_GP_old
