@@ -1,3 +1,7 @@
 # profiler output #
 ###################
 *.jlprof
+
+# gp data file    #
+###################
+DWPSDE model/fited_gp_simdata.jld
