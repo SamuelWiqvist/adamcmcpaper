@@ -69,7 +69,8 @@ function mcmc(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=
   @printf "Particel filter: %s, on %d cores\n" pf_alg nbr_of_cores
   @printf "Nbr particles for particel filter: %d\n" N
 
-  nbr_of_proc = set_nbr_cores(nbr_of_cores, pf_alg)
+  #nbr_of_proc = set_nbr_cores(nbr_of_cores, pf_alg)
+  nbr_of_proc = nbr_of_cores
   loglik_vec = SharedArray{Float64}(nbr_of_proc)
 
   # print acceptance rate each print_interval:th iteration
@@ -285,8 +286,9 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
   print_covariance(problem.adaptive_update,adaptive_update_params, 1)
 
   # set nbr of cores to use for parallel pf
-  nbr_of_proc = set_nbr_cores(nbr_of_cores, pf_alg)
-  loglik_vec = SharedArray{Float64}(nbr_of_proc)
+  #nbr_of_proc = set_nbr_cores(nbr_of_cores, pf_alg)
+  nbr_of_proc = nbr_of_cores
+  loglik_vec = SharedArray{Float64}(nbr_of_cores)
 
   # print acceptance rate each print_interval:th iteration
   print_interval = 100
@@ -631,8 +633,10 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, ca
   print_covariance(problem.adaptive_update,adaptive_update_params, 1)
 
   # set nbr of cores to use for parallel pf
-  nbr_of_proc = set_nbr_cores(nbr_of_cores, pf_alg)
+  #nbr_of_proc = set_nbr_cores(nbr_of_cores, pf_alg)
+  nbr_of_proc = nbr_of_cores
   loglik_vec = SharedArray{Float64}(nbr_of_proc)
+
 
   # print acceptance rate each print_interval:th iteration
   print_interval = 100

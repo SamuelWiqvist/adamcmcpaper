@@ -5,3 +5,4 @@
 # gp data file    #
 ###################
 DWPSDE model/fited_gp_simdata.jld
+DWPSDE model/fited_gp_newdata.jld
