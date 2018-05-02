@@ -593,6 +593,15 @@ for i = 1:nbr_alg_iter
 end
 
 
+# save results
+writetable("alg_prop_da.csv", convert(DataFrame, alg_prop_da))
+writetable("alg_prop_ada_biasedcoin.csv", convert(DataFrame, alg_prop_ada))
+
+# load results
+
+alg_prop_da = Matrix(readtable("alg_prop_da.csv"))
+alg_prop_ada = Matrix(readtable("alg_prop_ada_biasedcoin.csv"))
+
 
 # analysis
 using PyPlot

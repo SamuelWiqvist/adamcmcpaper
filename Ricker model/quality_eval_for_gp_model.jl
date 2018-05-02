@@ -157,7 +157,7 @@ else
   #@load "gp_training_$(set_nbr_params)_par.jld"
   #@load "gp_training_$(set_nbr_params)_par.jld"
 
-  @load "gp_training_and_test_data_ricker_gen_local.jld"
+  @load "gp_training_and_test_data_ricker_gen_lunarc_new_code_structure.jld"
 
 end
 

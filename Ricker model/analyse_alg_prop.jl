@@ -493,13 +493,13 @@ else
 end
 
 # save results
-writetable("alg_prop_da.csv", convert(DataFrame, alg_prop_da))
-writetable("alg_prop_ada.csv", convert(DataFrame, alg_prop_ada))
+writetable("alg_prop_da_dt.csv", convert(DataFrame, alg_prop_da))
+writetable("alg_prop_ada_dt.csv", convert(DataFrame, alg_prop_ada))
 
 # load results
 
-alg_prop_da = Matrix(readtable("alg_prop_da.csv"))
-alg_prop_ada = Matrix(readtable("alg_prop_ada.csv"))
+alg_prop_da = Matrix(readtable("alg_prop_da_bc.csv"))
+alg_prop_ada = Matrix(readtable("alg_prop_ada_bc.csv"))
 
 
 # analysis
