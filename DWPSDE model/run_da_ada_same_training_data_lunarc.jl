@@ -273,6 +273,24 @@ end
 
 set_nbr_cores(problem.alg_param.nbr_of_cores, problem.alg_param.pf_alg)
 
+function set_random_seed(nbr_cores)
+
+	@sync begin
+	#@everywhere srand(1337)
+	srand(0)
+	println(rand(1))
+
+	@parallel for i = 1:nbr_cores
+		srand(i)
+		println(rand(1))
+	end
+
+	end
+
+end
+
+
+#set_random_seed(problem.alg_param.nbr_of_cores)
 
 ################################################################################
 ##               Run DA-GP-MCMC                                              ###
@@ -286,13 +304,13 @@ jobname = global_jobname*"da_gp_mcmc"
 
 problem.model_param.theta_0 = mean(theta_training,2)
 
-
 if !log_scale_prior
   # run adaptive PMCMC
 	if fix_random_numebrs
-		@everywhere srand(1337)
+		set_random_seed(problem.alg_param.nbr_of_cores)
 	end
-  res = dagpmcmc(problem_training, problem, gp, cov_matrix)
+
+	res = dagpmcmc(problem_training, problem, gp, cov_matrix)
 
   mcmc_results = Result(res[1].Theta_est, res[1].loglik_est, res[1].accept_vec, res[1].prior_vec)
 
@@ -547,7 +565,7 @@ end
 if !log_scale_prior
   # run adaptive PMCMC
 	if fix_random_numebrs
-		@everywhere srand(1337)
+		set_random_seed(problem.alg_param.nbr_of_cores)
 	end
 	res = adagpmcmc(problem_training, problem, gp, casemodel, cov_matrix)
 

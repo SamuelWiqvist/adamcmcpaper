@@ -328,7 +328,7 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
       @printf "Covariance:\n"
       print_covariance(problem.adaptive_update,adaptive_update_params, r)
       # print loglik
-      @printf "Loglik: %.4f \n" loglik[r-1]
+      @printf "Loglik: %.8f \n" loglik[r-1]
       # print log-lik vector
       @printf "Loglik values on different cores:\n"
       println(loglik_vec)
