@@ -217,16 +217,16 @@ function set_up_problem(;use_sim_data::Bool=true,nbr_of_unknown_parameters::Int6
         end
       end
 
-      # Thinn data
-      thinning = 100
-      idx_thinned = 1:thinning:length(Z_data)
-      Z_data = Z_data[idx_thinned]
-
       # linear transformation of data to obtain a scaling where it is easier to
       # construct the dwp model
       Z_data = 50*Z_data
 
-      Z = Z_data
+      # thinned data
+      thinning = 100
+      idx_thinned = 1:thinning:length(Z_data)
+      Z = Z_data[idx_thinned] # zeros(Float64, idx_thinned)
+      Z = Z[1:24800]
+
     end
   end
 
@@ -302,6 +302,7 @@ function set_up_gp_problem(;use_sim_data::Bool=true,nbr_of_unknown_parameters::I
       Z = load_data() # load the old data set
     else
       # load data
+      println("test")
       file = open("new_data_set.txt") # load the new data set
       data = readlines(file)
       close(file)
@@ -325,7 +326,9 @@ function set_up_gp_problem(;use_sim_data::Bool=true,nbr_of_unknown_parameters::I
       # thinned data
       thinning = 100
       idx_thinned = 1:thinning:length(Z_data)
-      Z = zeros(Float64, idx_thinned)
+      Z = Z_data[idx_thinned] # zeros(Float64, idx_thinned)
+      Z = Z[1:24800]
+
     end
   end
 
@@ -680,7 +683,9 @@ Sets the parameters for the prior dist. and the model parameters theta.
         prior_parameters = [3 1.5; 3 1.5; 28 2; 4 1; 2 2; 2 2; 2 2]
       end
 
-      theta_0 = [log(10) log(10) log(100) log(40) log(2) log(2) log(2)]# [log(2) log(2) log(30) log(10) log(2) log(2) log(2)] #[log(1) log(1) log(30) log(5) log(2) log(2) log(1)] #theta_true #[log(1) log(30) log(4) log(2) log(2) log(2)]  #log([0.0001, 1, 1, 0.0001, 0.0001, 0.01]) # start values
+      #theta_0 = [log(10) log(10) log(100) log(40) log(2) log(2) log(2)]# [log(2) log(2) log(30) log(10) log(2) log(2) log(2)] #[log(1) log(1) log(30) log(5) log(2) log(2) log(1)] #theta_true #[log(1) log(30) log(4) log(2) log(2) log(2)]  #log([0.0001, 1, 1, 0.0001, 0.0001, 0.01]) # start values
+
+      theta_0 = [log(0.5) log(2) log(20) log(15) log(1.5) log(1.5) log(2.5)] #[log(1) log(1) log(30) log(5) log(2) log(2) log(1)] #theta_true #[log(1) log(30) log(4) log(2) log(2) log(2)]  #log([0.0001, 1, 1, 0.0001, 0.0001, 0.01]) # start values
 
     elseif nbr_of_unknown_parameters == 8  # set parameters for estimating all (9) parameters
 

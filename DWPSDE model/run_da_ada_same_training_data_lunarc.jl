@@ -46,7 +46,7 @@ log_scale_prior = false
 mcmc_alg = "MCWM"  # set MCWM or PMCMC
 
 # prob run MH update
-beta_MH = 0.15 # should be 0.1
+beta_MH = 1 # should be 0.1
 
 # load training data
 load_tranining_data = true
@@ -160,7 +160,6 @@ problem_training.alg_param.dt = dt
 problem_training.alg_param.dt_U = dt_U
 problem_training.alg_param.alg = mcmc_alg
 problem_training.adaptive_update =  AMUpdate_gen(eye(set_nbr_params), 1/sqrt(set_nbr_params), 0.15, 1, 0.8, 25)
-
 
 
 ################################################################################

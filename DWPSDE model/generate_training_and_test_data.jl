@@ -40,7 +40,7 @@ nbr_iterations = burn_in+length_training_data + length_test_data
 set_nbr_params = 7
 
 # set nbr cores
-nbr_of_cores = 10
+nbr_of_cores = 4
 
 # log-scale prior
 log_scale_prior = false
@@ -49,7 +49,7 @@ log_scale_prior = false
 mcmc_alg = "MCWM"  # set MCWM or PMCMC
 
 # type of job
-job = "simdata" # set work to simdata or new_data
+job = "new_data" # set work to simdata or new_data
 
 # set jod dep. parameters
 if job == "simdata"
@@ -75,10 +75,10 @@ if job == "simdata"
 elseif job == "new_data"
 
 	# jobname
-	jobname = "da_ada_training_data"*job
+	jobname = "da_ada_training_data_local"*job
 
 	# nbr particels
-	nbr_particels = 500
+	nbr_particels = 250
 
 	# use simulated data
 	sim_data = false # set to true to use sim data
@@ -115,6 +115,7 @@ problem_training.adaptive_update =  AMUpdate_gen(eye(set_nbr_params), 1/sqrt(set
 ################################################################################
 ##                generate training data                                     ###
 ################################################################################
+set_nbr_cores(problem_training.alg_param.nbr_of_cores, problem_training.alg_param.pf_alg)
 
 
 
@@ -136,7 +137,7 @@ end
 ################################################################################
 
 # export generated data
-export_data(problem_training, res_training[1],"gp_training_$(set_nbr_params)_par"*job)
+export_data(problem_training, res_training[1],"gp_training_$(set_nbr_params)_par_local"*job)
 
 # split training and test data
 
@@ -149,4 +150,4 @@ loglik_training = loglik_training[1:length_training_data]
 
 
 # save training data, test data, and covaraince matrix to a Julia workspace file
-save("gp_training_$(set_nbr_params)_par_training_and_test*job*.jld", "res_training", res_training, "theta_training", theta_training, "loglik_training", loglik_training, "theta_test", theta_test, "loglik_test", loglik_test,"cov_matrix",cov_matrix)
+save("gp_training_$(set_nbr_params)_par_training_and_test"*job*".jld", "res_training", res_training, "theta_training", theta_training, "loglik_training", loglik_training, "theta_test", theta_test, "loglik_test", loglik_test,"cov_matrix",cov_matrix)

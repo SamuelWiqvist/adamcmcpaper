@@ -25,28 +25,87 @@ include(pwd()*"\\utilities\\normplot.jl")
 cd("DWPSDE model")
 
 
-# set parameters
-nbr_iterations = 2000
-nbr_particels = 25
-nbr_of_cores= 4
+
+################################################################################
+##      parameters                                      					            ##
+################################################################################
+
+# set parameters for all jobs
+
+# nbr parameters
+set_nbr_params = 7
+
+# nbr cores
+nbr_of_cores = 4 # was 10
+
+# length burn-in
 burn_in = 1
-sim_data = true
-set_nbr_params = 7 # should be 7
+
+# nbr iterations
+nbr_iterations = 1000 # should be 20000
+
+# length training data
+length_training_data = 5000 # thid should ne 5000
+
+# log-scale priors
 log_scale_prior = false
-beta_MH = 0.1
+
+# algorithm
 mcmc_alg = "MCWM"  # set MCWM or PMCMC
 
-data_set = "old"
-dt = 0.035 # new = 0.5 old = 0.03
-dt_U = 1. # new = 1 old = 1
+# prob run MH update
+beta_MH = 0.15 # should be 0.1
 
-length_training_data = 5000
-
-
-accelerated_da = false
-
+# load training data
 load_tranining_data = true
 
+# type of job
+job = "new_data" # set work to simdata or new_data
+
+# set jod dep. parameters
+if job == "simdata"
+
+	# jobname
+	global_jobname = "est7"*job
+
+	# nbr particels
+	nbr_particels = 200
+
+	# use simulated data
+	sim_data = true # set to true to use sim data
+
+	# data set
+	data_set = "old" # was "old"
+
+	# dt
+	dt = 0.035 # new = 0.35 old = 0.035
+
+	# dt_U
+	dt_U = 1. # new = 1 old = 1
+
+elseif job == "new_data"
+
+	# jobname
+	global_jobname = "est7"*job
+
+	# nbr particels
+	nbr_particels = 500
+
+	# use simulated data
+	sim_data = false # set to true to use sim data
+
+	# data set
+	data_set = "new" # was "old"
+
+	# dt
+	dt = 0.35 # new = 0.35 old = 0.035
+
+	# dt_U
+	dt_U = 1. # new = 1 old = 1
+
+end
+
+#=
 
 # set parameters
 burn_in = 10000 # this should be 2000 when estimating 2 parameters
@@ -55,8 +114,7 @@ if set_nbr_params == 2
 	burn_in = 1000 # this should be 2000
 	length_training_data = 2000
 end
-
-job = "simdata" #or "new_data"
+=#
 
 ################################################################################
 ##                         set DA problem                               ##
@@ -137,8 +195,10 @@ else
   #@load "gp_training_7_par_training_and_test_lunarc.jld"
   if job == "simdata"
 		@load "gp_training_7_par_training_and_test_lunarc.jld"
+    @load "fited_gp_simdata.jld"
 	elseif job == "new_data"
 		@load "gp_training_7_par_training_and_test_new_data.jld"
+		@load "fited_gp_new_data.jld"
 	end
 
 end
@@ -191,7 +251,8 @@ plot_theta_true == true ? PyPlot.plot(problem.model_param.theta_true[7]*ones(siz
 PyPlot.ylabel(L"$\log \sigma$",fontsize=text_size)
 PyPlot.xlabel("Iteration",fontsize=text_size)
 
-
+PyPlot.figure()
+PyPlot.plot(res_training[1].loglik_est)
 
 for i = 1:set_nbr_params
   PyPlot.figure()

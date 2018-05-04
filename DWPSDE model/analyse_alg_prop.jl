@@ -45,13 +45,13 @@ log_scale_prior = false
 mcmc_alg = "MCWM"  # set MCWM or PMCMC
 
 # prob run MH update
-beta_MH = 0.15 # should be 0.1
+beta_MH = 1 # should be 0.1
 
 # load training data
 load_tranining_data = true
 
 # type of job
-job = "simdata" # set work to simdata or new_data
+job = "new_data" # set work to simdata or new_data
 
 # set jod dep. parameters
 if job == "simdata"
