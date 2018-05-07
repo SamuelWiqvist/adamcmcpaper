@@ -150,4 +150,4 @@ loglik_training = loglik_training[1:length_training_data]
 
 
 # save training data, test data, and covaraince matrix to a Julia workspace file
-save("gp_training_$(set_nbr_params)_par_training_and_test"*job*".jld", "res_training", res_training, "theta_training", theta_training, "loglik_training", loglik_training, "theta_test", theta_test, "loglik_test", loglik_test,"cov_matrix",cov_matrix)
+save("gp_training_$(set_nbr_params)_par_training_and_test_local"*job*".jld", "res_training", res_training, "theta_training", theta_training, "loglik_training", loglik_training, "theta_test", theta_test, "loglik_test", loglik_test,"cov_matrix",cov_matrix)

@@ -34,8 +34,8 @@ label_size = 15
 
 
 load_data_from_files = true # load data from files or form some  workspace
-dagp = true # was true #  set to _dagp to load ER-GP file  o.w. use ""
-jobname = "mcwm_7_par_real_data_2" # was "_dagpest7_real_dataada_gp_mcmc_dt" # set to jobname string
+dagp = false # was true #  set to _dagp to load ER-GP file  o.w. use ""
+jobname = "gp_training_7_par_localnew_data" # was "_dagpest7_real_dataada_gp_mcmc_dt" # set to jobname string
 
 
 plot_theta_true = false
@@ -61,6 +61,7 @@ plot_theta_true = false
 #
 #
 # mcwm_7_par_real_data_2
+# gp_training_7_par_localnew_data run_time 210995.217074414 seconds
 
 # results for sim data
 # gp_training_7_par_training_and_test_lunarc

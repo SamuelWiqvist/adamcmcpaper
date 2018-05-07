@@ -89,7 +89,7 @@ elseif job == "new_data"
 	global_jobname = "est7"*job
 
 	# nbr particels
-	nbr_particels = 500
+	nbr_particels = 250
 
 	# use simulated data
 	sim_data = false # set to true to use sim data
@@ -197,8 +197,8 @@ else
 		@load "gp_training_7_par_training_and_test_lunarc.jld"
     @load "fited_gp_simdata.jld"
 	elseif job == "new_data"
-		@load "gp_training_7_par_training_and_test_new_data.jld"
-		@load "fited_gp_new_data.jld"
+		@load "gp_training_7_par_training_and_test_localnew_data.jld"
+		#@load "fited_gp_new_data.jld"
 	end
 
 end
@@ -210,7 +210,7 @@ end
 
 #export_data(problem_training, res_training[1],"dagpMCMC_training_data"*jobname)
 
-plot_theta_true = true
+plot_theta_true = false
 
 
 using PyPlot
