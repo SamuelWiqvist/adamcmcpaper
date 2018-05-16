@@ -69,8 +69,8 @@ function mcmc(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=
   @printf "Particel filter: %s, on %d cores\n" pf_alg nbr_of_cores
   @printf "Nbr particles for particel filter: %d\n" N
 
-  #nbr_of_proc = set_nbr_cores(nbr_of_cores, pf_alg)
-  nbr_of_proc = nbr_of_cores
+  nbr_of_proc = set_nbr_cores(nbr_of_cores, pf_alg)
+  #nbr_of_proc = nbr_of_cores
   loglik_vec = SharedArray{Float64}(nbr_of_proc)
 
   # print acceptance rate each print_interval:th iteration

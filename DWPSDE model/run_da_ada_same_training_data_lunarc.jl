@@ -34,7 +34,7 @@ nbr_of_cores = 4 # was 10
 burn_in = 1
 
 # nbr iterations
-nbr_iterations = 1000 # should be 20000
+nbr_iterations = 5000 # should be 20000
 
 # length training data
 length_training_data = 5000 # thid should ne 5000
@@ -102,7 +102,7 @@ end
 ##                         fix random numbers                                      ##
 ################################################################################
 
-fix_random_numebrs = true
+fix_random_numebrs = false
 
 ################################################################################
 ##                         training data                                      ##
@@ -276,11 +276,11 @@ function set_random_seed(nbr_cores)
 
 	@sync begin
 	#@everywhere srand(1337)
-	srand(0)
+	srand(1)
 	println(rand(1))
 
 	@parallel for i = 1:nbr_cores
-		srand(i)
+		srand(i+1)
 		println(rand(1))
 	end
 

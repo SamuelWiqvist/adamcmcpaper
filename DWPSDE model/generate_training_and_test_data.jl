@@ -49,13 +49,13 @@ log_scale_prior = false
 mcmc_alg = "MCWM"  # set MCWM or PMCMC
 
 # type of job
-job = "new_data" # set work to simdata or new_data
+job = "simdata" # set work to simdata or new_data
 
 # set jod dep. parameters
 if job == "simdata"
 
 	# jobname
-	jobname = "da_ada_training_data"*job
+	jobname = "da_ada_training_data_local"*job
 
 	# nbr particels
 	nbr_particels = 200
@@ -115,13 +115,13 @@ problem_training.adaptive_update =  AMUpdate_gen(eye(set_nbr_params), 1/sqrt(set
 ################################################################################
 ##                generate training data                                     ###
 ################################################################################
-set_nbr_cores(problem_training.alg_param.nbr_of_cores, problem_training.alg_param.pf_alg)
+#set_nbr_cores(problem_training.alg_param.nbr_of_cores, problem_training.alg_param.pf_alg)
 
 
 
 if !log_scale_prior
 	tic()
-    println("run Normal prior model")
+  println("run Normal prior model")
 	res_training, theta_training, loglik_training, cov_matrix = mcmc(problem_training, true, true)
 	time_pre_er = toc()
 	#export_parameters(res_problem_normal_prior_est_AM_gen[2],jobname)

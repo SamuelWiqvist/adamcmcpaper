@@ -599,8 +599,12 @@ writetable("alg_prop_ada_biasedcoin.csv", convert(DataFrame, alg_prop_ada))
 
 # load results
 
-alg_prop_da = Matrix(readtable("alg_prop_da.csv"))
-alg_prop_ada = Matrix(readtable("alg_prop_ada_biasedcoin.csv"))
+
+# file names:
+
+
+alg_prop_da = Matrix(readtable("alg_prop_da_dt.csv"))
+alg_prop_ada = Matrix(readtable("alg_prop_ada_dt.csv"))
 
 
 # analysis
@@ -613,21 +617,29 @@ function print_stats(x::Vector)
   describe(x)
 end
 
+# text and lable size
+text_size = 25
+label_size = 20
+
 # run time
 
 println("Runtime:")
 print_stats(alg_prop_da[:,1])
 print_stats(alg_prop_ada[:,1])
 
-PyPlot.figure()
-PyPlot.plt[:hist](alg_prop_da[:,1],5, alpha = 0.6)
-PyPlot.plt[:hist](alg_prop_ada[:,1],5, alpha = 0.6)
+PyPlot.figure(figsize=(10,10))
+ax = axes()
+PyPlot.plt[:hist](alg_prop_da[:,1],10, alpha = 0.6)
+PyPlot.plt[:hist](alg_prop_ada[:,1],10, alpha = 0.6)
+ax[:tick_params]("both",labelsize = label_size)
 
 speed_up = alg_prop_da[:,1]./alg_prop_ada[:,1]
 print_stats(speed_up)
 
-PyPlot.figure()
-PyPlot.plt[:hist](speed_up,5)
+PyPlot.figure(figsize=(10,10))
+ax = axes()
+PyPlot.plt[:hist](speed_up,10, alpha = 0.6)
+ax[:tick_params]("both",labelsize = label_size)
 
 # nbr pf eval
 
@@ -635,16 +647,20 @@ println("Nbr pf eval:")
 print_stats(alg_prop_da[:,2])
 print_stats(alg_prop_ada[:,2])
 
-PyPlot.figure()
-PyPlot.plt[:hist](alg_prop_da[:,2],5, alpha = 0.6)
-PyPlot.plt[:hist](alg_prop_ada[:,2],5, alpha = 0.6)
+PyPlot.figure(figsize=(10,10))
+ax = axes()
+PyPlot.plt[:hist](alg_prop_da[:,2],10, alpha = 0.6)
+PyPlot.plt[:hist](alg_prop_ada[:,2],10, alpha = 0.6)
+ax[:tick_params]("both",labelsize = label_size)
 
 diff_nbr_pf = alg_prop_da[:,2] - alg_prop_ada[:,2]
 
 print_stats(diff_nbr_pf)
 
-PyPlot.figure()
-PyPlot.plt[:hist](diff_nbr_pf,5)
+PyPlot.figure(figsize=(10,10))
+ax = axes()
+PyPlot.plt[:hist](diff_nbr_pf,10, alpha = 0.6)
+ax[:tick_params]("both",labelsize = label_size)
 
 # nbr ord. mh.
 

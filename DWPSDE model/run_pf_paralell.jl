@@ -19,6 +19,10 @@ Runs each of the nbr_pf_proc estiamtions of log-likelihood for the parallel part
   w = zeros(N,T)
 
   # Pre-allocate vector for storing particels
+
+  #println(N)
+  #println(T)
+
   x = zeros(N,T)
 
   # set delta for U process
@@ -383,7 +387,14 @@ Runs each of the nbr_pf_proc estiamtions of log-likelihood for the parallel part
     id_selected = index
   end
 
-  return Z_star
+  U_sim = zeros(T)
+  U_sim[1] = 0
+
+  for t = 2:T # generate U process
+    U_sim[t] = rand(Normal( U_sim[t-1]*exp(-Κ*dt_U), sqrt( Γ^2*( 1 - exp( -2*Κ*dt_U ) ) ) ),1)[1]
+  end
+
+  return Z_star + U_sim
 
 end
 

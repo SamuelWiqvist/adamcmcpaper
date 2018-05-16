@@ -15,7 +15,6 @@ include("set_up.jl")
 
 using JLD
 using HDF5
-using StatPlots
 
 # load functions to compute posterior inference
 
@@ -60,7 +59,7 @@ beta_MH = 0.15 # should be 0.1
 load_tranining_data = true
 
 # type of job
-job = "new_data" # set work to simdata or new_data
+job = "simdata" # set work to simdata or new_data
 
 # set jod dep. parameters
 if job == "simdata"
@@ -194,10 +193,9 @@ else
 
   #@load "gp_training_7_par_training_and_test_lunarc.jld"
   if job == "simdata"
-		@load "gp_training_7_par_training_and_test_lunarc.jld"
-    @load "fited_gp_simdata.jld"
+		@load "gp_training_7_par_training_and_testsimdatalunarc_simdata_4_cores.jld"
 	elseif job == "new_data"
-		@load "gp_training_7_par_training_and_test_localnew_data.jld"
+		@load "gp_training_7_par_training_and_testnew_datalunarc_new_data_4_cores.jld"
 		#@load "fited_gp_new_data.jld"
 	end
 
@@ -310,7 +308,7 @@ if true #problem.alg_param.est_method == "ml"
   #perc_outlier = 0.1 # used when using PMCMC for trainig data 0.05
   #tail_rm = "left"
 
-  perc_outlier = 0.02
+  perc_outlier = 0.05 # 0.02 for simdata
   tail_rm = "left"
   lasso = false # was true test fitting without lassa, The lassa has a large inpact on the fit of the model, we should use lasso!
 

@@ -25,43 +25,73 @@ include("set_up.jl")
 #   Set up models
 ################################################################################
 
-# parameters                                      					            ##
-
-# nbr of iterations
-nbr_iterations = 1000 # should be 10000
-
 # nbr parameters
-set_nbr_params = 7  # should be 7
-
-# nbr particels
-nbr_particels = 200 # should be 200
+set_nbr_params = 7
 
 # nbr cores
-nbr_of_cores= 4 # should be > 8
+nbr_of_cores = 4 # was 10
 
-# brun-in
+# length burn-in
 burn_in = 1
 
-# data
-sim_data = true
-log_scale_prior = false
-
-# beta_MH
-beta_MH = 0.1 # should be 0.1
-
-# algorithm
-mcmc_alg = "MCWM"  # set MCWM or PMCMC
-
-# data
-data_set = "old"
-dt = 0.035 # new = 0.5 old = 0.03
-dt_U = 1. # new = 1 old = 1
+# nbr iterations
+nbr_iterations = 5000 # should be 20000
 
 # length training data
 length_training_data = 5000 # thid should ne 5000
 
-# job name
-global_jobname = "est7_test_new_code_1000iter_local"
+# log-scale priors
+log_scale_prior = false
+
+# algorithm
+mcmc_alg = "MCWM"  # set MCWM or PMCMC
+
+# prob run MH update
+beta_MH = 1 # should be 0.1
+
+# load training data
+load_tranining_data = true
+
+# type of job
+job = "new_data" # set work to simdata or new_data
+
+# set jod dep. parameters
+if job == "simdata"
+
+	# nbr particels
+	nbr_particels = 200
+
+	# use simulated data
+	sim_data = true # set to true to use sim data
+
+	# data set
+	data_set = "old" # was "old"
+
+	# dt
+	dt = 0.035 # new = 0.35 old = 0.035
+
+	# dt_U
+	dt_U = 1. # new = 1 old = 1
+
+elseif job == "new_data"
+
+
+	# nbr particels
+	nbr_particels = 250
+
+	# use simulated data
+	sim_data = false # set to true to use sim data
+
+	# data set
+	data_set = "new" # was "old"
+
+	# dt
+	dt = 0.35 # new = 0.35 old = 0.035
+
+	# dt_U
+	dt_U = 1. # new = 1 old = 1
+
+end
 
 # load stored data
 load_tranining_data = true
@@ -130,14 +160,29 @@ problem_training.adaptive_update =  AMUpdate_gen(eye(set_nbr_params), 1/sqrt(set
 ################################################################################
 
 
+
+
 load_data_from_files = true # load data from files or form some  workspace
 #dagp = "_dagp" #  set to _dagp to load ER-GP file  o.w. use ""
-dagp = false
-jobname = "mcwm_7_par_real_data_2" # set to jobname string
+dagp = true
 
-# mcwm_7_para_realdata
-# _dagpest7_real_dataada_gp_mcmc
-# _dagpest7_real_datada_gp_mcmc_biased_coin
+#=
+
+jobnames
+
+simdata:
+jobname_mcwm = "gp_training_7_par_lunarc_simdata_4_coressimdata" # jobname for mcwm
+jobname_da = "_dagpest7simdatada_gp_mcmc"
+jobname_ada = "_dagpest7simdataada_gp_mcmc_dt"
+
+new_data:
+jobname_mcwm = "gp_training_7_par_lunarc_new_data_4_coresnew_data" # jobname for mcwm
+jobname_da = "_dagpest7new_datada_gp_mcmc"
+jobname_ada = "_dagpest7new_dataada_gp_mcmc_dt"
+=#
+
+jobname = "_dagpest7new_dataada_gp_mcmc_dt" # set to jobname string
+
 
 if load_data_from_files
 
@@ -179,7 +224,7 @@ Theta = Theta[:, burn_in:end]
 # generate samples from the posterior pred distribtuion
 include("run_pf_paralell.jl")
 
-N = 500
+N = nbr_particels
 
 N_sample_from_posterior = 100
 
@@ -214,11 +259,12 @@ dist_post_pred = Categorical(1/N_sample_from_posterior*ones(N_sample_from_poster
 samples_dist_post_pred = rand(dist_post_pred,8)
 
 
-text_size = 15
-label_size = 15
+text_size = 25
+label_size = 20
 
 
-PyPlot.figure()
+PyPlot.figure(figsize=(10,10))
+ax = axes()
 PyPlot.subplot(331)
 PyPlot.plot(posterior_pred_samples[:,samples_dist_post_pred[1]])
 PyPlot.subplot(332)
@@ -233,36 +279,39 @@ PyPlot.subplot(336)
 PyPlot.plot(posterior_pred_samples[:,samples_dist_post_pred[6]])
 PyPlot.subplot(337)
 PyPlot.plot(posterior_pred_samples[:,samples_dist_post_pred[7]])
-PyPlot.xlabel("Index",fontsize=text_size)
+#PyPlot.xlabel("Index",fontsize=text_size)
 PyPlot.subplot(338)
 PyPlot.plot(posterior_pred_samples[:,samples_dist_post_pred[8]])
-PyPlot.xlabel("Index",fontsize=text_size)
+#PyPlot.xlabel("Index",fontsize=text_size)
 PyPlot.subplot(339)
 PyPlot.plot(Z, "k")
-PyPlot.xlabel("Index",fontsize=text_size)
+#PyPlot.xlabel("Index",fontsize=text_size)
+ax[:tick_params]("both",labelsize = label_size)
 
-PyPlot.figure()
+PyPlot.figure(figsize=(10,10))
+ax = axes()
 PyPlot.subplot(331)
 PyPlot.plt[:hist](posterior_pred_samples[:,samples_dist_post_pred[1]],50)
-PyPlot.ylabel("Freq",fontsize=text_size)
+#PyPlot.ylabel("Freq",fontsize=text_size)
 PyPlot.subplot(332)
 PyPlot.plt[:hist](posterior_pred_samples[:,samples_dist_post_pred[2]],50)
 PyPlot.subplot(333)
 PyPlot.plt[:hist](posterior_pred_samples[:,samples_dist_post_pred[3]],50)
 PyPlot.subplot(334)
 PyPlot.plt[:hist](posterior_pred_samples[:,samples_dist_post_pred[4]],50)
-PyPlot.ylabel("Freq",fontsize=text_size)
+#PyPlot.ylabel("Freq",fontsize=text_size)
 PyPlot.subplot(335)
 PyPlot.plt[:hist](posterior_pred_samples[:,samples_dist_post_pred[5]],50)
 PyPlot.subplot(336)
 PyPlot.plt[:hist](posterior_pred_samples[:,samples_dist_post_pred[6]],50)
 PyPlot.subplot(337)
 PyPlot.plt[:hist](posterior_pred_samples[:,samples_dist_post_pred[7]],50)
-PyPlot.ylabel("Freq",fontsize=text_size)
+#PyPlot.ylabel("Freq",fontsize=text_size)
 PyPlot.subplot(338)
 PyPlot.plt[:hist](posterior_pred_samples[:,samples_dist_post_pred[8]],50)
 PyPlot.subplot(339)
 PyPlot.plt[:hist](Z,50, color = "k")
+ax[:tick_params]("both",labelsize = label_size)
 
 PyPlot.figure()
 for i = 1:8

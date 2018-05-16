@@ -3,8 +3,37 @@
 # load packages
 using DataFrames
 
-# load plotting function
-include("plotting.jl")
+
+################################################################################
+###   Plot data                                                              ###
+################################################################################
+
+using PyPlot
+
+# go to Ricker model folder
+try
+  cd("Ricker model")
+catch
+  warn("Already in the Ricker model folder")
+end
+
+# load data
+y = Array(readtable("y_data_set_2.csv"))[:,1]
+
+text_size = 25
+label_size = 20
+
+PyPlot.figure(figsize=(20,10))
+ax = axes()
+PyPlot.plot(y)
+#PyPlot.xlabel("time", fontsize=text_size)
+#PyPlot.ylabel("y", fontsize=text_size)
+ax[:tick_params]("both",labelsize=label_size)
+
+
+################################################################################
+###   Plot resutls                                                              ###
+################################################################################
 
 try
   cd("Ricker model")
@@ -18,6 +47,9 @@ catch
   warn("Already in the Results folder")
 end
 
+
+# load plotting function
+include("plotting.jl")
 
 
 ################################################################################
@@ -239,16 +271,7 @@ burn_in_ada = Int64(algorithm_parameters_ada[1,1])
 theta_true_ada = algorithm_parameters_ada[2:4,1]
 theta_0_ada = algorithm_parameters_ada[5:7,1]
 
-# Posterior
-x_c1 = prior_parameters[1,1]-0.5:0.01:prior_parameters[1,2]+0.5
-x_c2 = prior_parameters[2,1]-0.5:0.01:prior_parameters[2,2]+0.5
-x_c3 = prior_parameters[3,1]-0.5:0.01:prior_parameters[3,2]+0.5
-
-
-priordens_c1 = pdf(Uniform(prior_parameters[1,1], prior_parameters[1,2]), x_c1)
-priordens_c2 = pdf(Uniform(prior_parameters[2,1], prior_parameters[2,2]), x_c2)
-priordens_c3 = pdf(Uniform(prior_parameters[3,1], prior_parameters[3,2]), x_c3)
-
+# kernel density for posteriors
 h1_pmcmc = kde(Theta_pmcmc[1,burn_in_pmcmc:end])
 h2_pmcmc = kde(Theta_pmcmc[2,burn_in_pmcmc:end])
 h3_pmcmc = kde(Theta_pmcmc[3,burn_in_pmcmc:end])
@@ -267,10 +290,21 @@ h2_ada = kde(Theta_ada[2,burn_in_ada:end])
 h3_ada = kde(Theta_ada[3,burn_in_ada:end])
 
 
-text_size = 15
-label_size = 15
+# prior
+x_c1 = prior_parameters[1,1]-0.5:0.01:prior_parameters[1,2]+0.5
+x_c2 = prior_parameters[2,1]-0.5:0.01:prior_parameters[2,2]+0.5
+x_c3 = prior_parameters[3,1]-0.5:0.01:prior_parameters[3,2]+0.5
 
-PyPlot.figure()
+
+priordens_c1 = pdf(Uniform(prior_parameters[1,1], prior_parameters[1,2]), x_c1)
+priordens_c2 = pdf(Uniform(prior_parameters[2,1], prior_parameters[2,2]), x_c2)
+priordens_c3 = pdf(Uniform(prior_parameters[3,1], prior_parameters[3,2]), x_c3)
+
+text_size = 25
+label_size = 20
+
+PyPlot.figure(figsize=(10,10))
+ax = axes()
 PyPlot.plot(h1_pmcmc.x,h1_pmcmc.density, "b")
 PyPlot.plot(h1_mcwm.x,h1_mcwm.density, "b--")
 PyPlot.hold(true)
@@ -278,9 +312,13 @@ PyPlot.plot(h1_da.x,h1_da.density, "r")
 PyPlot.plot(h1_ada.x,h1_ada.density, "r--")
 PyPlot.plot(x_c1,priordens_c1, "g")
 PyPlot.plot((theta_true[1], theta_true[1]), (0, maximum([maximum(h1_pmcmc.density); maximum(h1_mcwm.density);maximum(h1_da.density); maximum(h1_ada.density)]) ), "k")
-PyPlot.xlabel(L"log $r$",fontsize=text_size)
-PyPlot.ylabel(L"Density",fontsize=text_size)
-PyPlot.figure()
+#PyPlot.xlabel(L"log $r$",fontsize=text_size)
+#PyPlot.ylabel(L"Density",fontsize=text_size)
+PyPlot.xlim((minimum(h1_pmcmc.x)-0.2, maximum(h1_pmcmc.x)+0.2))
+ax[:tick_params]("both",labelsize=label_size)
+
+PyPlot.figure(figsize=(10,10))
+ax = axes()
 PyPlot.plot(h2_pmcmc.x,h2_pmcmc.density, "b")
 PyPlot.plot(h2_mcwm.x,h2_mcwm.density, "b--")
 PyPlot.hold(true)
@@ -288,9 +326,14 @@ PyPlot.plot(h2_da.x,h2_da.density, "r")
 PyPlot.plot(h2_ada.x,h2_ada.density, "r--")
 PyPlot.plot(x_c2,priordens_c2, "g")
 PyPlot.plot((theta_true[2], theta_true[2]), (0, maximum([maximum(h2_pmcmc.density); maximum(h2_mcwm.density);maximum(h2_da.density); maximum(h2_ada.density)]) ), "k")
-PyPlot.xlabel(L"log $\phi$",fontsize=text_size)
-PyPlot.ylabel(L"Density",fontsize=text_size)
-PyPlot.figure()
+#PyPlot.xlabel(L"log $\phi$",fontsize=text_size)
+#PyPlot.ylabel(L"Density",fontsize=text_size)
+PyPlot.xlim((minimum(h2_pmcmc.x)-0.07, maximum(h2_pmcmc.x)+0.07))
+ax[:tick_params]("both",labelsize=label_size)
+
+
+PyPlot.figure(figsize=(10,10))
+ax = axes()
 PyPlot.plot(h3_pmcmc.x,h3_pmcmc.density, "b")
 PyPlot.plot(h3_mcwm.x,h3_mcwm.density, "b--")
 PyPlot.hold(true)
@@ -298,7 +341,7 @@ PyPlot.plot(h3_da.x,h3_da.density, "r")
 PyPlot.plot(h3_ada.x,h3_ada.density, "r--")
 PyPlot.plot(x_c3,priordens_c3, "g")
 PyPlot.plot((theta_true[3], theta_true[3]), (0, maximum([maximum(h3_pmcmc.density); maximum(h3_mcwm.density);maximum(h3_da.density); maximum(h3_ada.density)]) ), "k")
-PyPlot.xlabel(L"log $\sigma$",fontsize=text_size)
-PyPlot.ylabel(L"Density",fontsize=text_size)
-
-#ax[:tick_params]("both",labelsize=label_size)
+#PyPlot.xlabel(L"log $\sigma$",fontsize=text_size)
+#PyPlot.ylabel(L"Density",fontsize=text_size)
+PyPlot.xlim((minimum(h3_pmcmc.x)-0.25, maximum(h3_pmcmc.x)+0.25))
+ax[:tick_params]("both",labelsize=label_size)

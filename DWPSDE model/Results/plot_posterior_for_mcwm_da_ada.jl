@@ -29,25 +29,26 @@ else
 end
 
 load_data_from_files = true # load data from files or form some workspace
+plot_theta_true = false
 
 # load data for MCWM
 dagp = false #  set to _dagp to load ER-GP file  o.w. use ""
 
-dataset = "sim_data" # select simdata or realdata (i.e the new dataset)
+dataset = "new_data" # select simdata or new_data (i.e the new dataset)
 
-if dataset == "sim_data"
+if dataset == "simdata"
 
-  jobname_mcwm = "mcwm_7_par_sim_data" # jobname for mcwm
-  jobname_da = "_dagpest7da_gp_mcmcMCWM"
-  jobname_ada = "_dagpest7ada_gp_mcmc_dt"
+  jobname_mcwm = "gp_training_7_par_lunarc_simdata_4_coressimdata" # jobname for mcwm
+  jobname_da = "_dagpest7simdatada_gp_mcmc"
+  jobname_ada = "_dagpest7simdataada_gp_mcmc_dt"
 
-elseif dataset == "realdata"
+elseif dataset == "new_data"
 
   # select res for real data
   # important! These files should be update later on!!!
-  jobname_mcwm = "mcwm_7_par_real_data_2" # jobname for mcwm
-  jobname_da = "mcwm_7_par_real_data_2"
-  jobname_ada = "mcwm_7_par_real_data_2"
+  jobname_mcwm = "gp_training_7_par_lunarc_new_data_4_coresnew_data" # jobname for mcwm
+  jobname_da = "_dagpest7new_datada_gp_mcmc"
+  jobname_ada = "_dagpest7new_dataada_gp_mcmc_dt"
 
 end
 
@@ -116,8 +117,8 @@ end
 
 
 # text and lable size
-text_size = 15
-label_size = 15
+text_size = 25
+label_size = 20
 
 # plot posterior
 #PyPlot.figure()
@@ -132,13 +133,15 @@ for i = 1:N-2
     h_ada = kde(Theta_ada[i,:])
     PyPlot.plot(h_ada.x,h_ada.density, "r--")
 
-    PyPlot.plot((theta_true[i], theta_true[i]), (0, maximum([maximum(h_mcwm.density);maximum(h_da.density); maximum(h_ada.density)])), "k")
+    if plot_theta_true
+        PyPlot.plot((theta_true[i], theta_true[i]), (0, maximum([maximum(h_mcwm.density);maximum(h_da.density); maximum(h_ada.density)])), "k")
+    end
 
     if data_prior_dist_type == "Uniform"
         error("Uniform priors are not not implemented.")
     elseif data_prior_dist_type == "Normal"
         #x_grid = (data_prior_dist[i,1]-3*data_prior_dist[i,2]):0.001:(data_prior_dist[i,1]+3*data_prior_dist[i,2])
-        x_grid = (minimum(h_mcwm.x)-1*data_prior_dist[i,2]):0.001:(maximum(h_mcwm.x)+1*data_prior_dist[i,2])
+        x_grid = (minimum(h_mcwm.x)-0.1*data_prior_dist[i,2]):0.001:(maximum(h_mcwm.x)+0.1*data_prior_dist[i,2])
 
         PyPlot.plot(x_grid, pdf(Normal(data_prior_dist[i,1],data_prior_dist[i,2]), x_grid) ,"g")
     end
