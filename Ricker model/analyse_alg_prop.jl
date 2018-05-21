@@ -498,8 +498,8 @@ writetable("alg_prop_ada_dt.csv", convert(DataFrame, alg_prop_ada))
 
 # load results
 
-alg_prop_da = Matrix(readtable("alg_prop_da_dt.csv"))
-alg_prop_ada = Matrix(readtable("alg_prop_ada_dt.csv"))
+alg_prop_da = Matrix(readtable("Results/alg_prop_da_dt.csv"))
+alg_prop_ada = Matrix(readtable("Results/alg_prop_ada_dt.csv"))
 
 
 # analysis
