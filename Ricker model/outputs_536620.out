@@ -1,0 +1,622 @@
+Starting ml estimationLength of training data: 1800Start values for optimization:
+[-1675.05; 1375.71; 4765.66; -58.8521; -73.1682; -747.808; -4.68548; -355.504; 8.98857; 4.83859; 0.934979; 0.588406; -1.67788; -2.87451; -0.771963]Iter     Function value   Gradient norm 
+     0     3.698300e+03     5.694031e+03
+     1     3.262084e+03     2.855870e+03
+     2     1.975381e+03     9.488459e+02
+     3     1.934337e+03     1.262212e+03
+     4     1.874534e+03     8.578166e+02
+     5     1.866085e+03     2.493929e+02
+     6     1.864053e+03     1.803131e+02
+     7     1.852694e+03     8.614007e+01
+     8     1.848558e+03     3.463314e+02
+     9     1.817633e+03     1.754832e+02
+    10     1.798021e+03     4.745932e+02
+    11     1.645368e+03     1.876391e+03
+    12     1.645370e+03     1.876423e+03
+Estimated parameters of the GP model:
+Estimated Β:s:
+[-1675.15,1375.6,4765.39,-58.7235,-72.4946,-748.514,-4.48632,-355.928,9.05095,5.1954]
+Estimated log Φ:s:
+[-0.320285,-0.640191,-2.23617,-2.05645,-0.732181]
+elapsed time: 179.364708873 seconds
+Starting DA-GP-MCMC with adaptive RW estimating 3 parameters
+Covariance - kernel_MH_direct:
+[0.0260567 -0.0059508 0.0221521; -0.0059508 0.00199741 -0.00417316; 0.0221521 -0.00417316 0.114205]
+MCMC algorithm: MCWM
+Adaptation algorithm: noAdaptation
+Prior distribution: Uniform
+Particel filter: bootstrap
+Iteration: 1
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+ESS: 212.7273
+Loglik: 6404.1259 
+Percentage done: 2.00 % 
+Acceptance rate on iteration 1 to 1000 is 9.0090 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6404.3570 
+Percentage done: 4.00 % 
+Acceptance rate on iteration 1001 to 2000 is 10.0100 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6403.3374 
+Percentage done: 6.00 % 
+Acceptance rate on iteration 2001 to 3000 is 9.0090 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6402.5589 
+Percentage done: 8.00 % 
+Acceptance rate on iteration 3001 to 4000 is 9.2092 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6401.8994 
+Percentage done: 10.00 % 
+Acceptance rate on iteration 4001 to 5000 is 6.5065 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6403.9088 
+Percentage done: 12.00 % 
+Acceptance rate on iteration 5001 to 6000 is 9.7097 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6404.1952 
+ESS: 225.0003
+ESS: 168.7637
+Percentage done: 14.00 % 
+Acceptance rate on iteration 6001 to 7000 is 10.1101 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6400.3045 
+ESS: 11.5400
+ESS: 32.5985
+Percentage done: 16.00 % 
+Acceptance rate on iteration 7001 to 8000 is 10.4104 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6404.0205 
+Percentage done: 18.00 % 
+Acceptance rate on iteration 8001 to 9000 is 10.2102 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6404.2138 
+Percentage done: 20.00 % 
+Acceptance rate on iteration 9001 to 10000 is 10.7107 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6401.0550 
+Percentage done: 22.00 % 
+Acceptance rate on iteration 10001 to 11000 is 10.2102 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6405.4201 
+Percentage done: 24.00 % 
+Acceptance rate on iteration 11001 to 12000 is 10.2102 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6403.7539 
+Percentage done: 26.00 % 
+Acceptance rate on iteration 12001 to 13000 is 10.8108 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6403.6349 
+Percentage done: 28.00 % 
+Acceptance rate on iteration 13001 to 14000 is 10.2102 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6403.2262 
+Percentage done: 30.00 % 
+Acceptance rate on iteration 14001 to 15000 is 11.6116 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6402.8984 
+Percentage done: 32.00 % 
+Acceptance rate on iteration 15001 to 16000 is 10.4104 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6404.9799 
+Percentage done: 34.00 % 
+Acceptance rate on iteration 16001 to 17000 is 10.4104 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6404.0859 
+Percentage done: 36.00 % 
+Acceptance rate on iteration 17001 to 18000 is 10.2102 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6403.4279 
+ESS: 83.7354
+ESS: 154.4652
+Percentage done: 38.00 % 
+Acceptance rate on iteration 18001 to 19000 is 10.2102 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6403.4378 
+Percentage done: 40.00 % 
+Acceptance rate on iteration 19001 to 20000 is 9.2092 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6405.4010 
+Percentage done: 42.00 % 
+Acceptance rate on iteration 20001 to 21000 is 7.2072 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6404.8447 
+Percentage done: 44.00 % 
+Acceptance rate on iteration 21001 to 22000 is 10.6106 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6404.8379 
+Percentage done: 46.00 % 
+Acceptance rate on iteration 22001 to 23000 is 10.3103 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6398.2552 
+Percentage done: 48.00 % 
+Acceptance rate on iteration 23001 to 24000 is 10.8108 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6405.5336 
+ESS: 365.4365
+ESS: 221.0501
+Percentage done: 50.00 % 
+Acceptance rate on iteration 24001 to 25000 is 8.6086 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6404.2739 
+Percentage done: 52.00 % 
+Acceptance rate on iteration 25001 to 26000 is 10.3103 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6404.3986 
+Percentage done: 54.00 % 
+Acceptance rate on iteration 26001 to 27000 is 11.0110 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6404.9471 
+Percentage done: 56.00 % 
+Acceptance rate on iteration 27001 to 28000 is 9.8098 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6401.4614 
+Percentage done: 58.00 % 
+Acceptance rate on iteration 28001 to 29000 is 9.0090 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6403.9783 
+Percentage done: 60.00 % 
+Acceptance rate on iteration 29001 to 30000 is 8.4084 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6402.7378 
+ESS: 12.1547
+ESS: 118.1907
+Percentage done: 62.00 % 
+Acceptance rate on iteration 30001 to 31000 is 9.4094 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6405.7386 
+Percentage done: 64.00 % 
+Acceptance rate on iteration 31001 to 32000 is 11.2112 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6404.3842 
+Percentage done: 66.00 % 
+Acceptance rate on iteration 32001 to 33000 is 10.6106 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6403.9591 
+Percentage done: 68.00 % 
+Acceptance rate on iteration 33001 to 34000 is 10.8108 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6403.7652 
+ESS: 116.8376
+ESS: 227.6768
+Percentage done: 70.00 % 
+Acceptance rate on iteration 34001 to 35000 is 6.7067 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6403.6524 
+Percentage done: 72.00 % 
+Acceptance rate on iteration 35001 to 36000 is 9.2092 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6403.8272 
+ESS: 228.9867
+ESS: 158.6729
+Percentage done: 74.00 % 
+Acceptance rate on iteration 36001 to 37000 is 10.4104 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6404.5002 
+Percentage done: 76.00 % 
+Acceptance rate on iteration 37001 to 38000 is 12.0120 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6403.2957 
+Percentage done: 78.00 % 
+Acceptance rate on iteration 38001 to 39000 is 10.6106 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6397.6412 
+Percentage done: 80.00 % 
+Acceptance rate on iteration 39001 to 40000 is 7.3073 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6403.6818 
+Percentage done: 82.00 % 
+Acceptance rate on iteration 40001 to 41000 is 9.5095 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6403.9795 
+Percentage done: 84.00 % 
+Acceptance rate on iteration 41001 to 42000 is 10.3103 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6403.6537 
+Percentage done: 86.00 % 
+Acceptance rate on iteration 42001 to 43000 is 9.0090 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6404.4452 
+Percentage done: 88.00 % 
+Acceptance rate on iteration 43001 to 44000 is 10.8108 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6403.6199 
+Percentage done: 90.00 % 
+Acceptance rate on iteration 44001 to 45000 is 9.4094 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6402.4307 
+ESS: 94.6302
+ESS: 117.2966
+Percentage done: 92.00 % 
+Acceptance rate on iteration 45001 to 46000 is 10.2102 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6403.5930 
+Percentage done: 94.00 % 
+Acceptance rate on iteration 46001 to 47000 is 12.3123 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6401.7459 
+Percentage done: 96.00 % 
+Acceptance rate on iteration 47001 to 48000 is 9.4094 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6404.0165 
+Percentage done: 98.00 % 
+Acceptance rate on iteration 48001 to 49000 is 9.6096 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6404.4454 
+elapsed time: 292.876430759 seconds
+Ending DA-GP-MCMC with adaptive RW estimating 3 parameters
+Algorithm: MCWM
+Adaptation algorithm: noAdaptation
+Prior distribution: Uniform
+Particel filter: bootstrap
+Time pre-er:  0
+Time fit GP model:  0
+Time er-part:  293
+Number early-rejections: 37990
+Number of cases directly to ordinary MH: 10124
+Number of cases directly to ordinary MH accapted: 3957
+Number cases in secound stage: 1885
+Number accepted in secound stage: 975
+Accaptace rate for ordinary MH accapted: 39.0853
+Accaptace rate a_1: 4.7273
+Accaptace rate a_2: 51.7241
+Accaptace rate a_1*a_2: 2.4451
+Accaptace rate a (for entier algorithm): 9.8640
+Covariance - kernel_secound_stage_direct:
+[0.0260567 -0.0059508 0.0221521; -0.0059508 0.00199741 -0.00417316; 0.0221521 -0.00417316 0.114205]
+Starting DA-GP-MCMC with adaptive RW estimating 3 parameters
+MCMC algorithm: MCWM
+Adaptation algorithm: noAdaptation
+Select case model: BiaseCoin
+Prior distribution: Uniform
+Particel filter: bootstrap
+Iteration: 1
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+ESS: 222.3914
+Loglik: 6404.6846 
+Percentage done: 2.00 % 
+Acceptance rate on iteration 1 to 1000 is 10.1101 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6404.6924 
+Percentage done: 4.00 % 
+Acceptance rate on iteration 1001 to 2000 is 9.6096 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6402.0332 
+Percentage done: 6.00 % 
+Acceptance rate on iteration 2001 to 3000 is 11.8118 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6405.2100 
+ESS: 117.1173
+ESS: 281.0907
+Percentage done: 8.00 % 
+Acceptance rate on iteration 3001 to 4000 is 10.7107 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6403.2455 
+Percentage done: 10.00 % 
+Acceptance rate on iteration 4001 to 5000 is 11.3113 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: NaN 
+ESS: 165.1621
+ESS: 202.8659
+Percentage done: 12.00 % 
+Acceptance rate on iteration 5001 to 6000 is 10.1101 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6405.1655 
+Percentage done: 14.00 % 
+Acceptance rate on iteration 6001 to 7000 is 11.1111 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6403.0412 
+Percentage done: 16.00 % 
+Acceptance rate on iteration 7001 to 8000 is 11.0110 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6403.0001 
+Percentage done: 18.00 % 
+Acceptance rate on iteration 8001 to 9000 is 11.4114 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6400.8382 
+Percentage done: 20.00 % 
+Acceptance rate on iteration 9001 to 10000 is 13.7137 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6399.8669 
+Percentage done: 22.00 % 
+Acceptance rate on iteration 10001 to 11000 is 11.7117 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: NaN 
+Percentage done: 24.00 % 
+Acceptance rate on iteration 11001 to 12000 is 10.4104 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6404.1179 
+Percentage done: 26.00 % 
+Acceptance rate on iteration 12001 to 13000 is 9.7097 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6403.5447 
+Percentage done: 28.00 % 
+Acceptance rate on iteration 13001 to 14000 is 10.6106 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6403.2249 
+Percentage done: 30.00 % 
+Acceptance rate on iteration 14001 to 15000 is 9.6096 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6402.8649 
+Percentage done: 32.00 % 
+Acceptance rate on iteration 15001 to 16000 is 9.1091 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6404.2412 
+ESS: 115.6004
+ESS: 120.8812
+Percentage done: 34.00 % 
+Acceptance rate on iteration 16001 to 17000 is 11.5115 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6404.5404 
+Percentage done: 36.00 % 
+Acceptance rate on iteration 17001 to 18000 is 8.0080 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: NaN 
+Percentage done: 38.00 % 
+Acceptance rate on iteration 18001 to 19000 is 11.6116 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: NaN 
+Percentage done: 40.00 % 
+Acceptance rate on iteration 19001 to 20000 is 11.5115 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6403.3045 
+Percentage done: 42.00 % 
+Acceptance rate on iteration 20001 to 21000 is 11.1111 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6401.9973 
+Percentage done: 44.00 % 
+Acceptance rate on iteration 21001 to 22000 is 13.7137 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6396.9074 
+ESS: 6.4189
+ESS: 13.3758
+Percentage done: 46.00 % 
+Acceptance rate on iteration 22001 to 23000 is 11.5115 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6405.2514 
+ESS: 262.3648
+ESS: 313.3770
+Percentage done: 48.00 % 
+Acceptance rate on iteration 23001 to 24000 is 9.9099 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: NaN 
+Percentage done: 50.00 % 
+Acceptance rate on iteration 24001 to 25000 is 12.8128 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6401.5554 
+Percentage done: 52.00 % 
+Acceptance rate on iteration 25001 to 26000 is 12.5125 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6405.0926 
+Percentage done: 54.00 % 
+Acceptance rate on iteration 26001 to 27000 is 12.3123 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6404.4744 
+Percentage done: 56.00 % 
+Acceptance rate on iteration 27001 to 28000 is 11.1111 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6404.3411 
+Percentage done: 58.00 % 
+Acceptance rate on iteration 28001 to 29000 is 10.0100 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6401.5215 
+Percentage done: 60.00 % 
+Acceptance rate on iteration 29001 to 30000 is 9.7097 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6404.6725 
+Percentage done: 62.00 % 
+Acceptance rate on iteration 30001 to 31000 is 11.0110 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6404.4981 
+Percentage done: 64.00 % 
+Acceptance rate on iteration 31001 to 32000 is 9.4094 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6404.6146 
+Percentage done: 66.00 % 
+Acceptance rate on iteration 32001 to 33000 is 10.1101 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6403.6561 
+Percentage done: 68.00 % 
+Acceptance rate on iteration 33001 to 34000 is 9.3093 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: NaN 
+Percentage done: 70.00 % 
+Acceptance rate on iteration 34001 to 35000 is 10.4104 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6404.2872 
+Percentage done: 72.00 % 
+Acceptance rate on iteration 35001 to 36000 is 11.8118 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6404.4724 
+Percentage done: 74.00 % 
+Acceptance rate on iteration 36001 to 37000 is 12.7127 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6402.2880 
+Percentage done: 76.00 % 
+Acceptance rate on iteration 37001 to 38000 is 11.4114 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: NaN 
+Percentage done: 78.00 % 
+Acceptance rate on iteration 38001 to 39000 is 11.6116 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6402.8933 
+Percentage done: 80.00 % 
+Acceptance rate on iteration 39001 to 40000 is 11.6116 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6404.0888 
+ESS: 402.3678
+ESS: 315.4240
+Percentage done: 82.00 % 
+Acceptance rate on iteration 40001 to 41000 is 12.2122 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6402.0733 
+Percentage done: 84.00 % 
+Acceptance rate on iteration 41001 to 42000 is 8.8088 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6402.9447 
+ESS: 203.9863
+ESS: 236.8092
+Percentage done: 86.00 % 
+Acceptance rate on iteration 42001 to 43000 is 9.6096 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: NaN 
+ESS: 334.1391
+ESS: 319.8172
+Percentage done: 88.00 % 
+Acceptance rate on iteration 43001 to 44000 is 12.7127 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6404.4999 
+ESS: 25.9748
+ESS: 132.7908
+Percentage done: 90.00 % 
+Acceptance rate on iteration 44001 to 45000 is 9.5095 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6400.8576 
+Percentage done: 92.00 % 
+Acceptance rate on iteration 45001 to 46000 is 9.8098 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6400.5530 
+ESS: 410.6664
+ESS: 507.4684
+Percentage done: 94.00 % 
+Acceptance rate on iteration 46001 to 47000 is 12.7127 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6404.4924 
+ESS: 236.9680
+ESS: 318.5958
+Percentage done: 96.00 % 
+Acceptance rate on iteration 47001 to 48000 is 10.6106 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: 6402.0606 
+Percentage done: 98.00 % 
+Acceptance rate on iteration 48001 to 49000 is 11.4114 %
+Covariance:
+[0.0375216 -0.00856914 0.031899; -0.00856914 0.00287627 -0.00600934; 0.031899 -0.00600934 0.164455]
+Loglik: NaN 
+ESS: 319.3785
+ESS: 259.3564
+elapsed time: 284.583639697 seconds
+Ending ADA-GP-MCMC with adaptive RW estimating 3 parameters
+Algorithm: MCWM
+Adaptation algorithm: noAdaptation
+Prior distribution: Uniform
+Particel filter: bootstrap
+Time consumption:Time pre-er:  0
+Time fit GP model:  0
+Time er-part:  285
+Number early-rejections: 37735
+Number of cases directly to ordinary MH: 10067
+Number of cases directly to ordinary MH accapted: 3900
+Number split accaptance region early-accept: 296
+Number split accaptance region early-reject: 566
+Number cases in secound stage: 2197
+Number accepted in secound stage: 706
+Accaptace rate for ordinary MH accapted: 38.7404
+Accaptace rate a_1: 5.5019
+Accaptace rate a_2: 32.1347
+Accaptace rate a_1*a_2: 1.7680
+Accaptace rate a (for entier algorithm): 10.9360
+Nbr assumtion correct: 883.000000
+Proc assumtion correct: 0.661423
+Number case 1: 1152
+Number case 2: 291
+Number case 3: 717
+Number case 4: 37

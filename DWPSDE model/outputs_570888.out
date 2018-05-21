@@ -1,0 +1,85 @@
+run Normal prior model
+#####################################################################
+Starting MCMC with adaptive RW estimating 7 parameters
+Algorithm: MCWM
+Adaptation algorithm: AMUpdate_gen
+Prior distribution: Normal
+Particel filter: parallel_bootstrap, on 10 cores
+Iteration: 1
+Covariance:
+[0.142857 0.0 0.0 0.0 0.0 0.0 0.0; 0.0 0.142857 0.0 0.0 0.0 0.0 0.0; 0.0 0.0 0.142857 0.0 0.0 0.0 0.0; 0.0 0.0 0.0 0.142857 0.0 0.0 0.0; 0.0 0.0 0.0 0.0 0.142857 0.0 0.0; 0.0 0.0 0.0 0.0 0.0 0.142857 0.0; 0.0 0.0 0.0 0.0 0.0 0.0 0.142857]
+	From worker 2:	ESS: NaN
+	From worker 2:	Nbr resample: 24799 
+	From worker 10:	ESS: NaN
+	From worker 8:	ESS: NaN
+	From worker 10:	Nbr resample: 24799 
+	From worker 8:	Nbr resample: 24799 
+	From worker 6:	ESS: NaN
+	From worker 6:	Nbr resample: 24799 
+	From worker 7:	ESS: NaN
+	From worker 11:	ESS: NaN
+	From worker 7:	Nbr resample: 24799 
+	From worker 3:	ESS: NaN
+	From worker 11:	Nbr resample: 24799 
+	From worker 3:	Nbr resample: 24799 
+	From worker 4:	ESS: NaN
+	From worker 4:	Nbr resample: 24799 
+	From worker 9:	ESS: NaN
+	From worker 9:	Nbr resample: 24799 
+	From worker 5:	ESS: NaN
+	From worker 5:	Nbr resample: 24799 
+Loglik: NaN 
+Percentage done: 50.00 % 
+Acceptance rate on iteration 1 to 100 is 0.0000
+Covariance:
+[0.814141 2.09417e-31 4.18834e-30 -1.67533e-30 2.09417e-31 2.09417e-31 2.09417e-31; 2.09417e-31 0.814141 4.18834e-30 -1.67533e-30 2.09417e-31 2.09417e-31 2.09417e-31; 4.18834e-30 4.18834e-30 0.814141 -3.35067e-29 4.18834e-30 4.18834e-30 4.18834e-30; -1.67533e-30 -1.67533e-30 -3.35067e-29 0.814141 -1.67533e-30 -1.67533e-30 -1.67533e-30; 2.09417e-31 2.09417e-31 4.18834e-30 -1.67533e-30 0.814141 2.09417e-31 2.09417e-31; 2.09417e-31 2.09417e-31 4.18834e-30 -1.67533e-30 2.09417e-31 0.814141 2.09417e-31; 2.09417e-31 2.09417e-31 4.18834e-30 -1.67533e-30 2.09417e-31 2.09417e-31 0.814141]
+Loglik: NaN 
+Loglik values on different cores:
+[NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN]
+	From worker 2:	ESS: NaN
+	From worker 2:	Nbr resample: 24799 
+	From worker 9:	ESS: NaN
+	From worker 9:	Nbr resample: 24799 
+	From worker 7:	ESS: NaN
+	From worker 7:	Nbr resample: 24799 
+	From worker 10:	ESS: NaN
+	From worker 10:	Nbr resample: 24799 
+	From worker 3:	ESS: NaN
+	From worker 3:	Nbr resample: 24799 
+	From worker 6:	ESS: NaN
+	From worker 6:	Nbr resample: 24799 
+	From worker 8:	ESS: NaN
+	From worker 8:	Nbr resample: 24799 
+	From worker 4:	ESS: NaN
+	From worker 4:	Nbr resample: 24799 
+	From worker 11:	ESS: NaN
+	From worker 11:	Nbr resample: 24799 
+	From worker 5:	ESS: NaN
+	From worker 5:	Nbr resample: 24799 
+	From worker 7:	ESS: NaN
+	From worker 7:	Nbr resample: 24799 
+	From worker 3:	ESS: NaN
+	From worker 3:	Nbr resample: 24799 
+	From worker 10:	ESS: NaN
+	From worker 10:	Nbr resample: 24799 
+	From worker 9:	ESS: NaN
+	From worker 9:	Nbr resample: 24799 
+	From worker 6:	ESS: NaN
+	From worker 6:	Nbr resample: 24799 
+	From worker 2:	ESS: NaN
+	From worker 2:	Nbr resample: 24799 
+	From worker 8:	ESS: NaN
+	From worker 8:	Nbr resample: 24799 
+	From worker 4:	ESS: NaN
+	From worker 4:	Nbr resample: 24799 
+	From worker 5:	ESS: NaN
+	From worker 5:	Nbr resample: 24799 
+	From worker 11:	ESS: NaN
+	From worker 11:	Nbr resample: 24799 
+Ending MCMC with adaptive RW estimating 7 parameters
+Algorithm: MCWM
+Adaptation algorithm: AMUpdate_gen
+Prior distribution: Normal
+Particel filter: parallel_bootstrap, on 10 cores
+#####################################################################
+elapsed time: 596.800558293 seconds

@@ -1,0 +1,6 @@
+WARNING: Already in the DWPSDE model folder
+ERROR: LoadError: could not open file /home/samwiq/project 1 accalerated delated accaptance mcmc\select case\selectcase.jl
+ in include_from_node1(::String) at ./loading.jl:488 (repeats 2 times)
+ in process_options(::Base.JLOptions) at ./client.jl:265
+ in _start() at ./client.jl:321
+while loading /home/samwiq/project 1 accalerated delated accaptance mcmc/DWPSDE model/analyse_alg_prop.jl, in expression starting on line 12

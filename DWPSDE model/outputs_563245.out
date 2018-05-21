@@ -1,0 +1,461 @@
+run Normal prior model
+#####################################################################
+Starting MCMC with adaptive RW estimating 2 parameters
+Algorithm: MCWM
+Adaptation algorithm: AMUpdate_gen
+Prior distribution: Normal
+Particel filter: parallel_bootstrap, on 10 cores
+Iteration: 1
+Covariance:
+[0.5 0.0; 0.0 0.5]
+	From worker 2:	ESS: 23.7430
+	From worker 2:	Nbr resample: 35354 
+	From worker 6:	ESS: 22.3399
+	From worker 6:	Nbr resample: 35354 
+	From worker 8:	ESS: 23.1051
+	From worker 8:	Nbr resample: 35354 
+	From worker 3:	ESS: 22.2847
+	From worker 3:	Nbr resample: 35354 
+	From worker 11:	ESS: 22.2457
+	From worker 11:	Nbr resample: 35354 
+	From worker 9:	ESS: 23.8066
+	From worker 9:	Nbr resample: 35354 
+	From worker 4:	ESS: 21.3852
+	From worker 4:	Nbr resample: 35354 
+	From worker 10:	ESS: 22.6193
+	From worker 10:	Nbr resample: 35354 
+	From worker 7:	ESS: 21.7901
+	From worker 7:	Nbr resample: 35354 
+	From worker 5:	ESS: 22.7196
+	From worker 5:	Nbr resample: 35354 
+Loglik: -234419.7273 
+Percentage done: 10.00 % 
+Acceptance rate on iteration 1 to 100 is 0.1414
+Covariance:
+[0.025069 0.00886929; 0.00886929 0.030073]
+Loglik: -161412.0349 
+Loglik values on different cores:
+[-1.61454e5,-1.61452e5,-1.61399e5,-1.6145e5,-161567.0,-1.61478e5,-1.61533e5,-1.61491e5,-1.6138e5,-1.61408e5]
+	From worker 11:	ESS: 12.6436
+	From worker 11:	Nbr resample: 35354 
+	From worker 6:	ESS: 6.1125
+	From worker 6:	Nbr resample: 35354 
+	From worker 2:	ESS: 9.6916
+	From worker 2:	Nbr resample: 35354 
+	From worker 3:	ESS: 10.7508
+	From worker 3:	Nbr resample: 35354 
+	From worker 7:	ESS: 10.8525
+	From worker 7:	Nbr resample: 35354 
+	From worker 10:	ESS: 12.5984
+	From worker 10:	Nbr resample: 35354 
+	From worker 4:	ESS: 9.1740
+	From worker 4:	Nbr resample: 35354 
+	From worker 5:	ESS: 13.5265
+	From worker 5:	Nbr resample: 35354 
+	From worker 8:	ESS: 9.5765
+	From worker 8:	Nbr resample: 35354 
+	From worker 9:	ESS: 13.4848
+	From worker 9:	Nbr resample: 35354 
+	From worker 2:	ESS: 12.1586
+	From worker 2:	Nbr resample: 35354 
+	From worker 5:	ESS: 13.8323
+	From worker 5:	Nbr resample: 35354 
+	From worker 8:	ESS: 14.3836
+	From worker 8:	Nbr resample: 35354 
+	From worker 3:	ESS: 10.8225
+	From worker 3:	Nbr resample: 35354 
+	From worker 6:	ESS: 13.9450
+	From worker 6:	Nbr resample: 35354 
+	From worker 7:	ESS: 10.8446
+	From worker 7:	Nbr resample: 35354 
+	From worker 4:	ESS: 11.2232
+	From worker 4:	Nbr resample: 35354 
+	From worker 10:	ESS: 12.3500
+	From worker 10:	Nbr resample: 35354 
+	From worker 9:	ESS: 10.6641
+	From worker 9:	Nbr resample: 35354 
+	From worker 11:	ESS: 16.1006
+	From worker 11:	Nbr resample: 35354 
+Percentage done: 20.00 % 
+Acceptance rate on iteration 101 to 200 is 0.0606
+Covariance:
+[0.00231192 0.000754506; 0.000754506 0.00282672]
+Loglik: -161317.1775 
+Loglik values on different cores:
+[-1.61434e5,-1.61344e5,-1.61363e5,-1.61332e5,-1.61386e5,-1.61365e5,-1.61359e5,-161385.0,-1.61397e5,-1.6142e5]
+	From worker 11:	ESS: 8.8929
+	From worker 11:	Nbr resample: 35354 
+	From worker 2:	ESS: 9.2164
+	From worker 2:	Nbr resample: 35354 
+	From worker 3:	ESS: 8.8223
+	From worker 3:	Nbr resample: 35354 
+	From worker 4:	ESS: 9.6613
+	From worker 4:	Nbr resample: 35354 
+	From worker 6:	ESS: 11.2340
+	From worker 6:	Nbr resample: 35354 
+	From worker 5:	ESS: 11.2923
+	From worker 5:	Nbr resample: 35354 
+	From worker 10:	ESS: 11.8830
+	From worker 10:	Nbr resample: 35354 
+	From worker 7:	ESS: 15.2442
+	From worker 7:	Nbr resample: 35354 
+	From worker 8:	ESS: 10.5252
+	From worker 8:	Nbr resample: 35354 
+	From worker 9:	ESS: 11.7667
+	From worker 9:	Nbr resample: 35354 
+	From worker 2:	ESS: 11.2056
+	From worker 2:	Nbr resample: 35354 
+	From worker 5:	ESS: 9.7404
+	From worker 5:	Nbr resample: 35354 
+	From worker 3:	ESS: 10.0413
+	From worker 3:	Nbr resample: 35354 
+	From worker 7:	ESS: 9.7771
+	From worker 7:	Nbr resample: 35354 
+	From worker 8:	ESS: 15.7293
+	From worker 8:	Nbr resample: 35354 
+	From worker 4:	ESS: 12.8777
+	From worker 4:	Nbr resample: 35354 
+	From worker 6:	ESS: 9.9890
+	From worker 6:	Nbr resample: 35354 
+	From worker 10:	ESS: 14.5394
+	From worker 10:	Nbr resample: 35354 
+	From worker 9:	ESS: 10.5241
+	From worker 9:	Nbr resample: 35354 
+	From worker 11:	ESS: 10.9440
+	From worker 11:	Nbr resample: 35354 
+Percentage done: 30.00 % 
+Acceptance rate on iteration 201 to 300 is 0.1717
+Covariance:
+[0.000649288 0.000182498; 0.000182498 0.000825683]
+Loglik: -161246.1339 
+Loglik values on different cores:
+[-161360.0,-1.61334e5,-1.61347e5,-1.61352e5,-1.61364e5,-1.61354e5,-1.61393e5,-1.61288e5,-1.6135e5,-1.6136e5]
+	From worker 11:	ESS: 11.3529
+	From worker 11:	Nbr resample: 35354 
+	From worker 3:	ESS: 12.3831
+	From worker 3:	Nbr resample: 35354 
+	From worker 4:	ESS: 13.6113
+	From worker 4:	Nbr resample: 35354 
+	From worker 2:	ESS: 9.0580
+	From worker 2:	Nbr resample: 35354 
+	From worker 6:	ESS: 11.5786
+	From worker 6:	Nbr resample: 35354 
+	From worker 5:	ESS: 12.3098
+	From worker 5:	Nbr resample: 35354 
+	From worker 8:	ESS: 10.3677
+	From worker 8:	Nbr resample: 35354 
+	From worker 7:	ESS: 12.3579
+	From worker 7:	Nbr resample: 35354 
+	From worker 9:	ESS: 9.6068
+	From worker 9:	Nbr resample: 35354 
+	From worker 10:	ESS: 9.4092
+	From worker 10:	Nbr resample: 35354 
+	From worker 2:	ESS: 10.4022
+	From worker 2:	Nbr resample: 35354 
+	From worker 3:	ESS: 6.1281
+	From worker 3:	Nbr resample: 35354 
+	From worker 5:	ESS: 10.7885
+	From worker 5:	Nbr resample: 35354 
+	From worker 7:	ESS: 14.1479
+	From worker 7:	Nbr resample: 35354 
+	From worker 6:	ESS: 11.4198
+	From worker 6:	Nbr resample: 35354 
+	From worker 8:	ESS: 12.7898
+	From worker 8:	Nbr resample: 35354 
+	From worker 4:	ESS: 8.5728
+	From worker 4:	Nbr resample: 35354 
+	From worker 9:	ESS: 12.5802
+	From worker 9:	Nbr resample: 35354 
+	From worker 10:	ESS: 13.5037
+	From worker 10:	Nbr resample: 35354 
+	From worker 11:	ESS: 9.5506
+	From worker 11:	Nbr resample: 35354 
+Percentage done: 40.00 % 
+Acceptance rate on iteration 301 to 400 is 0.2424
+Covariance:
+[0.000286426 6.81743e-5; 6.81743e-5 0.000399026]
+Loglik: -161267.1201 
+Loglik values on different cores:
+[-1.61319e5,-1.61355e5,-1.61275e5,-1.61391e5,-1.61372e5,-1.61337e5,-1.61388e5,-1.61311e5,-1.61287e5,-1.6137e5]
+	From worker 11:	ESS: 13.9717
+	From worker 11:	Nbr resample: 35354 
+	From worker 4:	ESS: 12.1105
+	From worker 4:	Nbr resample: 35354 
+	From worker 2:	ESS: 9.3882
+	From worker 2:	Nbr resample: 35354 
+	From worker 3:	ESS: 12.6598
+	From worker 3:	Nbr resample: 35354 
+	From worker 10:	ESS: 13.4032
+	From worker 10:	Nbr resample: 35354 
+	From worker 8:	ESS: 12.3777
+	From worker 8:	Nbr resample: 35354 
+	From worker 7:	ESS: 13.5838
+	From worker 7:	Nbr resample: 35354 
+	From worker 6:	ESS: 10.7902
+	From worker 6:	Nbr resample: 35354 
+	From worker 5:	ESS: 9.7405
+	From worker 5:	Nbr resample: 35354 
+	From worker 9:	ESS: 13.9070
+	From worker 9:	Nbr resample: 35354 
+	From worker 2:	ESS: 11.1292
+	From worker 2:	Nbr resample: 35354 
+	From worker 3:	ESS: 9.0154
+	From worker 3:	Nbr resample: 35354 
+	From worker 5:	ESS: 13.8470
+	From worker 5:	Nbr resample: 35354 
+	From worker 8:	ESS: 10.7925
+	From worker 8:	Nbr resample: 35354 
+	From worker 6:	ESS: 12.2404
+	From worker 6:	Nbr resample: 35354 
+	From worker 7:	ESS: 10.9103
+	From worker 7:	Nbr resample: 35354 
+	From worker 4:	ESS: 11.4415
+	From worker 4:	Nbr resample: 35354 
+	From worker 10:	ESS: 14.6565
+	From worker 10:	Nbr resample: 35354 
+	From worker 11:	ESS: 10.1339
+	From worker 11:	Nbr resample: 35354 
+	From worker 9:	ESS: 12.0006
+	From worker 9:	Nbr resample: 35354 
+Percentage done: 50.00 % 
+Acceptance rate on iteration 401 to 500 is 0.3838
+Covariance:
+[0.000184094 4.00331e-5; 4.00331e-5 0.000324022]
+Loglik: -161278.4286 
+Loglik values on different cores:
+[-1.61323e5,-1.61345e5,-1.61329e5,-1.6134e5,-1.61314e5,-1.61295e5,-1.61294e5,-1.61352e5,-1.61431e5,-1.61294e5]
+	From worker 11:	ESS: 12.9174
+	From worker 11:	Nbr resample: 35354 
+	From worker 8:	ESS: 11.9698
+	From worker 8:	Nbr resample: 35354 
+	From worker 2:	ESS: 7.4517
+	From worker 2:	Nbr resample: 35354 
+	From worker 4:	ESS: 13.2981
+	From worker 4:	Nbr resample: 35354 
+	From worker 5:	ESS: 11.2215
+	From worker 5:	Nbr resample: 35354 
+	From worker 10:	ESS: 11.1032
+	From worker 10:	Nbr resample: 35354 
+	From worker 7:	ESS: 11.3960
+	From worker 7:	Nbr resample: 35354 
+	From worker 9:	ESS: 8.8227
+	From worker 9:	Nbr resample: 35354 
+	From worker 6:	ESS: 13.9966
+	From worker 6:	Nbr resample: 35354 
+	From worker 3:	ESS: 16.4038
+	From worker 3:	Nbr resample: 35354 
+	From worker 2:	ESS: 12.5193
+	From worker 2:	Nbr resample: 35354 
+	From worker 5:	ESS: 10.6986
+	From worker 5:	Nbr resample: 35354 
+	From worker 6:	ESS: 8.6228
+	From worker 6:	Nbr resample: 35354 
+	From worker 7:	ESS: 12.5257
+	From worker 7:	Nbr resample: 35354 
+	From worker 4:	ESS: 13.2282
+	From worker 4:	Nbr resample: 35354 
+	From worker 3:	ESS: 11.0152
+	From worker 3:	Nbr resample: 35354 
+	From worker 9:	ESS: 12.2997
+	From worker 9:	Nbr resample: 35354 
+	From worker 10:	ESS: 11.9592
+	From worker 10:	Nbr resample: 35354 
+	From worker 8:	ESS: 14.2990
+	From worker 8:	Nbr resample: 35354 
+	From worker 11:	ESS: 14.0830
+	From worker 11:	Nbr resample: 35354 
+Percentage done: 60.00 % 
+Acceptance rate on iteration 501 to 600 is 0.3636
+Covariance:
+[0.000130871 1.10172e-5; 1.10172e-5 0.000301695]
+Loglik: -161253.9383 
+Loglik values on different cores:
+[-161353.0,-1.61387e5,-1.61319e5,-1.61387e5,-1.61357e5,-1.61375e5,-1.61337e5,-1.6129e5,-161361.0,-1.61388e5]
+	From worker 11:	ESS: 9.6128
+	From worker 11:	Nbr resample: 35354 
+	From worker 2:	ESS: 13.3721
+	From worker 2:	Nbr resample: 35354 
+	From worker 5:	ESS: 10.3304
+	From worker 5:	Nbr resample: 35354 
+	From worker 8:	ESS: 14.5887
+	From worker 8:	Nbr resample: 35354 
+	From worker 7:	ESS: 11.1808
+	From worker 7:	Nbr resample: 35354 
+	From worker 10:	ESS: 12.9507
+	From worker 10:	Nbr resample: 35354 
+	From worker 9:	ESS: 11.1142
+	From worker 9:	Nbr resample: 35354 
+	From worker 3:	ESS: 12.8263
+	From worker 3:	Nbr resample: 35354 
+	From worker 4:	ESS: 13.6327
+	From worker 4:	Nbr resample: 35354 
+	From worker 6:	ESS: 9.4604
+	From worker 6:	Nbr resample: 35354 
+	From worker 2:	ESS: 9.9995
+	From worker 2:	Nbr resample: 35354 
+	From worker 3:	ESS: 10.3455
+	From worker 3:	Nbr resample: 35354 
+	From worker 5:	ESS: 11.3088
+	From worker 5:	Nbr resample: 35354 
+	From worker 4:	ESS: 12.2120
+	From worker 4:	Nbr resample: 35354 
+	From worker 8:	ESS: 10.4256
+	From worker 8:	Nbr resample: 35354 
+	From worker 7:	ESS: 11.1213
+	From worker 7:	Nbr resample: 35354 
+	From worker 6:	ESS: 11.0063
+	From worker 6:	Nbr resample: 35354 
+	From worker 9:	ESS: 9.5455
+	From worker 9:	Nbr resample: 35354 
+	From worker 10:	ESS: 14.2531
+	From worker 10:	Nbr resample: 35354 
+	From worker 11:	ESS: 9.3264
+	From worker 11:	Nbr resample: 35354 
+Percentage done: 70.00 % 
+Acceptance rate on iteration 601 to 700 is 0.3737
+Covariance:
+[0.00010102 -3.17507e-6; -3.17507e-6 0.000247049]
+Loglik: -161276.1314 
+Loglik values on different cores:
+[-1.61338e5,-1.61373e5,-1.61335e5,-1.61374e5,-1.61376e5,-1.61325e5,-1.61347e5,-1.61258e5,-1.61414e5,-1.6134e5]
+	From worker 11:	ESS: 12.3239
+	From worker 11:	Nbr resample: 35354 
+	From worker 3:	ESS: 13.5502
+	From worker 3:	Nbr resample: 35354 
+	From worker 4:	ESS: 12.4709
+	From worker 4:	Nbr resample: 35354 
+	From worker 7:	ESS: 10.2253
+	From worker 7:	Nbr resample: 35354 
+	From worker 6:	ESS: 12.9728
+	From worker 6:	Nbr resample: 35354 
+	From worker 8:	ESS: 11.4551
+	From worker 8:	Nbr resample: 35354 
+	From worker 5:	ESS: 12.8878
+	From worker 5:	Nbr resample: 35354 
+	From worker 9:	ESS: 9.9866
+	From worker 9:	Nbr resample: 35354 
+	From worker 10:	ESS: 12.9847
+	From worker 10:	Nbr resample: 35354 
+	From worker 2:	ESS: 13.4389
+	From worker 2:	Nbr resample: 35354 
+	From worker 5:	ESS: 9.3737
+	From worker 5:	Nbr resample: 35354 
+	From worker 6:	ESS: 9.9121
+	From worker 6:	Nbr resample: 35354 
+	From worker 8:	ESS: 12.1350
+	From worker 7:	ESS: 13.6795
+	From worker 7:	Nbr resample: 35354 
+	From worker 4:	ESS: 15.7230
+	From worker 4:	Nbr resample: 35354 
+	From worker 8:	Nbr resample: 35354 
+	From worker 9:	ESS: 7.7770
+	From worker 9:	Nbr resample: 35354 
+	From worker 10:	ESS: 9.9295
+	From worker 10:	Nbr resample: 35354 
+	From worker 3:	ESS: 12.8483
+	From worker 3:	Nbr resample: 35354 
+	From worker 11:	ESS: 12.1165
+	From worker 11:	Nbr resample: 35354 
+	From worker 2:	ESS: 10.9889
+	From worker 2:	Nbr resample: 35354 
+Percentage done: 80.00 % 
+Acceptance rate on iteration 701 to 800 is 0.4848
+Covariance:
+[9.62809e-5 1.41868e-6; 1.41868e-6 0.000237099]
+Loglik: -161296.1029 
+Loglik values on different cores:
+[-1.61324e5,-1.61343e5,-1.61359e5,-1.61308e5,-1.61434e5,-1.61385e5,-1.61344e5,-1.61329e5,-1.61313e5,-1.61351e5]
+	From worker 11:	ESS: 11.9833
+	From worker 11:	Nbr resample: 35354 
+	From worker 5:	ESS: 13.7412
+	From worker 5:	Nbr resample: 35354 
+	From worker 7:	ESS: 11.8020
+	From worker 7:	Nbr resample: 35354 
+	From worker 6:	ESS: 9.0677
+	From worker 6:	Nbr resample: 35354 
+	From worker 3:	ESS: 6.4718
+	From worker 3:	Nbr resample: 35354 
+	From worker 9:	ESS: 8.7114
+	From worker 9:	Nbr resample: 35354 
+	From worker 8:	ESS: 11.8322
+	From worker 8:	Nbr resample: 35354 
+	From worker 4:	ESS: 12.0121
+	From worker 4:	Nbr resample: 35354 
+	From worker 10:	ESS: 12.3905
+	From worker 10:	Nbr resample: 35354 
+	From worker 2:	ESS: 8.5118
+	From worker 2:	Nbr resample: 35354 
+	From worker 3:	ESS: 12.7057
+	From worker 3:	Nbr resample: 35354 
+	From worker 7:	ESS: 7.2134
+	From worker 7:	Nbr resample: 35354 
+	From worker 8:	ESS: 11.1128
+	From worker 8:	Nbr resample: 35354 
+	From worker 9:	ESS: 9.9875
+	From worker 9:	Nbr resample: 35354 
+	From worker 10:	ESS: 10.9030
+	From worker 10:	Nbr resample: 35354 
+	From worker 4:	ESS: 13.4969
+	From worker 4:	Nbr resample: 35354 
+	From worker 6:	ESS: 11.2966
+	From worker 6:	Nbr resample: 35354 
+	From worker 5:	ESS: 6.4699
+	From worker 5:	Nbr resample: 35354 
+	From worker 11:	ESS: 9.0422
+	From worker 11:	Nbr resample: 35354 
+	From worker 2:	ESS: 14.8703
+	From worker 2:	Nbr resample: 35354 
+Percentage done: 90.00 % 
+Acceptance rate on iteration 801 to 900 is 0.3535
+Covariance:
+[8.53032e-5 -1.51877e-5; -1.51877e-5 0.000261775]
+Loglik: -161325.7775 
+Loglik values on different cores:
+[-1.61429e5,-1.61424e5,-1.61496e5,-1.61362e5,-1.6137e5,-161310.0,-161401.0,-1.61404e5,-1.61406e5,-1.6137e5]
+	From worker 11:	ESS: 8.9090
+	From worker 11:	Nbr resample: 35354 
+	From worker 2:	ESS: 13.7089
+	From worker 2:	Nbr resample: 35354 
+	From worker 7:	ESS: 14.1118
+	From worker 7:	Nbr resample: 35354 
+	From worker 9:	ESS: 14.2956
+	From worker 9:	Nbr resample: 35354 
+	From worker 3:	ESS: 10.6679
+	From worker 3:	Nbr resample: 35354 
+	From worker 10:	ESS: 9.4713
+	From worker 10:	Nbr resample: 35354 
+	From worker 8:	ESS: 8.7049
+	From worker 8:	Nbr resample: 35354 
+	From worker 6:	ESS: 10.5987
+	From worker 6:	Nbr resample: 35354 
+	From worker 4:	ESS: 15.9259
+	From worker 4:	Nbr resample: 35354 
+	From worker 5:	ESS: 11.7608
+	From worker 5:	Nbr resample: 35354 
+	From worker 2:	ESS: 9.5202
+	From worker 2:	Nbr resample: 35354 
+	From worker 3:	ESS: 11.9481
+	From worker 3:	Nbr resample: 35354 
+	From worker 8:	ESS: 9.5841
+	From worker 7:	ESS: 14.1322
+	From worker 7:	Nbr resample: 35354 
+	From worker 8:	Nbr resample: 35354 
+	From worker 5:	ESS: 9.5014
+	From worker 5:	Nbr resample: 35354 
+	From worker 4:	ESS: 13.6784
+	From worker 4:	Nbr resample: 35354 
+	From worker 9:	ESS: 13.5233
+	From worker 9:	Nbr resample: 35354 
+	From worker 10:	ESS: 14.6652
+	From worker 10:	Nbr resample: 35354 
+	From worker 6:	ESS: 10.0350
+	From worker 6:	Nbr resample: 35354 
+	From worker 11:	ESS: 12.5357
+	From worker 11:	Nbr resample: 35354 
+Ending MCMC with adaptive RW estimating 2 parameters
+Algorithm: MCWM
+Adaptation algorithm: AMUpdate_gen
+Prior distribution: Normal
+Particel filter: parallel_bootstrap, on 10 cores
+#####################################################################
+elapsed time: 885.956195214 seconds

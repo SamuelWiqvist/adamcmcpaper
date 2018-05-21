@@ -1,0 +1,47 @@
+Starting MCMC with adaptive RW estimating 3 parameters
+MCMC algorithm: PMCMC
+Adaptation algorithm: AMUpdate_gen
+Prior distribution: Uniform
+Particel filter: bootstrap
+Iteration: 1
+Covariance:
+[1.92 0.0 0.0; 0.0 1.92 0.0; 0.0 0.0 1.92]
+ESS: 13.9506
+Loglik: 6262.1471 
+Percentage done: 19.23 % 
+Acceptance rate on iteration 1 to 10000 is 0.4264
+Covariance:
+[0.0101837 -0.00251325 0.00863312; -0.00251325 0.00111602 -0.0024095; 0.00863312 -0.0024095 0.0845493]
+Loglik: 6404.3189 
+ESS: 261.2227
+Percentage done: 38.46 % 
+Acceptance rate on iteration 10001 to 20000 is 0.3889
+Covariance:
+[0.0106375 -0.00262564 0.00932518; -0.00262564 0.00111182 -0.0024168; 0.00932518 -0.0024168 0.0878277]
+Loglik: 6404.2741 
+ESS: 330.3515
+Percentage done: 57.69 % 
+Acceptance rate on iteration 20001 to 30000 is 0.4079
+Covariance:
+[0.01166 -0.00273334 0.00832184; -0.00273334 0.00114836 -0.00170368; 0.00832184 -0.00170368 0.0906285]
+Loglik: 6404.9073 
+ESS: 172.8510
+Percentage done: 76.92 % 
+Acceptance rate on iteration 30001 to 40000 is 0.3971
+Covariance:
+[0.0109045 -0.00258336 0.00805608; -0.00258336 0.001101 -0.00145046; 0.00805608 -0.00145046 0.0837326]
+Loglik: 6402.1854 
+ESS: 185.2327
+Percentage done: 96.15 % 
+Acceptance rate on iteration 40001 to 50000 is 0.3865
+Covariance:
+[0.0130744 -0.00319356 0.0110063; -0.00319356 0.00128536 -0.00245195; 0.0110063 -0.00245195 0.0908365]
+Loglik: 6403.9886 
+ESS: 271.4109
+Ending MCMC with adaptive RW estimating 3 parameters
+Algorithm: PMCMC
+Adaptation algorithm: AMUpdate_gen
+Prior distribution: Uniform
+Particel filter: bootstrap
+elapsed time: 859.729910885 seconds
+Run time (s): 859.7299 
