@@ -34,10 +34,10 @@ label_size = 20
 
 load_data_from_files = true # load data from files or form some  workspace
 dagp = true # was true #  set to _dagp to load ER-GP file  o.w. use ""
-jobname = "_dagpest7new_dataada_gp_mcmc_dt" # was "_dagpest7_real_dataada_gp_mcmc_dt" # set to jobname string
+jobname = "_dagpest7simdataada_gp_mcmc_dt" # was "_dagpest7_real_dataada_gp_mcmc_dt" # set to jobname string
 
 
-plot_theta_true = false
+plot_theta_true = true
 
 # results:
 # gp_training_7_par
@@ -171,15 +171,21 @@ Base.showarray(STDOUT,round(calcquantileint(Theta[:,burn_in+1:end],lower_q_int_l
 
 # plot trace plots
 
+text_size = 15
+label_size = 10
+
 #on log-scale
-PyPlot.figure()
+PyPlot.figure(figsize=(10,20))
+ax = axes()
 for i = 1:N-2
-    PyPlot.subplot(N-2,1,i)
+    ax1 = PyPlot.subplot(N-2,1,i)
     PyPlot.plot(Theta[i,:])
-    plot_theta_true == true ? PyPlot.plot(ones(size(Theta,2),1)*theta_true[i], "k") :
+    plot_theta_true == true ? PyPlot.plot(ones(size(Theta,2),1)*theta_true[i], "k") : 2
     PyPlot.ylabel(title_vec_log[i],fontsize=text_size)
+    i < 7 ? ax1[:axes][:get_xaxis]()[:set_ticks]([]) : 2
 end
-PyPlot.xlabel("Iteration")
+PyPlot.xlabel("Iteration",fontsize=text_size)
+ax[:tick_params]("both",labelsize = label_size)
 
 # on non-log scale
 PyPlot.figure()
@@ -194,15 +200,18 @@ PyPlot.xlabel("Iteration")
 # plot trace plots after burn in
 
 # on log-scale
-PyPlot.figure()
+PyPlot.figure(figsize=(10,20))
+ax = axes()
 x_axis = burn_in+1:size(Theta,2)
 for i = 1:N-2
-    PyPlot.subplot(N-2,1,i)
+    ax1 = PyPlot.subplot(N-2,1,i)
     PyPlot.plot(x_axis, Theta[i,burn_in+1:end])
-    plot_theta_true == true ? PyPlot.plot(x_axis, ones(length(x_axis),1)*theta_true[i], "k") :
-    PyPlot.ylabel(title_vec_log[i])
+    plot_theta_true == true ? PyPlot.plot(x_axis, ones(length(x_axis),1)*theta_true[i], "k") : 2
+    PyPlot.ylabel(title_vec_log[i],fontsize=text_size)
+    i < 7 ? ax1[:axes][:get_xaxis]()[:set_ticks]([]) : 2
 end
-PyPlot.xlabel("Iteration")
+PyPlot.xlabel("Iteration",fontsize=text_size)
+ax[:tick_params]("both",labelsize = label_size)
 
 # on non-log scale
 PyPlot.figure()

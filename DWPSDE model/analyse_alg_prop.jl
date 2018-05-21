@@ -602,9 +602,21 @@ writetable("alg_prop_ada_biasedcoin.csv", convert(DataFrame, alg_prop_ada))
 
 # file names:
 
+# alg_prop_da_simdatadt
+# alg_prop_ada_simdatadt
 
-alg_prop_da = Matrix(readtable("alg_prop_da_dt.csv"))
-alg_prop_ada = Matrix(readtable("alg_prop_ada_dt.csv"))
+# alg_prop_da_simdatabiasedcoin
+# alg_prop_ada_simdatabiasedcoin
+
+# alg_prop_da_new_datadt
+# alg_prop_ada_new_datadt
+
+# alg_prop_da_newdatabiasedcoin
+# alg_prop_ada_newdatabiasedcoin
+
+
+alg_prop_da = Matrix(readtable("alg_prop_da_simdatadt.csv"))
+alg_prop_ada = Matrix(readtable("alg_prop_ada_simdatadt.csv"))
 
 
 # analysis

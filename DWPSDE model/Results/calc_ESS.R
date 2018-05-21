@@ -4,7 +4,7 @@ library(readr)
 
 
 # MCWM/PMCMC 
-output <- read_csv("output_resmcwm_7_para_realdata.csv")
+output <- read_csv("gp_training_7_par_lunarc_simdata_4_coressimdata")
 View(output)
 
 X = (output)[10000:20000,1:7]

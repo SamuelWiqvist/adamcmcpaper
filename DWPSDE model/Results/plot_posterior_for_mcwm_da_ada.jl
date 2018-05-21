@@ -34,7 +34,7 @@ plot_theta_true = false
 # load data for MCWM
 dagp = false #  set to _dagp to load ER-GP file  o.w. use ""
 
-dataset = "new_data" # select simdata or new_data (i.e the new dataset)
+dataset = "simdata" # select simdata or new_data (i.e the new dataset)
 
 if dataset == "simdata"
 
