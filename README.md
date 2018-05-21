@@ -41,7 +41,7 @@ The files (in the master branch) are structured as following
 
 The `lunarc` branch contains the code used to run the algorithms on AURORA@LUNARC  http://www.lunarc.lu.se/resources/hardware/aurora/. The source code in the `lunarc` branch is similar to the source code on the `master` branch. The `lunarc` branch also contains scripts to run the algorithms on AURORA@LUNARC, and all numerical results.
 
-###### Julia environment
+#### Julia environment
 
 ```
 julia> versioninfo()
@@ -57,7 +57,7 @@ LIBM: libopenlibm
 LLVM: libLLVM-3.9.1 (ORCJIT, skylake)
 ```
 
-###### Packages:
+#### Packages:
 ```
 julia> include("utilities/print_used_packages.jl")
 
