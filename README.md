@@ -43,7 +43,7 @@ The `lunarc` branch contains the code used to run the algorithms on AURORA@LUNAR
 
 #### Julia environment
 
-```
+```julia 
 julia> versioninfo()
 Julia Version 0.6.0
 Commit 903644385b* (2017-06-19 13:05 UTC)
@@ -58,7 +58,7 @@ LLVM: libLLVM-3.9.1 (ORCJIT, skylake)
 ```
 
 #### Packages
-```
+```julia
 julia> include("utilities/print_used_packages.jl")
 
  - Distributions                 0.15.0
