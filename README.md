@@ -57,7 +57,7 @@ LIBM: libopenlibm
 LLVM: libLLVM-3.9.1 (ORCJIT, skylake)
 ```
 
-#### Packages:
+#### Packages
 ```
 julia> include("utilities/print_used_packages.jl")
 
