@@ -2,6 +2,9 @@
 
 This repository contains all code the draft paper *Accelerating delayed-acceptance Markov Chain Monte Carlo algorithms using Gaussian processes*.
 
+
+## File structure
+
 The files (in the master branch) are structured as following
 
 /DWPSDE model
@@ -37,3 +40,31 @@ The files (in the master branch) are structured as following
 
 
 The `lunarc` branch contains the code used to run the algorithms on AURORA@LUNARC  http://www.lunarc.lu.se/resources/hardware/aurora/. The source code in the `lunarc` branch is similar to the source code on the `master` branch. The `lunarc` branch also contains scripts to run the algorithms on AURORA@LUNARC, and all numerical results.
+
+## Julia environment
+
+```
+julia> versioninfo()
+Julia Version 0.6.0
+Commit 903644385b* (2017-06-19 13:05 UTC)
+Platform Info:
+OS: Windows (x86_64-w64-mingw32)
+CPU: Intel(R) Core(TM) i7-6700 CPU @ 3.40GHz
+WORD_SIZE: 64
+BLAS: libopenblas (USE64BITINT DYNAMIC_ARCH NO_AFFINITY Haswell)
+LAPACK: libopenblas64_
+LIBM: libopenlibm
+LLVM: libLLVM-3.9.1 (ORCJIT, skylake)
+```
+
+Packages:
+
+- Distributions
+- DataFrames
+- StatsBase
+- Optim
+- Lasso
+- StatsFuns
+- JLD
+- HDF5
+- PyPlot
