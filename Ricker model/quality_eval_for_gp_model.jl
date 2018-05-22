@@ -1459,7 +1459,7 @@ nbr_case_4_correct = 0
 
 include("pf.jl")
 N = 1000
-y = problem_traning.data.y
+y = problem_training.data.y
 
 for i = 1:n
 
