@@ -19,10 +19,10 @@ X = output[2001:nrow(output),]
 View(X)
 
 # time for pmcmc 
-t = 859*(50/52)
+t = 1053.3146205*(50/52)
 
 # time for mcwm 
-t = 1589*(50/52)
+t = 2071.179437869*(50/52)
 
 
 ess = ess(X)
@@ -45,7 +45,7 @@ X = output
 
 
 # time DA 
-t = 507
+t = 515.974548 
 
 
 # time ADA 

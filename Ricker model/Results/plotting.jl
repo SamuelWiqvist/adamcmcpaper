@@ -1,9 +1,7 @@
 # This file contains the plotting function
 
 # load packages
-using Plots
 using PyPlot
-using StatPlots
 using KernelDensity
 using Distributions
 
@@ -63,11 +61,12 @@ function analyse_results(Theta, loglik, accept_vec, prior_vec,
 
   # text and lable size
   text_size = 15
-  label_size = 15
+  label_size = 10
 
 
   # plot chains
   PyPlot.figure(figsize=(10,20))
+  ax = axes()
   ax1 = PyPlot.subplot(311)
   PyPlot.plot(Theta[1,:])
   PyPlot.plot(ones(size(Theta,2),1)*theta_true[1], "k")
@@ -83,10 +82,12 @@ function analyse_results(Theta, loglik, accept_vec, prior_vec,
   PyPlot.plot(ones(size(Theta,2),1)*theta_true[3], "k")
   PyPlot.ylabel(L"$\log \sigma$",fontsize=text_size)
   PyPlot.xlabel("Iteration",fontsize=text_size)
+  ax[:tick_params]("both",labelsize = label_size)
 
 
   # plot chains after burn in
   PyPlot.figure(figsize=(10,20))
+  ax = axes()
   ax1 = PyPlot.subplot(311)
   PyPlot.plot(Theta[1,burn_in:end])
   PyPlot.plot(ones(size(Theta[:,burn_in:end],2),1)*theta_true[1], "k")
@@ -102,6 +103,7 @@ function analyse_results(Theta, loglik, accept_vec, prior_vec,
   PyPlot.plot(ones(size(Theta[:,burn_in:end],2),1)*theta_true[3], "k")
   PyPlot.ylabel(L"$\log \sigma$",fontsize=text_size)
   PyPlot.xlabel("Iteration",fontsize=text_size)
+  ax[:tick_params]("both",labelsize = label_size)
 
 
     # plot acf

@@ -58,30 +58,24 @@ include("plotting.jl")
 
 # add this information when I do the final simulations
 
-# MCWM: Job_id=576929; Runtime: ??
+# MCWM: Job_id=791451; Runtime: ??
 
-# PMCMC: Job_id=576932; Runtime: ??
+# PMCMC: Job_id=791448; Runtime: ??
 
-# DA/ADA dt: Job_id=577315; Runtime: ??
+# DA/ADA dt: Job_id=791450; Runtime: ??
 
 ################################################################################
 ###   Results for PMCMC, MCWM, DA-GP-MCMC, and ADA-GP-MCMC                          ###
 ################################################################################
 
 # set job name
-jobname = "_dagpmcmc_local"
-jobname = "_adagpmcmc_local"
-
+jobname = "_dagpmcmc_lunarc"
+jobname = "_adagpmcmc_lunarc"
 jobname = "mcwm"
 jobname = "pmcmc"
-jobname = "_training"
-jobname = "_dagpmcmcMCWM"
-jobname = "_adagpmcmc_biasedcoin"
-jobname = "_adagpmcmc_dt"
 
 
-# or use if we are loading results from the Results folder
-savepath = ""
+savepath = "" # we are currently in the Results folder
 
 # load data
 Theta = Array(readtable(savepath*"Theta"*jobname*".csv"))
@@ -105,8 +99,8 @@ analyse_results(Theta, loglik, accept_vec, prior_vec,theta_true, burn_in, prior_
 ################################################################################
 
 jobname_mcwm = "mcwm"
-jobname_da = "_dagpmcmcMCWM"
-jobname_ada = "_adagpmcmc_biasedcoin"
+jobname_da = "_dagpmcmc_lunarc"
+jobname_ada = "_adagpmcmc_lunarc"
 
 savepath = ""
 
@@ -210,8 +204,8 @@ PyPlot.ylabel(L"Density",fontsize=text_size)
 
 jobname_pmcmc = "pmcmc"
 jobname_mcwm = "mcwm"
-jobname_da = "_dagpmcmcMCWM"
-jobname_ada = "_adagpmcmc_dt"
+jobname_da = "_dagpmcmc_lunarc"
+jobname_ada = "_adagpmcmc_lunarc"
 
 savepath = ""
 

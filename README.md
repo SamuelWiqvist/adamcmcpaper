@@ -1,6 +1,8 @@
-# Code for the paper *Accelerating delayed-acceptance Markov Chain Monte Carlo algorithms*
+# Algorithm implementations and case studies for the paper *Accelerating delayed-acceptance Markov Chain Monte Carlo algorithms*
 
-This repository contains all code the draft paper *Accelerating delayed-acceptance Markov Chain Monte Carlo algorithms using Gaussian processes*.
+This repository contains all code the pre-print paper *Accelerating delayed-acceptance Markov Chain Monte Carlo algorithms using Gaussian processes* **insert link here**.
+
+**N.B.:** The results in the pre-print at arXiv v1 are computed using the version of the code at tag *add_tag_name* for both the `master` and the `lunarc` branch.  
 
 
 ## File structure
@@ -43,7 +45,7 @@ The `lunarc` branch contains the code used to run the algorithms on AURORA@LUNAR
 
 #### Julia environment
 
-```julia 
+```julia
 julia> versioninfo()
 Julia Version 0.6.0
 Commit 903644385b* (2017-06-19 13:05 UTC)
