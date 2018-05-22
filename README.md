@@ -1,6 +1,6 @@
 # Algorithm implementations and case studies for the paper *Accelerating delayed-acceptance Markov Chain Monte Carlo algorithms*
 
-This repository contains all code the pre-print paper *Accelerating delayed-acceptance Markov Chain Monte Carlo algorithms using Gaussian processes* **insert link here**.
+This repository contains all code for the pre-print paper *Accelerating delayed-acceptance Markov Chain Monte Carlo algorithms using Gaussian processes* **insert link here**.
 
 **N.B.:** The results in the pre-print at arXiv v1 are computed using the version of the code at tag *add_tag_name* for both the `master` and the `lunarc` branch.  
 
