@@ -59,7 +59,7 @@ beta_MH = 0.15 # should be 0.1
 load_tranining_data = true
 
 # type of job
-job = "simdata" # set work to simdata or new_data
+job = "new_data" # set work to simdata or new_data
 
 # set jod dep. parameters
 if job == "simdata"

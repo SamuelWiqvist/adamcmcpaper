@@ -33,11 +33,11 @@ text_size = 25
 label_size = 20
 
 load_data_from_files = true # load data from files or form some  workspace
-dagp = true # was true #  set to _dagp to load ER-GP file  o.w. use ""
-jobname = "_dagpest7simdataada_gp_mcmc_dt" # was "_dagpest7_real_dataada_gp_mcmc_dt" # set to jobname string
+dagp = false # was true #  set to _dagp to load ER-GP file  o.w. use ""
+jobname = "gp_training_7_par_lunarc_new_data_4_coresnew_data" # was "_dagpest7_real_dataada_gp_mcmc_dt" # set to jobname string
 
 
-plot_theta_true = true
+plot_theta_true = false
 
 # results:
 # gp_training_7_par
@@ -70,7 +70,7 @@ plot_theta_true = true
 
 # training data from lunarc
 
-# gp_training_7_par_lunarc_new_data_4_coresnew_data at 2018-05-10 05:15.26
+# gp_training_7_par_lunarc_new_data_4_coresnew_data at 2018-05-22 14:14.24
 # gp_training_7_par_lunarc_simdata_4_coressimdata 2018-05-09 23:42:50
 
 
