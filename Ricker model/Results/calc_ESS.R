@@ -33,9 +33,9 @@ print(ess_min_per_sec)
 
 # DA/ADA
 
-output <- fread("Theta_dagpmcmcMCWM.csv")
+output <- fread("Theta_dagpmcmc_lunarc.csv")
 
-output <- fread("Theta_adagpmcmc_dt.csv")
+output <- fread("Theta_adagpmcmc_lunarc.csv")
 
 
 output <- t(output)
@@ -49,9 +49,7 @@ t = 515.974548
 
 
 # time ADA 
-t = 471
-
-
+t = 473.044584 
 
 ess = ess(X)
 ess_min = min(ess)
