@@ -548,7 +548,7 @@ end
 
 
 # save results
-writetable("alg_prop_da_"*job*select_case_model*".csv", convert(DataFrame, alg_prop_da))
-writetable("alg_prop_ada_"*job*select_case_model*".csv", convert(DataFrame, alg_prop_ada))
+writetable("Results/alg_prop_da_"*job*select_case_model*".csv", convert(DataFrame, alg_prop_da))
+writetable("Results/alg_prop_ada_"*job*select_case_model*".csv", convert(DataFrame, alg_prop_ada))
 
 

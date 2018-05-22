@@ -257,7 +257,7 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
   prior_parameters = problem.prior_dist.prior_parameters
 
   # prop kernl for DA-GP-MCMC
-  xi = 1.2
+  xi = 1.1
   problem.adaptive_update = noAdaptation(xi^2*cov_matrix)
 
   adaptive_update_params = set_adaptive_alg_params(problem.adaptive_update, length(theta_0),Theta[:,1], R)
@@ -602,7 +602,7 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, ca
   prior_parameters = problem.prior_dist.prior_parameters
   
   # prop kernl for ADA-GP-MCMC
-  xi = 1.2
+  xi = 1.1
   problem.adaptive_update = noAdaptation(xi^2*cov_matrix)
 
   adaptive_update_params = set_adaptive_alg_params(problem.adaptive_update, length(theta_0),Theta[:,1], R)
@@ -810,7 +810,7 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, ca
               nbr_split_accaptance_region_early_reject = nbr_split_accaptance_region_early_reject+1
               Theta[:,r] = Theta[:,r-1] # keep old values
               loglik[r] = loglik[r-1]
-              accept_vec[r] = 1
+              #accept_vec[r] = 1
 
             else
 
