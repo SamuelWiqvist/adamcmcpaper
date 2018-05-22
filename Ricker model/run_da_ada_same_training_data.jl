@@ -81,7 +81,7 @@ problem_training.alg_param.alg = "MCWM"
 #problem_training.adaptive_update = AMUpdate_gen(eye(3), 2.4/sqrt(3), 0.2, 1., 0.8, 25)
 problem_training.adaptive_update = AMUpdate_gen(eye(3), 2.4/sqrt(3), 0.4, 1., 0.8, 25)
 
-load_training_data = false
+load_training_data = true
 
 if !load_training_data
 
@@ -146,7 +146,7 @@ if !load_training_data
 
 else
 
-  @load "gp_training_and_test_data_ricker_gen_lunarc.jld"
+  @load "gp_training_and_test_data_ricker_gen_lunarc_new_code_structure.jld"
 
 end
 
@@ -217,13 +217,13 @@ algorithm_parameters[5:7,1] = problem.model_param.theta_0
 algorithm_parameters[8:end,:] = problem.prior_dist.prior_parameters
 
 if !accelerated_da
-  writetable("Results/Theta_dagpmcmc_local.csv", convert(DataFrame, Theta))
-  writetable("Results/loglik_avec_priorvec_dagpmcmc_local.csv", convert(DataFrame, loglik_avec_priorvec))
-  writetable("Results/algorithm_parameters_dagpmcmc_local.csv", convert(DataFrame, algorithm_parameters))
+  writetable("Results/Theta_dagpmcmc_lunarc.csv", convert(DataFrame, Theta))
+  writetable("Results/loglik_avec_priorvec_dagpmcmc_lunarc.csv", convert(DataFrame, loglik_avec_priorvec))
+  writetable("Results/algorithm_parameters_dagpmcmc_lunarc.csv", convert(DataFrame, algorithm_parameters))
 else
-  writetable("Results/Theta_adagpmcmc_local.csv", convert(DataFrame, Theta))
-  writetable("Results/loglik_avec_priorvec_adagpmcmc_local.csv", convert(DataFrame, loglik_avec_priorvec))
-  writetable("Results/algorithm_parameters_adagpmcmc_local.csv", convert(DataFrame, algorithm_parameters))
+  writetable("Results/Theta_adagpmcmc_lunarc.csv", convert(DataFrame, Theta))
+  writetable("Results/loglik_avec_priorvec_adagpmcmc_lunarc.csv", convert(DataFrame, loglik_avec_priorvec))
+  writetable("Results/algorithm_parameters_adagpmcmc_lunarc.csv", convert(DataFrame, algorithm_parameters))
 end
 
 
@@ -457,13 +457,13 @@ algorithm_parameters[5:7,1] = problem.model_param.theta_0
 algorithm_parameters[8:end,:] = problem.prior_dist.prior_parameters
 
 if !accelerated_da
-  writetable("Results/Theta_dagpmcmc_local.csv", convert(DataFrame, Theta))
-  writetable("Results/loglik_avec_priorvec_dagpmcmc_local.csv", convert(DataFrame, loglik_avec_priorvec))
-  writetable("Results/algorithm_parameters_dagpmcmc_local.csv", convert(DataFrame, algorithm_parameters))
+  writetable("Results/Theta_dagpmcmc_lunarc.csv", convert(DataFrame, Theta))
+  writetable("Results/loglik_avec_priorvec_dagpmcmc_lunarc.csv", convert(DataFrame, loglik_avec_priorvec))
+  writetable("Results/algorithm_parameters_dagpmcmc_lunarc.csv", convert(DataFrame, algorithm_parameters))
 else
-  writetable("Results/Theta_adagpmcmc_local.csv", convert(DataFrame, Theta))
-  writetable("Results/loglik_avec_priorvec_adagpmcmc_local.csv", convert(DataFrame, loglik_avec_priorvec))
-  writetable("Results/algorithm_parameters_adagpmcmc_local.csv", convert(DataFrame, algorithm_parameters))
+  writetable("Results/Theta_adagpmcmc_lunarc.csv", convert(DataFrame, Theta))
+  writetable("Results/loglik_avec_priorvec_adagpmcmc_lunarc.csv", convert(DataFrame, loglik_avec_priorvec))
+  writetable("Results/algorithm_parameters_adagpmcmc_lunarc.csv", convert(DataFrame, algorithm_parameters))
 end
 
 

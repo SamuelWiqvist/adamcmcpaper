@@ -229,13 +229,13 @@ algorithm_parameters[5:7,1] = problem.model_param.theta_0
 algorithm_parameters[8:end,:] = problem.prior_dist.prior_parameters
 
 if !accelerated_da
-  writetable("Results/Theta_dagpmcmc_local.csv", convert(DataFrame, Theta))
-  writetable("Results/loglik_avec_priorvec_dagpmcmc_local.csv", convert(DataFrame, loglik_avec_priorvec))
-  writetable("Results/algorithm_parameters_dagpmcmc_local.csv", convert(DataFrame, algorithm_parameters))
+  writetable("Results/Theta_dagpmcmc_alg_prop.csv", convert(DataFrame, Theta))
+  writetable("Results/loglik_avec_priorvec_dagpmcmc_alg_prop.csv", convert(DataFrame, loglik_avec_priorvec))
+  writetable("Results/algorithm_parameters_dagpmcmc_alg_prop.csv", convert(DataFrame, algorithm_parameters))
 else
-  writetable("Results/Theta_adagpmcmc_local.csv", convert(DataFrame, Theta))
-  writetable("Results/loglik_avec_priorvec_adagpmcmc_local.csv", convert(DataFrame, loglik_avec_priorvec))
-  writetable("Results/algorithm_parameters_adagpmcmc_local.csv", convert(DataFrame, algorithm_parameters))
+  writetable("Results/Theta_adagpmcmc_alg_prop.csv", convert(DataFrame, Theta))
+  writetable("Results/loglik_avec_priorvec_adagpmcmc_alg_prop.csv", convert(DataFrame, loglik_avec_priorvec))
+  writetable("Results/algorithm_parameters_adagpmcmc_alg_prop.csv", convert(DataFrame, algorithm_parameters))
 end
 
 
@@ -483,22 +483,22 @@ algorithm_parameters[5:7,1] = problem.model_param.theta_0
 algorithm_parameters[8:end,:] = problem.prior_dist.prior_parameters
 
 if !accelerated_da
-  writetable("Results/Theta_dagpmcmc_local.csv", convert(DataFrame, Theta))
-  writetable("Results/loglik_avec_priorvec_dagpmcmc_local.csv", convert(DataFrame, loglik_avec_priorvec))
-  writetable("Results/algorithm_parameters_dagpmcmc_local.csv", convert(DataFrame, algorithm_parameters))
+  writetable("Results/Theta_dagpmcmc_alg_prop.csv", convert(DataFrame, Theta))
+  writetable("Results/loglik_avec_priorvec_dagpmcmc_alg_prop.csv", convert(DataFrame, loglik_avec_priorvec))
+  writetable("Results/algorithm_parameters_dagpmcmc_alg_prop.csv", convert(DataFrame, algorithm_parameters))
 else
-  writetable("Results/Theta_adagpmcmc_local.csv", convert(DataFrame, Theta))
-  writetable("Results/loglik_avec_priorvec_adagpmcmc_local.csv", convert(DataFrame, loglik_avec_priorvec))
-  writetable("Results/algorithm_parameters_adagpmcmc_local.csv", convert(DataFrame, algorithm_parameters))
+  writetable("Results/Theta_adagpmcmc_alg_prop.csv", convert(DataFrame, Theta))
+  writetable("Results/loglik_avec_priorvec_adagpmcmc_alg_prop.csv", convert(DataFrame, loglik_avec_priorvec))
+  writetable("Results/algorithm_parameters_adagpmcmc_alg_prop.csv", convert(DataFrame, algorithm_parameters))
 end
 
 
 if ARGS[1] == "dt"
-	writetable("alg_prop_da_dt.csv", convert(DataFrame, alg_prop_da))
-	writetable("alg_prop_ada_dt.csv", convert(DataFrame, alg_prop_ada))
+	writetable("Results/alg_prop_da_dt.csv", convert(DataFrame, alg_prop_da))
+	writetable("Results/alg_prop_ada_dt.csv", convert(DataFrame, alg_prop_ada))
 elseif ARGS[1] == "biasedcoin"	
-	writetable("alg_prop_da_bc.csv", convert(DataFrame, alg_prop_da))
-	writetable("alg_prop_ada_bc.csv", convert(DataFrame, alg_prop_ada))
+	writetable("Results/alg_prop_da_bc.csv", convert(DataFrame, alg_prop_da))
+	writetable("Results/alg_prop_ada_bc.csv", convert(DataFrame, alg_prop_ada))
 end 
 
 

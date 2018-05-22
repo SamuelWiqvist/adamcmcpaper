@@ -1,6 +1,0 @@
-WARNING: Already in the Ricker model folder
-ERROR: LoadError: could not open file /home/samwiq/project 1 accalerated delated accaptance mcmc\select case\selectcase.jl
- in include_from_node1(::String) at ./loading.jl:488 (repeats 2 times)
- in process_options(::Base.JLOptions) at ./client.jl:265
- in _start() at ./client.jl:321
-while loading /home/samwiq/project 1 accalerated delated accaptance mcmc/Ricker model/run_da_ada_same_training_data.jl, in expression starting on line 12
