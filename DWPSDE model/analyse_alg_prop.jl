@@ -615,8 +615,8 @@ writetable("alg_prop_ada_biasedcoin.csv", convert(DataFrame, alg_prop_ada))
 # alg_prop_ada_newdatabiasedcoin
 
 
-alg_prop_da = Matrix(readtable("Results/alg_prop_da_new_datadt.csv"))
-alg_prop_ada = Matrix(readtable("Results/alg_prop_ada_new_datadt.csv"))
+alg_prop_da = Matrix(readtable("Results/alg_prop_da_simdatadt.csv"))
+alg_prop_ada = Matrix(readtable("Results/alg_prop_ada_simdatadt.csv"))
 
 
 # analysis

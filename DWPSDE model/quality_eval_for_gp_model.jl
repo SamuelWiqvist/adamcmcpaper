@@ -59,7 +59,7 @@ beta_MH = 0.15 # should be 0.1
 load_tranining_data = true
 
 # type of job
-job = "new_data" # set work to simdata or new_data
+job = "simdata" # set work to simdata or new_data
 
 # set jod dep. parameters
 if job == "simdata"
@@ -308,7 +308,7 @@ if true #problem.alg_param.est_method == "ml"
   #perc_outlier = 0.1 # used when using PMCMC for trainig data 0.05
   #tail_rm = "left"
 
-  perc_outlier = 0.05 # 0.02 for simdata
+  perc_outlier = 0.0 # 0.02 for simdata, 0.01 also works for new_data
   tail_rm = "left"
   lasso = false # was true test fitting without lassa, The lassa has a large inpact on the fit of the model, we should use lasso!
 
@@ -365,6 +365,8 @@ RMSE_ml_sample = RMSE(loglik_pf, loglik_sample)
 # todo
 
 residuals = loglik_pf - loglik_sample
+
+describe(residuals)
 
 # plot residuals
 PyPlot.figure(figsize=(10,5))
