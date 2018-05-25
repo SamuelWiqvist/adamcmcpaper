@@ -36,7 +36,7 @@ problem.adaptive_update = AMUpdate_gen(eye(3), 2.4/sqrt(3), 0.3, 1., 0.8, 25)
 
 # set algorithm parameters
 problem.alg_param.N = 1000 # nbr particels
-problem.alg_param.R = 50000 # nbr iterations
+problem.alg_param.R = 10000 # nbr iterations
 problem.alg_param.burn_in = 0 # burn in
 problem.alg_param.length_training_data = 2000
 problem.alg_param.alg = "MCWM" # we should only! use the MCWM algorithm
@@ -151,7 +151,7 @@ if !load_training_data
 
 else
 
-  @load "gp_training_and_test_data_ricker_gen_local.jld"
+  @load "gp_training_and_test_data_ricker_gen_lunarc_new_code_structure.jld"
 
 end
 
@@ -190,7 +190,7 @@ time_fit_gp = toc()
 
 # save fitted gp model
 # @save "gp_fitted_model.jld" gp
-nbr_alg_iter = 50
+nbr_alg_iter = 10
 
 ################################################################################
 ###     DA-GP-MCMC                                                           ###
@@ -201,7 +201,7 @@ accelerated_da = false
 problem.model_param.theta_0 = mean(res_training[1].Theta_est[:,problem_training.alg_param.burn_in+1:problem_training.alg_param.burn_in+length_training_data],2)
 
 # time multiple runs
-alg_prop_da = zeros(nbr_alg_iter,3)
+alg_prop_da = zeros(nbr_alg_iter,5)
 
 for i = 1:nbr_alg_iter
   println("Iterstion:")
@@ -325,7 +325,7 @@ targets_case_2_and_4 = convert(Array{Float64,1}, targets_case_2_and_4)
 ##   set case model                                                          ###
 ################################################################################
 
-select_case_model = "biasedcoin" # logisticregression or dt
+select_case_model = "dt" # logisticregression or dt
 
 nbr_GP_star_led_GP_old = n-nbr_GP_star_geq_GP_old
 
@@ -557,16 +557,52 @@ ax = axes()
 PyPlot.plt[:hist](diff_nbr_pf,10, alpha = 0.6)
 ax[:tick_params]("both",labelsize = label_size)
 
+# nbr pf eval in secound stage
+
+println("Nbr pf eval in secound stage:")
+print_stats(alg_prop_da[:,3])
+print_stats(sum(alg_prop_ada[:,end-3:end],2)[:])
+
+PyPlot.figure(figsize=(10,10))
+ax = axes()
+PyPlot.plt[:hist](alg_prop_da[:,3],10, alpha = 0.6)
+PyPlot.plt[:hist](sum(alg_prop_ada[:,end-3:end],2)[:],10, alpha = 0.6)
+ax[:tick_params]("both",labelsize = label_size)
+
+diff_nbr_pf_secound_stage = alg_prop_da[:,3] - sum(alg_prop_ada[:,end-3:end],2)[:]
+
+print_stats(diff_nbr_pf_secound_stage)
+
+PyPlot.figure(figsize=(10,10))
+ax = axes()
+PyPlot.plt[:hist](diff_nbr_pf_secound_stage,10, alpha = 0.6)
+ax[:tick_params]("both",labelsize = label_size)
+
+
 # nbr ord. mh.
 
-print_stats(alg_prop_da[:,3])
+print_stats(alg_prop_da[:,end])
 print_stats(alg_prop_ada[:,3])
 
 PyPlot.figure()
 ax = axes()
-PyPlot.plt[:hist](alg_prop_da[:,3],5, alpha = 0.6)
+PyPlot.plt[:hist](alg_prop_da[:,end],5, alpha = 0.6)
 PyPlot.plt[:hist](alg_prop_ada[:,3],5, alpha = 0.6)
 ax[:tick_params]("both",labelsize = label_size)
+
+# nbr times in secound stage
+
+
+print_stats(alg_prop_da[:,3])
+print_stats(sum(alg_prop_ada[:,4:5],2)[:])
+
+PyPlot.figure()
+ax = axes()
+PyPlot.plt[:hist](alg_prop_da[:,3],5, alpha = 0.6)
+PyPlot.plt[:hist](sum(alg_prop_ada[:,4:5],2),5, alpha = 0.6)
+ax[:tick_params]("both",labelsize = label_size)
+
+
 
 # nbr cases1_3 and cases2_4
 

@@ -1,6 +1,6 @@
 # load packages
 
-using Plots
+#using Plots
 using PyPlot
 using StatPlots
 using KernelDensity
@@ -33,8 +33,8 @@ text_size = 25
 label_size = 20
 
 load_data_from_files = true # load data from files or form some  workspace
-dagp = false # was true #  set to _dagp to load ER-GP file  o.w. use ""
-jobname = "gp_training_7_par_lunarc_new_data_4_coresnew_data" # was "_dagpest7_real_dataada_gp_mcmc_dt" # set to jobname string
+dagp = true # was true #  set to _dagp to load ER-GP file  o.w. use ""
+jobname = "_dagpest7simdataada_gp_mcmc_dt" # was "_dagpest7_real_dataada_gp_mcmc_dt" # set to jobname string
 
 
 plot_theta_true = false
@@ -74,11 +74,11 @@ plot_theta_true = false
 # gp_training_7_par_lunarc_simdata_4_coressimdata 2018-05-09 23:42:50
 
 
-# _dagpest7new_dataada_gp_mcmc_dt 2018-05-12 02:14.28 # problem
-# _dagpest7new_datada_gp_mcmc 2018-05-12 23:15.47 # ok
+# _dagpest7new_dataada_gp_mcmc_dt 2018-05-23 21:52:59
+# _dagpest7new_datada_gp_mcmc 2018-05-23 19:11:43
 
-# _dagpest7simdataada_gp_mcmc_dt 2018-05-11 22:59:13
-# _dagpest7simdatada_gp_mcmc 2018-05-11 20:21:30
+# _dagpest7simdataada_gp_mcmc_dt 2018-05-21 21:15:15
+# _dagpest7simdatada_gp_mcmc 2018-05-21 18:42:58
 
 if load_data_from_files
 

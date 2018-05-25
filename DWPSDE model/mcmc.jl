@@ -247,6 +247,7 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
   a_log = zero(Float64)
   loglik_current = zero(Float64)
   nbr_eval_pf = 0
+  nbr_eval_pf_secound_stage = 0
 
   # starting values for times:
   time_pre_er = zero(Float64)
@@ -286,12 +287,12 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
   print_covariance(problem.adaptive_update,adaptive_update_params, 1)
 
   # set nbr of cores to use for parallel pf
-  #nbr_of_proc = set_nbr_cores(nbr_of_cores, pf_alg)
-  nbr_of_proc = nbr_of_cores
+  nbr_of_proc = set_nbr_cores(nbr_of_cores, pf_alg)
+  #nbr_of_proc = nbr_of_cores
   loglik_vec = SharedArray{Float64}(nbr_of_cores)
 
   # print acceptance rate each print_interval:th iteration
-  print_interval = 100
+  print_interval = 1000
 
   # first iteration
   @printf "Iteration: %d\n" 1 # print first iteration
@@ -432,6 +433,7 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
         end
 
         nbr_eval_pf += 1
+        nbr_eval_pf_secound_stage += 1
 
         a_log = (loglik_star + loglik_gp_old)  -  (loglik_current + loglik_gp_new)
 
@@ -492,6 +494,8 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
   # return resutls
   if return_run_info
     run_info = [nbr_eval_pf;
+                nbr_eval_pf_secound_stage;
+                nbr_second_stage;
                 nbr_ordinary_mh]
     return return_gp_results(gp, Theta,loglik,accept_vec,prior_vec, compare_GP_PF, data_gp_pf,nbr_early_rejections, problem, adaptive_update_params,accept_prob_log,times), run_info
   else
@@ -633,13 +637,13 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, ca
   print_covariance(problem.adaptive_update,adaptive_update_params, 1)
 
   # set nbr of cores to use for parallel pf
-  #nbr_of_proc = set_nbr_cores(nbr_of_cores, pf_alg)
-  nbr_of_proc = nbr_of_cores
+  nbr_of_proc = set_nbr_cores(nbr_of_cores, pf_alg)
+  #nbr_of_proc = nbr_of_cores
   loglik_vec = SharedArray{Float64}(nbr_of_proc)
 
 
   # print acceptance rate each print_interval:th iteration
-  print_interval = 100
+  print_interval = 1000
 
   # first iteration
   @printf "Iteration: %d\n" 1 # print first iteration
@@ -814,7 +818,7 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, ca
               nbr_split_accaptance_region_early_reject = nbr_split_accaptance_region_early_reject+1
               Theta[:,r] = Theta[:,r-1] # keep old values
               loglik[r] = loglik[r-1]
-              accept_vec[r] = 1
+              #accept_vec[r] = 1
 
             else
 

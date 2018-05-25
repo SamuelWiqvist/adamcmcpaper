@@ -615,8 +615,8 @@ writetable("alg_prop_ada_biasedcoin.csv", convert(DataFrame, alg_prop_ada))
 # alg_prop_ada_newdatabiasedcoin
 
 
-alg_prop_da = Matrix(readtable("Results\alg_prop_da_simdatadt.csv"))
-alg_prop_ada = Matrix(readtable("Results\alg_prop_ada_simdatadt.csv"))
+alg_prop_da = Matrix(readtable("Results/alg_prop_da_new_datadt.csv"))
+alg_prop_ada = Matrix(readtable("Results/alg_prop_ada_new_datadt.csv"))
 
 
 # analysis
@@ -674,14 +674,52 @@ ax = axes()
 PyPlot.plt[:hist](diff_nbr_pf,10, alpha = 0.6)
 ax[:tick_params]("both",labelsize = label_size)
 
+# nbr pf eval in secound stage
+
+println("Nbr pf eval in secound stage:")
+print_stats(alg_prop_da[:,3])
+print_stats(sum(alg_prop_ada[:,end-3:end],2)[:])
+
+PyPlot.figure(figsize=(10,10))
+ax = axes()
+PyPlot.plt[:hist](alg_prop_da[:,3],10, alpha = 0.6)
+PyPlot.plt[:hist](sum(alg_prop_ada[:,end-3:end],2)[:],10, alpha = 0.6)
+ax[:tick_params]("both",labelsize = label_size)
+
+diff_nbr_pf_secound_stage = alg_prop_da[:,3] - sum(alg_prop_ada[:,end-3:end],2)[:]
+
+print_stats(diff_nbr_pf_secound_stage)
+
+PyPlot.figure(figsize=(10,10))
+ax = axes()
+PyPlot.plt[:hist](diff_nbr_pf_secound_stage,10, alpha = 0.6)
+ax[:tick_params]("both",labelsize = label_size)
+
+
 # nbr ord. mh.
 
-print_stats(alg_prop_da[:,3])
+print_stats(alg_prop_da[:,end])
 print_stats(alg_prop_ada[:,3])
 
 PyPlot.figure()
-PyPlot.plt[:hist](alg_prop_da[:,3],5, alpha = 0.6)
+ax = axes()
+PyPlot.plt[:hist](alg_prop_da[:,end],5, alpha = 0.6)
 PyPlot.plt[:hist](alg_prop_ada[:,3],5, alpha = 0.6)
+ax[:tick_params]("both",labelsize = label_size)
+
+# nbr times in secound stage
+
+
+print_stats(alg_prop_da[:,3])
+print_stats(sum(alg_prop_ada[:,4:5],2)[:])
+
+PyPlot.figure()
+ax = axes()
+PyPlot.plt[:hist](alg_prop_da[:,3],5, alpha = 0.6)
+PyPlot.plt[:hist](sum(alg_prop_ada[:,4:5],2),5, alpha = 0.6)
+ax[:tick_params]("both",labelsize = label_size)
+
+
 
 # nbr cases1_3 and cases2_4
 

@@ -1,4 +1,4 @@
-prob_correct_given_selected:
+﻿prob_correct_given_selected:
 
 updated on 1/3-18
 
@@ -21,3 +21,28 @@ model with 5 features corr + ratio + std(gp pred)
 model with 4 features corr + ratio
 1×4 Array{Float64,2}:
  0.867416  0.914791  0.340102  0.377193
+
+alg_prop for DA
+
+runtime
+#pf 
+#pf secound stage
+#secound stage 
+#ord. mh 
+
+alg_prop ADA
+
+runtime  
+nbr_eval_pf
+nbr_ordinary_mh
+nbr_case_13
+nbr_case_24
+nbr_case_1
+nbr_case_2
+nbr_case_3
+nbr_case_4
+nbr_case_pf_1
+nbr_case_pf_2
+nbr_case_pf_3
+nbr_case_pf_4
+
