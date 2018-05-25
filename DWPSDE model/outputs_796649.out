@@ -1,0 +1,201 @@
+Mean:
+[-1.19474; -0.115413; 3.34929; 1.41993; 0.423864; 0.524684; 0.647563]
+Std:
+[0.154594; 0.0915249; 0.00561732; 0.200285; 0.11075; 0.23941; 0.110742]
+[-1.05702 -0.954911 -0.966449 -0.925236 -0.926215 -1.2054 -1.11233 -1.13475 -1.09365 -1.203; -0.254592 -0.289722 -0.241129 -0.28801 -0.285948 -0.168635 -0.167598 -0.124351 -0.181036 -0.0887189; 3.35337 3.34876 3.35298 3.35389 3.35726 3.35049 3.34377 3.34396 3.34769 3.34831; 1.76978 1.69278 1.65428 1.50996 1.40042 1.67623 1.8717 2.05664 1.84133 1.66576; 0.63292 0.547622 0.531843 0.46163 0.36411 0.550366 0.660388 0.73099 0.620384 0.564654; 0.267598 0.508042 0.39971 0.553505 0.776789 0.449141 0.116444 -0.0279099 0.235111 0.291064; 0.825946 0.915464 0.774959 0.802593 0.826623 0.808955 0.756642 0.719464 0.815954 0.638883; -1.36642e5 -1.36662e5 -1.36601e5 -136603.0 -1.3662e5 -1.36616e5 -1.36591e5 -1.36626e5 -1.36615e5 -1.36598e5]Starting ml estimationLength of training data: 4750Start values for optimization:
+[-1.9371e6; -6071.27; -14504.4; 1.07336e6; -42554.2; 1.23453e5; 18314.6; -7623.19; -2285.73; -11995.3; -1.60297e5; -1381.66; -9327.45; -753.471; -2011.28; -9894.9; 408.802; 65.8286; -469.316; -177.887; -2630.14; 1390.63; 50.4832; 170.402; 45.9892; -7564.59; 13117.1; -36908.0; -5168.58; 1443.18; 5750.26; 399.937; -18.9679; -3809.33; 2118.72; 972.47; 2.68778; 2.34121; -1.90277; -2.43284; -5.21391; -1.63139; -2.22109; -1.45557; -2.24542]Iter     Function value   Gradient norm 
+     0     2.731682e+04     5.498701e+06
+     1     2.716780e+04     1.752268e+06
+     2     2.716782e+04     3.931489e+03
+Estimated parameters of the GP model:
+Estimated Β:s:
+[-1.9371e6,-6071.27,-14504.4,1.07336e6,-42554.2,1.23453e5,18314.6,-7623.19,-2285.73,-11995.3,-1.60297e5,-1381.66,-9327.45,-753.471,-2011.28,-9894.9,408.802,65.8286,-469.316,-177.887,-2630.14,1390.63,50.4832,170.402,45.9892,-7564.59,13117.1,-36908.0,-5168.58,1443.18,5750.26,399.937,-18.9679,-3809.33,2118.72,972.47]
+Estimated log Φ:s:
+[2.68773,2.33294,-1.88754,-2.41674,-4.61206,-1.62213,-2.20719,-1.44779,-2.22266]
+elapsed time: 950.391838914 seconds
+Iterstion:
+1
+#####################################################################
+Starting DA-GP-MCMC estimating 7 parameters 
+MCMC algorithm: MCWM
+Adaptation algorithm: noAdaptation
+Prior distribution: Normal
+Particle filter: parallel_bootstrap, on 4 cores
+Nbr particles for particle filter: 200
+Covariance - kernel_MH_direct:
+[0.0161117 -0.00863341 2.66693e-5 -0.00506119 -0.00289389 0.00813033 0.00637247; -0.00863341 0.00546783 3.5914e-6 0.00241083 0.00139394 -0.00525582 -0.00541592; 2.66693e-5 3.5914e-6 1.82367e-5 -3.97142e-5 -7.43151e-5 6.58272e-5 -5.00135e-6; -0.00506119 0.00241083 -3.97142e-5 0.029185 0.0146502 -0.0294034 -0.00190708; -0.00289389 0.00139394 -7.43151e-5 0.0146502 0.00805734 -0.0163729 -0.00113595; 0.00813033 -0.00525582 6.58272e-5 -0.0294034 -0.0163729 0.0394531 0.00700566; 0.00637247 -0.00541592 -5.00135e-6 -0.00190708 -0.00113595 0.00700566 0.00883558]
+Iteration: 1
+Covariance:
+[0.0232008 -0.0124321 3.84038e-5 -0.00728811 -0.0041672 0.0117077 0.00917636; -0.0124321 0.00787367 5.17161e-6 0.0034716 0.00200727 -0.00756839 -0.00779892; 3.84038e-5 5.17161e-6 2.62608e-5 -5.71884e-5 -0.000107014 9.47912e-5 -7.20195e-6; -0.00728811 0.0034716 -5.71884e-5 0.0420264 0.0210962 -0.0423408 -0.0027462; -0.0041672 0.00200727 -0.000107014 0.0210962 0.0116026 -0.023577 -0.00163577; 0.0117077 -0.00756839 9.47912e-5 -0.0423408 -0.023577 0.0568125 0.0100881; 0.00917636 -0.00779892 -7.20195e-6 -0.0027462 -0.00163577 0.0100881 0.0127232]
+Iteration: 1
+Covariance:
+[0.0232008 -0.0124321 3.84038e-5 -0.00728811 -0.0041672 0.0117077 0.00917636; -0.0124321 0.00787367 5.17161e-6 0.0034716 0.00200727 -0.00756839 -0.00779892; 3.84038e-5 5.17161e-6 2.62608e-5 -5.71884e-5 -0.000107014 9.47912e-5 -7.20195e-6; -0.00728811 0.0034716 -5.71884e-5 0.0420264 0.0210962 -0.0423408 -0.0027462; -0.0041672 0.00200727 -0.000107014 0.0210962 0.0116026 -0.023577 -0.00163577; 0.0117077 -0.00756839 9.47912e-5 -0.0423408 -0.023577 0.0568125 0.0100881; 0.00917636 -0.00779892 -7.20195e-6 -0.0027462 -0.00163577 0.0100881 0.0127232]
+Loglik start: -136572.9928 
+elapsed time: 1163.083096103 seconds
+Ending DA-GP-MCMC with adaptive RW estimating 7 parameters
+Algorithm: MCWM
+Adaptation algorithm: noAdaptation
+Prior distribution: Normal
+Particle filter: parallel_bootstrap
+Time pre-er:  0
+Time fit GP model:  0
+Time er-part:  1163
+Number early-rejections: 695
+Number of cases directly to ordinary MH: 162
+Number of cases directly to ordinary MH accepted: 18
+Number cases in in DA part: 837
+Number cases in second stage: 142
+Number accepted in second stage: 17
+Total number of evaluations of the particle filter: 304
+Acceptance rate for ordinary MH accepted: 11.1111
+Acceptance rate a_1: 16.9654
+Acceptance rate a_2: 11.9718
+Acceptance rate a_1*a_2: 2.0311
+Acceptance rate a (for entier algorithm): 3.5000
+#####################################################################
+Iterstion:
+2
+#####################################################################
+Starting DA-GP-MCMC estimating 7 parameters 
+MCMC algorithm: MCWM
+Adaptation algorithm: noAdaptation
+Prior distribution: Normal
+Particle filter: parallel_bootstrap, on 4 cores
+Nbr particles for particle filter: 200
+Covariance - kernel_MH_direct:
+[0.0161117 -0.00863341 2.66693e-5 -0.00506119 -0.00289389 0.00813033 0.00637247; -0.00863341 0.00546783 3.5914e-6 0.00241083 0.00139394 -0.00525582 -0.00541592; 2.66693e-5 3.5914e-6 1.82367e-5 -3.97142e-5 -7.43151e-5 6.58272e-5 -5.00135e-6; -0.00506119 0.00241083 -3.97142e-5 0.029185 0.0146502 -0.0294034 -0.00190708; -0.00289389 0.00139394 -7.43151e-5 0.0146502 0.00805734 -0.0163729 -0.00113595; 0.00813033 -0.00525582 6.58272e-5 -0.0294034 -0.0163729 0.0394531 0.00700566; 0.00637247 -0.00541592 -5.00135e-6 -0.00190708 -0.00113595 0.00700566 0.00883558]
+Iteration: 1
+Covariance:
+[0.0232008 -0.0124321 3.84038e-5 -0.00728811 -0.0041672 0.0117077 0.00917636; -0.0124321 0.00787367 5.17161e-6 0.0034716 0.00200727 -0.00756839 -0.00779892; 3.84038e-5 5.17161e-6 2.62608e-5 -5.71884e-5 -0.000107014 9.47912e-5 -7.20195e-6; -0.00728811 0.0034716 -5.71884e-5 0.0420264 0.0210962 -0.0423408 -0.0027462; -0.0041672 0.00200727 -0.000107014 0.0210962 0.0116026 -0.023577 -0.00163577; 0.0117077 -0.00756839 9.47912e-5 -0.0423408 -0.023577 0.0568125 0.0100881; 0.00917636 -0.00779892 -7.20195e-6 -0.0027462 -0.00163577 0.0100881 0.0127232]
+Iteration: 1
+Covariance:
+[0.0232008 -0.0124321 3.84038e-5 -0.00728811 -0.0041672 0.0117077 0.00917636; -0.0124321 0.00787367 5.17161e-6 0.0034716 0.00200727 -0.00756839 -0.00779892; 3.84038e-5 5.17161e-6 2.62608e-5 -5.71884e-5 -0.000107014 9.47912e-5 -7.20195e-6; -0.00728811 0.0034716 -5.71884e-5 0.0420264 0.0210962 -0.0423408 -0.0027462; -0.0041672 0.00200727 -0.000107014 0.0210962 0.0116026 -0.023577 -0.00163577; 0.0117077 -0.00756839 9.47912e-5 -0.0423408 -0.023577 0.0568125 0.0100881; 0.00917636 -0.00779892 -7.20195e-6 -0.0027462 -0.00163577 0.0100881 0.0127232]
+Loglik start: -136581.3308 
+elapsed time: 1257.328403692 seconds
+Ending DA-GP-MCMC with adaptive RW estimating 7 parameters
+Algorithm: MCWM
+Adaptation algorithm: noAdaptation
+Prior distribution: Normal
+Particle filter: parallel_bootstrap
+Time pre-er:  0
+Time fit GP model:  0
+Time er-part:  1257
+Number early-rejections: 670
+Number of cases directly to ordinary MH: 152
+Number of cases directly to ordinary MH accepted: 22
+Number cases in in DA part: 847
+Number cases in second stage: 177
+Number accepted in second stage: 24
+Total number of evaluations of the particle filter: 329
+Acceptance rate for ordinary MH accepted: 14.4737
+Acceptance rate a_1: 20.8973
+Acceptance rate a_2: 13.5593
+Acceptance rate a_1*a_2: 2.8335
+Acceptance rate a (for entier algorithm): 4.6000
+#####################################################################
+Est prob:
+[0.232951,0.905087,0.767049,0.0949133]
+Iterstion:
+1
+#####################################################################
+Starting ADA-GP-MCMC with adaptive RW estimating 7 parameters
+MCMC algorithm: MCWM
+Adaptation algorithm: noAdaptation
+Select case model: DT
+Prior distribution: Normal
+Particle filter: parallel_bootstrap, on 4 cores
+Nbr particles for particle filter: 200
+Covariance - kernel_MH_direct:
+[0.0232008 -0.0124321 3.84038e-5 -0.00728811 -0.0041672 0.0117077 0.00917636; -0.0124321 0.00787367 5.17161e-6 0.0034716 0.00200727 -0.00756839 -0.00779892; 3.84038e-5 5.17161e-6 2.62608e-5 -5.71884e-5 -0.000107014 9.47912e-5 -7.20195e-6; -0.00728811 0.0034716 -5.71884e-5 0.0420264 0.0210962 -0.0423408 -0.0027462; -0.0041672 0.00200727 -0.000107014 0.0210962 0.0116026 -0.023577 -0.00163577; 0.0117077 -0.00756839 9.47912e-5 -0.0423408 -0.023577 0.0568125 0.0100881; 0.00917636 -0.00779892 -7.20195e-6 -0.0027462 -0.00163577 0.0100881 0.0127232]
+Iteration: 1
+Covariance:
+[0.0161117 -0.00863341 2.66693e-5 -0.00506119 -0.00289389 0.00813033 0.00637247; -0.00863341 0.00546783 3.5914e-6 0.00241083 0.00139394 -0.00525582 -0.00541592; 2.66693e-5 3.5914e-6 1.82367e-5 -3.97142e-5 -7.43151e-5 6.58272e-5 -5.00135e-6; -0.00506119 0.00241083 -3.97142e-5 0.029185 0.0146502 -0.0294034 -0.00190708; -0.00289389 0.00139394 -7.43151e-5 0.0146502 0.00805734 -0.0163729 -0.00113595; 0.00813033 -0.00525582 6.58272e-5 -0.0294034 -0.0163729 0.0394531 0.00700566; 0.00637247 -0.00541592 -5.00135e-6 -0.00190708 -0.00113595 0.00700566 0.00883558]
+Iteration: 1
+Covariance:
+[0.0161117 -0.00863341 2.66693e-5 -0.00506119 -0.00289389 0.00813033 0.00637247; -0.00863341 0.00546783 3.5914e-6 0.00241083 0.00139394 -0.00525582 -0.00541592; 2.66693e-5 3.5914e-6 1.82367e-5 -3.97142e-5 -7.43151e-5 6.58272e-5 -5.00135e-6; -0.00506119 0.00241083 -3.97142e-5 0.029185 0.0146502 -0.0294034 -0.00190708; -0.00289389 0.00139394 -7.43151e-5 0.0146502 0.00805734 -0.0163729 -0.00113595; 0.00813033 -0.00525582 6.58272e-5 -0.0294034 -0.0163729 0.0394531 0.00700566; 0.00637247 -0.00541592 -5.00135e-6 -0.00190708 -0.00113595 0.00700566 0.00883558]
+Loglik: -136574.3144 
+elapsed time: 884.680435972 seconds
+Ending ADA-GP-MCMC with adaptive RW estimating 7 parameters
+Algorithm: MCWM
+Adaptation algorithm: noAdaptation
+Prior distribution: Normal
+Particel filter: parallel_bootstrap
+Time consumption:Time pre-er:  0
+Time fit GP model:  0
+Time er-part:  885
+Number early-rejections: 616
+Number of cases directly to ordinary MH: 148
+Number split acceptance region early-accept: 0
+Number split acceptance region early-reject: 152
+Number cases in DA part: 851
+Number cases in second stage: 235
+Number accepted in second stage: 15
+Total number of evaluations of the particle filter: 229
+Acceptance rate for ordinary MH accepted: 10.1351
+Acceptance rate a_1: 27.6146
+Acceptance rate a_2: 6.3830
+Acceptance rate a_1*a_2: 1.7626
+Acceptance rate a (for entier algorithm): 3.0000
+Number case 1 or 3: 204
+Number case 2 or 4: 31
+Number case 1: 47, 0.2304 % of all cases
+Number case 2: 29, 0.9355 % of all cases
+Number case 3: 157, 0.7696 % of all cases
+Number case 4: 2, 0.0645 % of all cases
+Number pf runs in case 1: 47, prob pf given case 1 100.0000 %
+Number pf runs in case 2: 29, prob pf given case 2 100.0000 %
+Number pf runs in case 3: 5, prob pf given case 3 3.1847 %
+Number pf runs in case 4: 0, prob pf given case 4 0.0000 %
+#####################################################################
+Iterstion:
+2
+#####################################################################
+Starting ADA-GP-MCMC with adaptive RW estimating 7 parameters
+MCMC algorithm: MCWM
+Adaptation algorithm: noAdaptation
+Select case model: DT
+Prior distribution: Normal
+Particle filter: parallel_bootstrap, on 4 cores
+Nbr particles for particle filter: 200
+Covariance - kernel_MH_direct:
+[0.0232008 -0.0124321 3.84038e-5 -0.00728811 -0.0041672 0.0117077 0.00917636; -0.0124321 0.00787367 5.17161e-6 0.0034716 0.00200727 -0.00756839 -0.00779892; 3.84038e-5 5.17161e-6 2.62608e-5 -5.71884e-5 -0.000107014 9.47912e-5 -7.20195e-6; -0.00728811 0.0034716 -5.71884e-5 0.0420264 0.0210962 -0.0423408 -0.0027462; -0.0041672 0.00200727 -0.000107014 0.0210962 0.0116026 -0.023577 -0.00163577; 0.0117077 -0.00756839 9.47912e-5 -0.0423408 -0.023577 0.0568125 0.0100881; 0.00917636 -0.00779892 -7.20195e-6 -0.0027462 -0.00163577 0.0100881 0.0127232]
+Iteration: 1
+Covariance:
+[0.0161117 -0.00863341 2.66693e-5 -0.00506119 -0.00289389 0.00813033 0.00637247; -0.00863341 0.00546783 3.5914e-6 0.00241083 0.00139394 -0.00525582 -0.00541592; 2.66693e-5 3.5914e-6 1.82367e-5 -3.97142e-5 -7.43151e-5 6.58272e-5 -5.00135e-6; -0.00506119 0.00241083 -3.97142e-5 0.029185 0.0146502 -0.0294034 -0.00190708; -0.00289389 0.00139394 -7.43151e-5 0.0146502 0.00805734 -0.0163729 -0.00113595; 0.00813033 -0.00525582 6.58272e-5 -0.0294034 -0.0163729 0.0394531 0.00700566; 0.00637247 -0.00541592 -5.00135e-6 -0.00190708 -0.00113595 0.00700566 0.00883558]
+Iteration: 1
+Covariance:
+[0.0161117 -0.00863341 2.66693e-5 -0.00506119 -0.00289389 0.00813033 0.00637247; -0.00863341 0.00546783 3.5914e-6 0.00241083 0.00139394 -0.00525582 -0.00541592; 2.66693e-5 3.5914e-6 1.82367e-5 -3.97142e-5 -7.43151e-5 6.58272e-5 -5.00135e-6; -0.00506119 0.00241083 -3.97142e-5 0.029185 0.0146502 -0.0294034 -0.00190708; -0.00289389 0.00139394 -7.43151e-5 0.0146502 0.00805734 -0.0163729 -0.00113595; 0.00813033 -0.00525582 6.58272e-5 -0.0294034 -0.0163729 0.0394531 0.00700566; 0.00637247 -0.00541592 -5.00135e-6 -0.00190708 -0.00113595 0.00700566 0.00883558]
+Loglik: -136580.8394 
+elapsed time: 998.863907137 seconds
+Ending ADA-GP-MCMC with adaptive RW estimating 7 parameters
+Algorithm: MCWM
+Adaptation algorithm: noAdaptation
+Prior distribution: Normal
+Particel filter: parallel_bootstrap
+Time consumption:Time pre-er:  0
+Time fit GP model:  0
+Time er-part:  999
+Number early-rejections: 577
+Number of cases directly to ordinary MH: 153
+Number split acceptance region early-accept: 3
+Number split acceptance region early-reject: 156
+Number cases in DA part: 846
+Number cases in second stage: 269
+Number accepted in second stage: 33
+Total number of evaluations of the particle filter: 260
+Acceptance rate for ordinary MH accepted: 16.3399
+Acceptance rate a_1: 31.7967
+Acceptance rate a_2: 12.2677
+Acceptance rate a_1*a_2: 3.9007
+Acceptance rate a (for entier algorithm): 5.8000
+Number case 1 or 3: 230
+Number case 2 or 4: 39
+Number case 1: 64, 0.2783 % of all cases
+Number case 2: 36, 0.9231 % of all cases
+Number case 3: 166, 0.7217 % of all cases
+Number case 4: 3, 0.0769 % of all cases
+Number pf runs in case 1: 61, prob pf given case 1 95.3125 %
+Number pf runs in case 2: 36, prob pf given case 2 100.0000 %
+Number pf runs in case 3: 10, prob pf given case 3 6.0241 %
+Number pf runs in case 4: 0, prob pf given case 4 0.0000 %
+#####################################################################

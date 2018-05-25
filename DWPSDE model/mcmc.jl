@@ -70,6 +70,7 @@ function mcmc(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=
   @printf "Nbr particles for particel filter: %d\n" N
 
   nbr_of_proc = set_nbr_cores(nbr_of_cores, pf_alg)
+  #nbr_of_proc = nbr_of_cores
   loglik_vec = SharedArray{Float64}(nbr_of_proc)
 
   # print acceptance rate each print_interval:th iteration
@@ -246,6 +247,7 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
   a_log = zero(Float64)
   loglik_current = zero(Float64)
   nbr_eval_pf = 0
+  nbr_eval_pf_secound_stage = 0
 
   # starting values for times:
   time_pre_er = zero(Float64)
@@ -257,7 +259,7 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
   prior_parameters = problem.prior_dist.prior_parameters
 
   # prop kernl for DA-GP-MCMC
-  xi = 1.1
+  xi = 1.2
   problem.adaptive_update = noAdaptation(xi^2*cov_matrix)
 
   adaptive_update_params = set_adaptive_alg_params(problem.adaptive_update, length(theta_0),Theta[:,1], R)
@@ -286,10 +288,11 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
 
   # set nbr of cores to use for parallel pf
   nbr_of_proc = set_nbr_cores(nbr_of_cores, pf_alg)
-  loglik_vec = SharedArray{Float64}(nbr_of_proc)
+  #nbr_of_proc = nbr_of_cores
+  loglik_vec = SharedArray{Float64}(nbr_of_cores)
 
   # print acceptance rate each print_interval:th iteration
-  print_interval = 100
+  print_interval = 1000
 
   # first iteration
   @printf "Iteration: %d\n" 1 # print first iteration
@@ -326,7 +329,7 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
       @printf "Covariance:\n"
       print_covariance(problem.adaptive_update,adaptive_update_params, r)
       # print loglik
-      @printf "Loglik: %.4f \n" loglik[r-1]
+      @printf "Loglik: %.8f \n" loglik[r-1]
       # print log-lik vector
       @printf "Loglik values on different cores:\n"
       println(loglik_vec)
@@ -430,6 +433,7 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
         end
 
         nbr_eval_pf += 1
+        nbr_eval_pf_secound_stage += 1
 
         a_log = (loglik_star + loglik_gp_old)  -  (loglik_current + loglik_gp_new)
 
@@ -490,6 +494,8 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
   # return resutls
   if return_run_info
     run_info = [nbr_eval_pf;
+                nbr_eval_pf_secound_stage;
+                nbr_second_stage;
                 nbr_ordinary_mh]
     return return_gp_results(gp, Theta,loglik,accept_vec,prior_vec, compare_GP_PF, data_gp_pf,nbr_early_rejections, problem, adaptive_update_params,accept_prob_log,times), run_info
   else
@@ -600,15 +606,15 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, ca
   # parameters for prior dist
   dist_type = problem.prior_dist.dist
   prior_parameters = problem.prior_dist.prior_parameters
-  
-  # prop kernl for ADA-GP-MCMC
-  xi = 1.1
-  problem.adaptive_update = noAdaptation(xi^2*cov_matrix)
+
+  # prop kernl for DA-GP-MCMC
+  problem.adaptive_update = noAdaptation(cov_matrix)
 
   adaptive_update_params = set_adaptive_alg_params(problem.adaptive_update, length(theta_0),Theta[:,1], R)
 
   # prop kernl for MH_direct
-  kernel_MH_direct = noAdaptation(cov_matrix)
+  xi = 1.2
+  kernel_MH_direct = noAdaptation(xi^2*cov_matrix)
   adaptive_update_params_MH_direct = set_adaptive_alg_params(kernel_MH_direct, length(theta_0),Theta[:,1], R)
 
   @printf "#####################################################################\n"
@@ -632,10 +638,12 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, ca
 
   # set nbr of cores to use for parallel pf
   nbr_of_proc = set_nbr_cores(nbr_of_cores, pf_alg)
+  #nbr_of_proc = nbr_of_cores
   loglik_vec = SharedArray{Float64}(nbr_of_proc)
 
+
   # print acceptance rate each print_interval:th iteration
-  print_interval = 100
+  print_interval = 1000
 
   # first iteration
   @printf "Iteration: %d\n" 1 # print first iteration

@@ -196,7 +196,7 @@ accelerated_da = false
 problem.model_param.theta_0 = mean(res_training[1].Theta_est[:,problem_training.alg_param.burn_in+1:problem_training.alg_param.burn_in+length_training_data],2)
 
 # time multiple runs
-alg_prop_da = zeros(nbr_alg_iter,3)
+alg_prop_da = zeros(nbr_alg_iter,5)
 
 for i = 1:nbr_alg_iter
   println("Iterstion:")

@@ -248,7 +248,7 @@ nbr_alg_iter = 50
 problem.model_param.theta_0 = mean(res_training[1].Theta_est[:,end-size(data_training,2)-size(data_test,2):end],2)[:]
 
 
-alg_prop_da = zeros(nbr_alg_iter,3)
+alg_prop_da = zeros(nbr_alg_iter,5)
 
 
 for i = 1:nbr_alg_iter

@@ -224,6 +224,7 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
   nbr_second_stage_accepted = 0
   nbr_second_stage = 0
   nbr_eval_pf = 0
+  nbr_eval_pf_secound_stage = 0 
 
   # starting values for times:
   time_pre_er = 0
@@ -398,6 +399,7 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
         end
 
         nbr_eval_pf += 1
+        nbr_eval_pf_secound_stage += 1
 
         accept = log(rand()) < a_log # calc accaptance decision
         accept_prob_log[2, r] = a_log # store data
@@ -454,6 +456,8 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
   # return resutls
   if return_run_info
     run_info = [nbr_eval_pf;
+                nbr_eval_pf_secound_stage;
+                nbr_second_stage;
                 nbr_ordinary_mh]
     return return_da_results(gp, Theta,loglik,accept_vec,prior_vec, compare_GP_PF, data_gp_pf,nbr_early_rejections, problem, adaptive_update_params,accept_prob_log,times),
             run_info
