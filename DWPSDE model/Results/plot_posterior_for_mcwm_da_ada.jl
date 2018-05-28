@@ -33,7 +33,7 @@ plot_theta_true = false
 
 # load data for MCWM
 
-dataset = "new_data" # select simdata or new_data (i.e the new dataset)
+dataset = "simdata" # select simdata or new_data (i.e the new dataset)
 
 if dataset == "simdata"
 

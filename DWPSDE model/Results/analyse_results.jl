@@ -39,46 +39,16 @@ jobname = "_dagpest7simdataada_gp_mcmc_dt" # was "_dagpest7_real_dataada_gp_mcmc
 
 plot_theta_true = false
 
-# results:
-# gp_training_7_par
-# mcwm_7_para_realdata
-# gp_training_7_par_realdata
-
-# res:
-#_dagpest7_real_dataada_gp_mcmc_dt
-#_dagpest7_real_datada_gp_mcmcMCWM
-# mcwm_7_par_real_data_2
-
-#_dagpest7ada_gp_mcmc_dt
-#_dagpest7da_gp_mcmcMCWM
-
-# results for old data
-# mcwm_7_para_realdata
-
-# results for new data
-# gp_training_7_par_training_and_test_new_data
-#
-#
-# mcwm_7_par_real_data_2
-# gp_training_7_par_localnew_data run_time 210995.217074414 seconds
-
-# results for sim data
-# gp_training_7_par_training_and_test_lunarc
-#_dagpest7ada_gp_mcmc_dt at 2018-4-13 09:33:17
-#_dagpest7da_gp_mcmcMCWM at 2018-4-13 02:38:22
-# mcwm_7_par_sim_data at 2018-4-13 17:44:39
-
 # training data from lunarc
 
 # gp_training_7_par_lunarc_new_data_4_coresnew_data at 2018-05-22 14:14.24
 # gp_training_7_par_lunarc_simdata_4_coressimdata 2018-05-09 23:42:50
 
+# _dagpest7new_dataada_gp_mcmc_dt 2018-05-28 07:14:14
+# _dagpest7new_datada_gp_mcmc 2018-05-28 04:55:39
 
-# _dagpest7new_dataada_gp_mcmc_dt 2018-05-23 21:52:59
-# _dagpest7new_datada_gp_mcmc 2018-05-23 19:11:43
-
-# _dagpest7simdataada_gp_mcmc_dt 2018-05-21 21:15:15
-# _dagpest7simdatada_gp_mcmc 2018-05-21 18:42:58
+# _dagpest7simdataada_gp_mcmc_dt 2018-05-28 01:10:42
+# _dagpest7simdatada_gp_mcmc 2018-05-27 22:31:57
 
 if load_data_from_files
 
