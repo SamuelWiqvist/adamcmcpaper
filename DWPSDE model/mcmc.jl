@@ -607,15 +607,16 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, ca
   dist_type = problem.prior_dist.dist
   prior_parameters = problem.prior_dist.prior_parameters
 
-  # prop kernl for DA-GP-MCMC
-  problem.adaptive_update = noAdaptation(cov_matrix)
+  # prop kernl for ADA-GP-MCMC
+  xi = 1.2
+  problem.adaptive_update = noAdaptation(xi^2*cov_matrix)
 
   adaptive_update_params = set_adaptive_alg_params(problem.adaptive_update, length(theta_0),Theta[:,1], R)
 
   # prop kernl for MH_direct
-  xi = 1.2
-  kernel_MH_direct = noAdaptation(xi^2*cov_matrix)
+  kernel_MH_direct = noAdaptation(cov_matrix)
   adaptive_update_params_MH_direct = set_adaptive_alg_params(kernel_MH_direct, length(theta_0),Theta[:,1], R)
+
 
   @printf "#####################################################################\n"
 

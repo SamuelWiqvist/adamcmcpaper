@@ -232,10 +232,10 @@ if true
 	# fit GP model
 	if true #problem.alg_param.est_method == "ml"
 	  # fit GP model using ml
-	  #perc_outlier = 0.1 # used when using PMCMC for trainig data 0.05
+	  #perc_outlier = 0.0 # used when using PMCMC for trainig data 0.05
 	  #tail_rm = "left"
 
-	  perc_outlier = 0.05 # should be 0.05
+	  perc_outlier = 0.01 # should be 0.05
 	  tail_rm = "left"
 	  lasso = false # should be true
 
