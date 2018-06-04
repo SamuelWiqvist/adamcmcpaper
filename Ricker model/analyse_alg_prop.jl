@@ -569,7 +569,7 @@ PyPlot.plt[:hist](alg_prop_da[:,3],10, alpha = 0.6)
 PyPlot.plt[:hist](sum(alg_prop_ada[:,end-3:end],2)[:],10, alpha = 0.6)
 ax[:tick_params]("both",labelsize = label_size)
 
-diff_nbr_pf_secound_stage = alg_prop_da[:,3] - sum(alg_prop_ada[:,end-3:end],2)[:]
+diff_nbr_pf_secound_stage = alg_prop_da[:,3]./sum(alg_prop_ada[:,end-3:end],2)[:]
 
 print_stats(diff_nbr_pf_secound_stage)
 
