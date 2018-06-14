@@ -74,4 +74,5 @@ julia> include("utilities/print_used_packages.jl")
  - JLD                           0.8.3
  - HDF5                          0.8.8
  - PyPlot                        2.3.2+             master
+ - KernelDensity                 0.4.0
 ```
