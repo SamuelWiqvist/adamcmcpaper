@@ -59,7 +59,7 @@ beta_MH = 0.15 # should be 0.1
 load_tranining_data = true
 
 # type of job
-job = "simdata" # set work to simdata or new_data
+job = "new_data" # set work to simdata or new_data
 
 # set jod dep. parameters
 if job == "simdata"
@@ -308,7 +308,7 @@ if true #problem.alg_param.est_method == "ml"
   #perc_outlier = 0.1 # used when using PMCMC for trainig data 0.05
   #tail_rm = "left"
 
-  perc_outlier = 0.0 # 0.02 for simdata, 0.01 also works for new_data
+  perc_outlier = 0.01 # 0.02 for simdata, 0.01 also works for new_data
   tail_rm = "left"
   lasso = false # was true test fitting without lassa, The lassa has a large inpact on the fit of the model, we should use lasso!
 
@@ -1627,14 +1627,14 @@ nbr_case_2_correct = 0
 nbr_case_3_correct = 0
 nbr_case_4_correct = 0
 
-theta_new_tree_model = zeros(dim+1)
-theta_new_tree_model = [theta_new; prediction_sample_ml_star[1]/prediction_sample_ml_old[1]]
-case = apply_tree(model_1_and_3, theta_new_tree_model)
-case = apply_tree(model_2_and_4, theta_new_tree_model)
+#theta_new_tree_model = zeros(dim+1)
+#theta_new_tree_model = [theta_new; prediction_sample_ml_star[1]/prediction_sample_ml_old[1]]
+#case = apply_tree(model_1_and_3, theta_new_tree_model)
+#case = apply_tree(model_2_and_4, theta_new_tree_model)
 
 
 include("run_pf_paralell.jl")
-N = 25
+N = 250
 Z = problem_training.data.Z
 
 
@@ -1651,6 +1651,8 @@ case_4_theta_val = []
 case_4_assumption_holds = []
 
 for i = 1:n
+
+  println(i)
 
   (loglik_est_star, var_pred_ml, prediction_sample_ml_star) = predict(data_test[1:dim,i],gp,noisy_pred)
   (loglik_est_old, var_pred_ml, prediction_sample_ml_old) = predict(res_training[1].Theta_est[:,idx_test_old[i]],gp,noisy_pred)
