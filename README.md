@@ -7,7 +7,7 @@ This repository contains all code for the pre-print paper *Accelerating delayed-
 
 ## File structure
 
-The files (in the master branch) are structured as following
+The files (in the master branch) are structured as following:
 
 /DWPSDE model
 - source files for the implementations of the algorithms for the DWP-SDE model
