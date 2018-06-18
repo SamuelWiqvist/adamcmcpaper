@@ -2,7 +2,7 @@
 
 This repository contains all code for the pre-print paper *Accelerating delayed-acceptance Markov Chain Monte Carlo algorithms* https://arxiv.org/abs/1806.05982.
 
-**N.B.:** The results in the pre-print at arXiv v1 are computed using the version of the code at tag *preprint_v1* for both the `master` and the `lunarc` branch.  
+**N.B.:** The results in the pre-print at arXiv v1 are computed using the version of the code at tag *preprint_v1_master* and *preprint_v1_lunarc* for the `master` and the `lunarc` branch respectively.  
 
 
 ## File structure
@@ -78,4 +78,4 @@ julia> include("utilities/print_used_packages.jl")
 ```
 ## Data
 
-To get access to the reaction coordinate data sets, please contact the authors. 
+To get access to the reaction coordinate data sets, please contact the authors.
