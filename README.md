@@ -76,3 +76,6 @@ julia> include("utilities/print_used_packages.jl")
  - PyPlot                        2.3.2+             master
  - KernelDensity                 0.4.0
 ```
+## Data
+
+To get access to the reaction coordinate data sets, please contact the authors. 
