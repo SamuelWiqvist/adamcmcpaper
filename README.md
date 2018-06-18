@@ -1,6 +1,6 @@
-# Algorithm implementations and case studies for the paper *Accelerating delayed-acceptance Markov Chain Monte Carlo algorithms*
+# Algorithm implementations and case studies for the paper *Accelerating delayed-acceptance Markov chain Monte Carlo algorithms*
 
-This repository contains all code for the pre-print paper *Accelerating delayed-acceptance Markov Chain Monte Carlo algorithms* https://arxiv.org/abs/1806.05982.
+This repository contains all code for the pre-print paper *Accelerating delayed-acceptance Markov chain Monte Carlo algorithms* https://arxiv.org/abs/1806.05982.
 
 **N.B.:** The results in the pre-print at arXiv v1 are computed using the version of the code at tag *preprint_v1_master* and *preprint_v1_lunarc* for the `master` and the `lunarc` branch respectively.  
 
