@@ -86,18 +86,6 @@ type gpProblem
   prior_dist::PriorDistribution
 end
 
-"Type for the parameters of the IS part of the ISMCMCM algorithm"
-type ISParameters
-  N::Int64
-  R::Int64
-  method::String
-  est_method::String
-  lasso::Bool
-  pred_method::String
-  noisy_est::Bool
-end
-
-
 "Type for the results"
 type Result
   Theta_est::Array{Float64}
