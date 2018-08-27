@@ -1,11 +1,9 @@
 #!/bin/sh
 
-# Description: This is a simple script to test Aurora
-
 # Set up for run: 
  
 # need this since I use a LU project 
-#SBATCH -A lu2017-2-14
+#SBATCH -A lu2018-2-22
 
 # need this since I use a LU project
 #SBATCH -p lu
@@ -17,8 +15,8 @@
 #SBATCH -J job_ana_sim_data_bc
 
 # controll job outputs 
-#SBATCH -o outputs_%j.out
-#SBATCH -e errors_%j.err
+#SBATCH -o lunarc_output/outputs_job_ana_sim_data_bc_%j.out
+#SBATCH -e lunarc_output/errors_job_ana_sim_data_bc_%j.err
 
 # set number of nodes 
 #SBATCH -N 1

@@ -1,7 +1,5 @@
 #!/bin/sh
 
-# script to run DA and ADA 
-
 # Set up for run: 
  
 # need this since I use a LU project 

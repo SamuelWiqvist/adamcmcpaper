@@ -1,7 +1,5 @@
 #!/bin/sh
 
-# Script to run MCMC
-
 # Set up for run: 
  
 # need this since I use a LU project 

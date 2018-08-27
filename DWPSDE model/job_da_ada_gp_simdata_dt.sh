@@ -17,8 +17,8 @@
 #SBATCH -J mcmc_da_ada_dwpsde_model 
 
 # controll job outputs 
-#SBATCH -o outputs_%j.out
-#SBATCH -e errors_%j.err
+#SBATCH -o lunarc_output/outputs_%j.out
+#SBATCH -e lunarc_output/errors_%j.err
 
 # set number of nodes 
 #SBATCH -N 1

@@ -1,7 +1,5 @@
 #!/bin/sh
 
-# Script to run alg. analyses for DA and ADA using bc selection method 
-
 # Set up for run: 
  
 # need this since I use a LU project 
