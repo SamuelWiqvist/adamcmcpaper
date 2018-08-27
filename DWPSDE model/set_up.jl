@@ -395,87 +395,6 @@ Sets the parameters for the prior dist. and the model parameters theta.
 
       theta_0 = [log(100) log(40)] #theta_true #[log(100) log(40)] #theta_true #[log(100) log(40)] # theta_truestart values
 
-
-    elseif nbr_of_unknown_parameters == 3
-
-        # estimate A,c,d
-
-        theta_true = log.([A c d]) # true values for the unknown parameters
-        theta_known = [Κ  Γ A_sign B f g power1 power2 sigma] # set vector with known parameters
-        if prior_dist == "Uniform"
-          # uniform prior dist
-          prior_parameters =  [-10 0; log(20) log(40); 0 log(10)] # uniform prior distribution
-        elseif prior_dist == "Normal"
-          # normal prior dist
-          prior_parameters = [-5 1;  3.34 0.173; 1.15 0.2]
-        elseif prior_dist == "nonlog"
-          # prior distribution on non-log scale
-          prior_parameters = [3 0.05; 28 2; 4 1]
-        end
-
-        #theta_0 = [log(100) log(40) log(0.01)] # old start values
-        theta_0 = [log(10) log(100) log(40)] #theta_true #[log(10) log(100) log(40)] #theta_true # [log(10) log(100) log(40)] # new start values
-
-    elseif nbr_of_unknown_parameters == 4 # set parameters for estimating 4 parameters
-
-      # estimate Κ Γ c d
-
-      theta_true = log.([Κ Γ c d]) # true values for the unknown parameters
-      theta_known = [A A_sign B f g power1 power2 sigma] # set vector with known parameters
-
-      if prior_dist == "Uniform"
-        # uniform prior dist
-        prior_parameters =  [-10 2; -10 2;-10 0;0 log(10);log(1) log(4)]
-      elseif prior_dist == "Normal"
-        # normal prior dist
-        prior_parameters = [-0.7 0.5;-0.7 0.5;3.34 0.173; 1.15 0.2]
-      elseif prior_dist == "nonlog"
-        # prior distribution on non-log scale
-        prior_parameters = [3 1.5; 3 1.5; 28 2; 4 1]
-      end
-
-      theta_0 = [log(10) log(10) log(100) log(40)] #theta_true #[log(10) log(10) log(100) log(40)] #theta_true #[log(10) log(10) log(100) log(40)] # start values
-
-    elseif nbr_of_unknown_parameters == 5 # set parameters for estimating 4 parameters
-
-      # estimate Κ Γ c d sigma
-
-      theta_true = log.([Κ Γ c d sigma]) # true values for the unknown parameters
-      theta_known = [A A_sign B f g power1 power2] # set vector with known parameters
-
-      if prior_dist == "Uniform"
-        # uniform prior dist
-        prior_parameters =  [-10 2; -10 2;log(20) log(40);0 log(10);log(1) log(4)]
-      elseif prior_dist == "Normal"
-        # normal prior dist
-        prior_parameters = [-0.7 0.5;-0.7 0.5;3.34 0.173; 1.15 0.2; log(2) 0.5]
-      elseif prior_dist == "nonlog"
-        # prior distribution on non-log scale
-        prior_parameters = [3 1.5; 3 1.5; 28 2; 4 1; 2 2]
-      end
-
-      theta_0 = [log(10) log(10) log(100) log(40) log(10)] #theta_true #[log(1) log(1) log(30) log(5) log(1)] # theta_true #[log(1) log(1) log(1) log(30) log(5)]  #[log(10) log(10) log(10) log(100) log(40)]  # theta_true [log(10) log(10) log(10) log(100) log(40)] # start values
-
-    elseif nbr_of_unknown_parameters == 6
-
-      # estiamte A,c,d,power1,power2,sigma
-
-      theta_true = log.([A,c,d,power1,power2,sigma]) # true values for the unknown parameters
-      theta_known = [Κ Γ A_sign B f g ] # set vector with known parameters
-
-      if prior_dist == "Uniform"
-        # uniform prior dist
-        prior_parameters =  [-10 0; log(20) log(40);  0 log(10); -10 0.7; -10 0.7; log(1) log(4)]
-      elseif prior_dist == "Normal"
-        # normal prior dist
-        prior_parameters = [-5 1;  log(20)+(log(40)-log(20))/2 (log(40)-log(20))/4 ;(log(10))/2 (log(10))/4;0 0.5;0 0.5;log(2) 0.5]
-      elseif prior_dist == "nonlog"
-        # prior distribution on non-log scale
-        prior_parameters = [3 0.05; 28 2; 4 1; 2 2; 2 2; 2 2]
-      end
-
-      theta_0 =  [log(1) log(30) log(10) log(2) log(2) log(2)]  #log([0.0001, 1, 1, 0.0001, 0.0001, 0.01]) # start values
-
     elseif nbr_of_unknown_parameters == 7
 
       # estimate Κ,Γ,c,d,power1,power2,sigma
@@ -495,46 +414,9 @@ Sets the parameters for the prior dist. and the model parameters theta.
       end
 
       theta_0 = [log(2) log(2) log(30) log(10) log(2) log(2) log(2)] #[log(1) log(1) log(30) log(5) log(2) log(2) log(1)] #theta_true #[log(1) log(30) log(4) log(2) log(2) log(2)]  #log([0.0001, 1, 1, 0.0001, 0.0001, 0.01]) # start values
-
-
-    elseif nbr_of_unknown_parameters == 8  # set parameters for estimating all (9) parameters
-
-      # estiamte Κ, Γ,A,c,d,power1,power2,sigma
-
-      theta_true = log.([Κ, Γ,A,c,d,power1,power2,sigma]) # true values for the unknown parameters
-      theta_known = [A_sign B f g] # set vector with known parameters
-
-      if prior_dist == "Uniform"
-        # uniform prior dist
-        prior_parameters =  [-10 2; -10 2; -10 0; log(20) log(40);  0 log(10);-10 0.7; -10 0.7; log(1) log(4)]
-      elseif prior_dist == "Normal"
-        # normal prior dist
-        prior_parameters = [-0.7 0.5;-0.7 0.5;-5 1;  log(20)+(log(40)-log(20))/2 (log(40)-log(20))/4 ;(log(10))/2 (log(10))/4;0 0.5;0 0.5;log(2) 0.5]
-      elseif prior_dist == "nonlog"
-        # prior distribution on non-log scale
-        prior_parameters = [3 1.5; 3 1.5; 3 0.05; 28 2; 4 1; 2 2; 2 2; 2 2]
-      end
-
-      theta_0 = [log(2) log(2) log(1) log(30) log(10) log(2) log(2) log(2)] #log([0.0001, 0.0001, 0.0001, 1, 1, 0.0001, 0.0001, 0.0001, 0.01]) # start values
-
     else
 
-      # estimate all parameters. i.e. estimate Κ, Γ,A,c,d,g,power1,power2,sigma
-      theta_true = log.([Κ, Γ,A,c,d,g,power1,power2,sigma]) # true values for the unknown parameters
-      theta_known = [A_sign B f] # set vector with known parameters
-
-      if prior_dist == "Uniform"
-        # uniform prior dist
-        prior_parameters =  [-10 2; -10 2; -10 0; log(20) log(40);  0 log(10); -10 0; -10 0.7; -10 0.7; log(1) log(4)]
-      elseif prior_dist == "Normal"
-        # normal prior dist
-        prior_parameters = [-0.7 0.5;-0.7 0.5;-5 1;  log(20)+(log(40)-log(20))/2 (log(40)-log(20))/4 ;(log(10))/2 (log(10))/4;-5 1;0 0.5;0 0.5;log(2) 0.5]
-      elseif prior_dist == "nonlog"
-        # prior distribution on non-log scale
-        prior_parameters = [3 1.5; 3 1.5; 3 0.05; 28 2; 4 1; 3 0.05; 2 2; 2 2; 2 2]
-      end
-
-      theta_0 = [log(2) log(2) log(1) log(30) log(10) log(2) log(2) log(2) log(2)] #log([0.0001, 0.0001, 0.0001, 1, 1, 0.0001, 0.0001, 0.0001, 0.01]) # start values
+      error("selected wrong number of unknown parameters")
 
     end
 
@@ -581,89 +463,6 @@ Sets the parameters for the prior dist. and the model parameters theta.
       theta_0 = [log(100) log(40)] #theta_true #[log(100) log(40)] #theta_true #[log(100) log(40)] # theta_truestart values
 
 
-    elseif nbr_of_unknown_parameters == 3
-
-        # estimate A,c,d
-
-        theta_true = log.([A c d]) # true values for the unknown parameters
-        theta_known = [Κ  Γ A_sign B f g power1 power2 sigma] # set vector with known parameters
-
-
-        if prior_dist == "Uniform"
-          # uniform prior dist
-          prior_parameters =  [-10 0; log(20) log(40); 0 log(10)] # uniform prior distribution
-        elseif prior_dist == "Normal"
-          # normal prior dist
-          prior_parameters = [-5 1;  3.34 0.173; 1.15 0.2]
-        elseif prior_dist == "nonlog"
-          # prior distribution on non-log scale
-          prior_parameters = [3 0.05; 28 2; 4 1]
-        end
-
-        #theta_0 = [log(0.1) log(100) log(40)] [log(100) log(40) log(0.01)] # old start values
-        theta_0 = theta_true #[log(10) log(100) log(40)] #theta_true #[log(10) log(100) log(40)] #theta_true # [log(10) log(100) log(40)] # new start values
-
-    elseif nbr_of_unknown_parameters == 4 # set parameters for estimating 4 parameters
-
-      # estimate Κ Γ c d
-
-
-      theta_true = log.([Κ Γ c d]) # true values for the unknown parameters
-      theta_known = [A A_sign B f g power1 power2 sigma] # set vector with known parameters
-
-      if prior_dist == "Uniform"
-        # uniform prior dist
-        prior_parameters =  [-10 2; -10 2;-10 0;0 log(10);log(1) log(4)]
-      elseif prior_dist == "Normal"
-        # normal prior dist
-        prior_parameters = [-0.7 0.8;-0.7 0.8;3.34 0.173; 2.3 0.4]
-      elseif prior_dist == "nonlog"
-        # prior distribution on non-log scale
-        prior_parameters = [3 1.5; 3 1.5; 28 2; 4 1]
-      end
-
-      theta_0 = [log(10) log(10) log(100) log(40)] #theta_true #[log(10) log(10) log(100) log(40)] #theta_true #[log(10) log(10) log(100) log(40)] # start values
-
-    elseif nbr_of_unknown_parameters == 5 # set parameters for estimating 4 parameters
-
-      # estimate Κ Γ c d sigma
-
-      theta_true = log.([Κ Γ c d sigma]) # true values for the unknown parameters
-      theta_known = [A A_sign B f g power1 power2] # set vector with known parameters
-
-      if prior_dist == "Uniform"
-        # uniform prior dist
-        prior_parameters =  [-10 2; -10 2;log(20) log(40);0 log(10);log(1) log(4)]
-      elseif prior_dist == "Normal"
-        # normal prior dist
-        prior_parameters = [-0.7 0.5;-0.7 0.5;3.34 0.173; 2 0.4; log(2) 0.5]
-      elseif prior_dist == "nonlog"
-        # prior distribution on non-log scale
-        prior_parameters = [3 1.5; 3 1.5; 28 2; 4 1; 2 2]
-      end
-
-      theta_0 = theta_true #[log(10) log(10) log(100) log(40) log(10)] #theta_true #[log(1) log(1) log(30) log(5) log(1)] # theta_true #[log(1) log(1) log(1) log(30) log(5)]  #[log(10) log(10) log(10) log(100) log(40)]  # theta_true [log(10) log(10) log(10) log(100) log(40)] # start values
-
-    elseif nbr_of_unknown_parameters == 6
-
-      # estiamte A,c,d,power1,power2,sigma
-
-      theta_true = log.([A,c,d,power1,power2,sigma]) # true values for the unknown parameters
-      theta_known = [Κ Γ A_sign B f g ] # set vector with known parameters
-
-      if prior_dist == "Uniform"
-        # uniform prior dist
-        prior_parameters =  [-10 0; log(20) log(40);  0 log(10); -10 0.7; -10 0.7; log(1) log(4)]
-      elseif prior_dist == "Normal"
-        # normal prior dist
-        prior_parameters = [-5 1;  log(20)+(log(40)-log(20))/2 (log(40)-log(20))/4 ;(log(10))/2 (log(10))/4;0 0.5;0 0.5;log(2) 0.5]
-      elseif prior_dist == "nonlog"
-        # prior distribution on non-log scale
-        prior_parameters = [3 0.05; 28 2; 4 1; 2 2; 2 2; 2 2]
-      end
-
-      theta_0 =  [log(1) log(30) log(10) log(2) log(2) log(2)]  #log([0.0001, 1, 1, 0.0001, 0.0001, 0.01]) # start values
-
     elseif nbr_of_unknown_parameters == 7
 
       # estimate Κ,Γ,c,d,power1,power2,sigma
@@ -686,46 +485,11 @@ Sets the parameters for the prior dist. and the model parameters theta.
 
       theta_0 = [log(0.5) log(2) log(20) log(15) log(1.5) log(1.5) log(2.5)] #[log(1) log(1) log(30) log(5) log(2) log(2) log(1)] #theta_true #[log(1) log(30) log(4) log(2) log(2) log(2)]  #log([0.0001, 1, 1, 0.0001, 0.0001, 0.01]) # start values
 
-    elseif nbr_of_unknown_parameters == 8  # set parameters for estimating all (9) parameters
-
-      # estiamte Κ, Γ,A,c,d,power1,power2,sigma
-
-      theta_true = log.([Κ, Γ,A,c,d,power1,power2,sigma]) # true values for the unknown parameters
-      theta_known = [A_sign B f g] # set vector with known parameters
-
-      if prior_dist == "Uniform"
-        # uniform prior dist
-        prior_parameters =  [-10 2; -10 2; -10 0; log(20) log(40);  0 log(10);-10 0.7; -10 0.7; log(1) log(4)]
-      elseif prior_dist == "Normal"
-        # normal prior dist
-        prior_parameters = [-0.7 0.5;-0.7 0.5;-5 1;  log(20)+(log(40)-log(20))/2 (log(40)-log(20))/4 ;(log(10))/2 (log(10))/4;0 0.5;0 0.5;log(2) 0.5]
-      elseif prior_dist == "nonlog"
-        # prior distribution on non-log scale
-        prior_parameters = [3 1.5; 3 1.5; 3 0.05; 28 2; 4 1; 2 2; 2 2; 2 2]
-      end
-
-      theta_0 = [log(2) log(2) log(1) log(30) log(10) log(2) log(2) log(2)] #log([0.0001, 0.0001, 0.0001, 1, 1, 0.0001, 0.0001, 0.0001, 0.01]) # start values
-
     else
 
-      theta_true = log.([Κ, Γ,A,c,d,g,power1,power2,sigma]) # true values for the unknown parameters
-      theta_known = [A_sign B f] # set vector with known parameters
-
-      if prior_dist == "Uniform"
-        # uniform prior dist
-        prior_parameters =  [-10 2; -10 2; -10 0; log(20) log(40);  0 log(10); -10 0; -10 0.7; -10 0.7; log(1) log(4)]
-      elseif prior_dist == "Normal"
-        # normal prior dist
-        prior_parameters = [-0.7 0.5;-0.7 0.5;-5 1;3.34 0.173; 2 0.4;-5 1;0 0.5;0 0.5;log(2) 0.5]
-      elseif prior_dist == "nonlog"
-        # prior distribution on non-log scale
-        prior_parameters = [3 1.5; 3 1.5; 3 0.05; 28 2; 4 1; 3 0.05; 2 2; 2 2; 2 2]
-      end
-
-      theta_0 = theta_true # [log(2) log(2) log(1) log(30) log(10) log(2) log(2) log(2) log(2)] #log([0.0001, 0.0001, 0.0001, 1, 1, 0.0001, 0.0001, 0.0001, 0.01]) # start values
+      error("selected wrong number of unknown parameters")
 
     end
-
     # return parameters
     return theta_true,theta_known,theta_0,prior_parameters
 
