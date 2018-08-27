@@ -88,18 +88,6 @@ type gpProblem
   prior_dist::PriorDistribution
 end
 
-"Type for the parameters of the IS part of the ISMCMCM algorithm"
-type ISParameters
-  N::Int64
-  R::Int64
-  method::String
-  est_method::String
-  lasso::Bool
-  pred_method::String
-  noisy_est::Bool
-end
-
-
 "Type for the results"
 type Result
   Theta_est::Array{Float64}
@@ -257,57 +245,6 @@ function set_up_gp_problem(use_sim_data::Bool=true;nbr_of_unknown_parameters::In
 
 end
 
-
-
-#=
-doc"""
-    set_up_problem(use_sim_data::Bool=true;nbr_of_unknown_parameters::Int64=2,
-  prior_dist::String = "Uniform", adaptiveon::Bool = true, ploton::Bool = false,
-  nbr_of_cores::Int64 = 8, pf_algorithm::String = "bootstrap", T::Int64 = 50,x0::Float64 = 7.,
-  print_interval::Int64 = 500, alg::String="PMCMC")
-
-set_up_problem sets the parameters for the problem defined by the inputs.
-
-# Output
-* `problem`: An instance of the type Problem cointaining all information for the problem
-"""
-function set_up_abcmcmc_problem(use_sim_data::Bool=true;nbr_of_unknown_parameters::Int64=2,
-  prior_dist::String = "Uniform", adaptiveon::Bool = true, ploton::Bool = false,
-  nbr_of_cores::Int64 = 8, T::Int64 = 50,x0::Float64 = 7.,
-  print_interval::Int64 = 500, alg::String="abcmcmc", nbr_summary_stats::Int64=5,
-  eps::Float64=0.1)
-
-  # set algorithm parameters
-  theta_true = log([44.7; 10; 0.3])
-  theta_0 =  log([3;3;10])
-  Theta_parameters = [0 10; 0 4;-10 1]
-  theta_known = NaN
-
-  # create instance of AlgorithmParametersABCMCMC (set parameters to default values)
-  alg_param = AlgorithmParametersABCMCMC(10000,2000,alg,print_interval,nbr_summary_stats,eps)
-
-  # create instance of ModelParameters, all theta paramters are on log-scale
-  model_param = ModelParameters(theta_true,theta_known,theta_0)
-
-  # set data
-  if use_sim_data
-    y = generate_data(T, exp(theta_true[1]),exp(theta_true[2]),exp(theta_true[3]),x0,ploton)
-  end
-
-  # create instance of Data
-  data = Data(y)
-
-  # create instance of PriorDistribution
-  prior = PriorDistribution(prior_dist, Theta_parameters)
-
-  # create instance of AdaptiveUpdate
-  adaptive_update = AMUpdate(eye(length(theta_0)), 2.4/sqrt(length(theta_0)), 1., 0.7, 50)
-
-  # return the an instance of Problem
-  return ProblemABCMCMC(data, alg_param, model_param, adaptive_update, prior)
-
-end
-=#
 
 doc"""
     generate_data(T::Int65=50,r::Float64,phi::Float64,sigma::Float64,x0::Float64,ploton::Bool)
