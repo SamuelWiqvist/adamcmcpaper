@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Description: This is a simple script to test Aurora
+# Script to run MCMC
 
 # Set up for run: 
  
@@ -17,8 +17,8 @@
 #SBATCH -J mcmc_ricker_model
 
 # controll job outputs 
-#SBATCH -o outputs_%j.out
-#SBATCH -e errors_%j.err
+#SBATCH -o lunarc_output/outputs_mcmc_ricker_model_%j.out
+#SBATCH -e lunarc_output/errors_mcmc_ricker_model_%j.err
 
 # set number of nodes 
 #SBATCH -N 1
@@ -30,20 +30,10 @@
 #SBATCH --mail-type=ALL  
 
 # load modules  
-#module load GCC/4.9.3 
-#module load impi/5.0.3.048
-#module load julia/0.4 
 
 ml load icc/2017.1.132-GCC-6.3.0-2.27
 ml load impi/2017.1.132
 ml load julia/0.5.2
-
-
-
-
-# # set nbr of threads
-# # export JULIA_NUM_THREADS=10
-# export  MKL_NUM_THREADS=20 
 
 # run program
 julia run_mcmc.jl 

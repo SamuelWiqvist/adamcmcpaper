@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Description: This is a simple script to test Aurora
+# Script to run alg. analyses for DA and ADA using bc selection method 
 
 # Set up for run: 
  
@@ -17,8 +17,8 @@
 #SBATCH -J ricker_alg_prop_bc
 
 # controll job outputs 
-#SBATCH -o outputs_%j.out
-#SBATCH -e errors_%j.err
+#SBATCH -o lunarc_output/outputs_ricker_alg_prop_bc_%j.out
+#SBATCH -e lunarc_output/errors_ricker_alg_prop_bc_%j.err
 
 # set number of nodes 
 #SBATCH -N 1

@@ -1,4 +1,4 @@
-Code used to run the algorithms on Lunarc.
+Code used to run the algorithms on Lunarc (http://www.lunarc.lu.se/).
 
 ## Software
 
