@@ -1,5 +1,8 @@
 # Script for running PMCMC/MCWM
 
+using PyPlot
+using ProfileView
+
 include("rickermodel.jl")
 
 # set up problem
@@ -8,9 +11,9 @@ problem = set_up_problem(ploton = false)
 problem.alg_param.N = 1000
 problem.alg_param.R = 50000
 problem.alg_param.burn_in = 2000
-problem.data.y = Array(readtable("y_data_set_2.csv"))[:,1]
+problem.data.y = Array(readtable("Ricker model/y_data_set_2.csv"))[:,1]
 
-
+# plot data
 text_size = 15
 
 PyPlot.figure(figsize=(20,15))
@@ -31,66 +34,21 @@ problem.alg_param.print_interval = 1000 #problem.alg_param.R
 #problem.model_param.theta_0 = problem.model_param.theta_true
 
 # MCWM
-jobname = "profileing"
+jobname = "test_run"
 problem.alg_param.alg = "MCWM"
 problem.adaptive_update = AMUpdate_gen(eye(3), 2.4/sqrt(3), 0.4, 1., 0.8, 25)
 
 # PMCMC
-jobname = "profileing"
+jobname = "test_run"
 problem.alg_param.alg = "PMCMC"
 problem.adaptive_update = AMUpdate_gen(eye(3), 2.4/sqrt(3), 0.2, 1., 0.8, 25)
 
-
-
-# use AM alg for adaptive updating
-#problem.adaptive_update = AMUpdate(eye(3), 2.4/sqrt(3), 1., 0.7, 25)
-
-#problem.adaptive_update = noAdaptation(2.4/sqrt(3)*eye(3))
-
-# or, use AM gen alg for adaptive updating
-#problem.adaptive_update = AMUpdate_gen(eye(3), 2.4/sqrt(3), 0.2, 1., 0.8, 25)
-
 # run adaptive PMCMC
-
-
-Profile.clear()
-Profile.clear_malloc_data()
-Profile.init(n = 10^7, delay = 0.01)
 
 tic()
 res_MCMC = mcmc(problem)
 time_MCMC = toc()
-@printf "Run time (s): %.4f \n" time_MCM
-
-
-# plot profiler results
-
-using PyPlot
-using ProfileView
-ProfileView.view()
-ProfileView.view(colorgc=false)
-
-# save results
-
-li, lidict = Profile.retrieve()
-@save  "mcwm_profiler_res.jlprof"  li lidict
-
-# load results
-
-try
-  cd("DWPSDE model")
-catch
-  warn("Already in the DWPSDE model folder")
-end
-
-using JLD
-using HDF5
-using ProfileView
-
-@load "da_profiler_res.jlprof"
-
-ProfileView.view(li, lidict=lidict)
-ProfileView.view(li, lidict=lidict, colorgc=false)
+@printf "Run time (s): %.4f \n" time_MCMC
 
 # write outputs
 res = res_MCMC[1]
@@ -112,6 +70,6 @@ algorithm_parameters[2:4,1] = problem.model_param.theta_true
 algorithm_parameters[5:7,1] = problem.model_param.theta_0
 algorithm_parameters[8:end,:] = problem.prior_dist.prior_parameters
 
-writetable("Results/Theta"*jobname*".csv", convert(DataFrame, Theta))
-writetable("Results/loglik_avec_priorvec"*jobname*".csv", convert(DataFrame, loglik_avec_priorvec))
-writetable("Results/algorithm_parameters"*jobname*".csv", convert(DataFrame, algorithm_parameters))
+writetable("Ricker model/Results/Theta"*jobname*".csv", convert(DataFrame, Theta))
+writetable("Ricker model/Results/loglik_avec_priorvec"*jobname*".csv", convert(DataFrame, loglik_avec_priorvec))
+writetable("Ricker model/Results/algorithm_parameters"*jobname*".csv", convert(DataFrame, algorithm_parameters))

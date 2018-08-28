@@ -49,16 +49,16 @@ The `lunarc` branch contains the code used to run the algorithms on AURORA@LUNAR
 
 ```julia
 julia> versioninfo()
-Julia Version 0.6.0
-Commit 903644385b* (2017-06-19 13:05 UTC)
+Julia Version 0.6.3
+Commit d55cadc350 (2018-05-28 20:20 UTC)
 Platform Info:
-OS: Windows (x86_64-w64-mingw32)
-CPU: Intel(R) Core(TM) i7-6700 CPU @ 3.40GHz
-WORD_SIZE: 64
-BLAS: libopenblas (USE64BITINT DYNAMIC_ARCH NO_AFFINITY Haswell)
-LAPACK: libopenblas64_
-LIBM: libopenlibm
-LLVM: libLLVM-3.9.1 (ORCJIT, skylake)
+  OS: Linux (x86_64-pc-linux-gnu)
+  CPU: Intel(R) Core(TM) i7-6600U CPU @ 2.60GHz
+  WORD_SIZE: 64
+  BLAS: libopenblas (USE64BITINT DYNAMIC_ARCH NO_AFFINITY Haswell)
+  LAPACK: libopenblas64_
+  LIBM: libopenlibm
+  LLVM: libLLVM-3.9.1 (ORCJIT, skylake)
 ```
 
 #### Packages

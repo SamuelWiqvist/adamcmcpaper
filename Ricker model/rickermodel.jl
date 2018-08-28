@@ -7,15 +7,14 @@ using DataFrames
 using StatsBase
 using Optim
 #using Lasso
-#using GLM
+using GLM
 using JLD
 using HDF5
 
-
 # load functions
-include(pwd()*"/Ricker model/gpmodel/gp_model.jl")
-include(pwd()*"/Ricker model/adaptive updating algorithms/adaptiveupdate.jl")
-include(pwd()*"/Ricker model/select case/selectcase.jl")
+include(pwd()*"/gpmodel/gp_model.jl")
+include(pwd()*"/adaptive updating algorithms/adaptiveupdate.jl")
+include(pwd()*"/select case/selectcase.jl")
 
 
 # types:
@@ -163,8 +162,8 @@ function set_up_problem(use_sim_data::Bool=true;nbr_of_unknown_parameters::Int64
   print_interval::Int64 = 500, alg::String="PMCMC")
 
   # set algorithm parameters
-  theta_true = log([44.7; 10; 0.3])
-  theta_0 =  log([3;3;10])
+  theta_true = log.([44.7; 10; 0.3])
+  theta_0 =  log.([3;3;10])
   Theta_parameters = [0 10; 0 4;-10 1]
   theta_known = NaN
 
@@ -214,8 +213,8 @@ function set_up_gp_problem(use_sim_data::Bool=true;nbr_of_unknown_parameters::In
   pred_method::String = "sample",T::Int64 = 50,  x0::Float64 = 7., print_interval::Int64 = 500, alg::String="PMCMC", beta_MH::Float64=0.1)
 
   # set algorithm parameters
-  theta_true = log([44.7; 10; 0.3])
-  theta_0 =  log([3;3;10])
+  theta_true = log.([44.7; 10; 0.3])
+  theta_0 =  log.([3;3;10])
   Theta_parameters = [0 10; 0 4;-10 1]
   theta_known = NaN
   # create instance of AlgorithmParametersgpPMCMC (set parameters to default values)

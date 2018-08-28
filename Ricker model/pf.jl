@@ -44,7 +44,7 @@ plotflag::Bool=false)
     if t == 1 # first iteration
 
       # propagate particels
-      x[:,1] = r*xint.*exp(-xint .+ e[:,1]);
+      x[:,1] = r*xint.*exp.(-xint .+ e[:,1]);
 
 
       # calc weigths and update loglik
@@ -57,7 +57,7 @@ plotflag::Bool=false)
       x_resample = x[ind,t-1]
 
       # propagate particels
-      x[:,t] = r*x_resample.*exp(-x_resample .+ e[:,t])
+      x[:,t] = r*x_resample.*exp.(-x_resample .+ e[:,t])
 
       # calc weigths and update loglik
       (w[:,t], loglik) = calc_weigths(y[t],x[:,t],phi,loglik,N)
@@ -81,9 +81,9 @@ doc"""
 Calculates the weigths in the particel filter and the estiamtes the loglikelihood value.
 """
 function calc_weigths(y::Float64,x::Array{Float64},phi::Float64,loglik::Float64,N::Int64)
-  logweigths = y*log(x.*phi)  .- x*phi # compute logweigths
+  logweigths = y*log.(x.*phi)  .- x*phi # compute logweigths
   constant = maximum(logweigths) # find largets wegith
-  weigths = exp(logweigths - constant) # subtract largets weigth and compute weigths
+  weigths = exp.(logweigths - constant) # subtract largets weigth and compute weigths
   loglik =  loglik + constant + log(sum(weigths)) - log(N) # update loglik
   return weigths/sum(weigths), loglik
 end

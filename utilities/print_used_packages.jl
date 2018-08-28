@@ -5,12 +5,12 @@ used_packages =  ["Distributions";
                   "DataFrames";
                   "StatsBase";
                   "Optim";
-                  "Lasso";
                   "StatsFuns";
                   "JLD";
                   "HDF5";
                   "PyPlot";
-                  "KernelDensity"]
+                  "KernelDensity"
+                  "GLM"]
 
 for pack in used_packages
   Pkg.status(pack)
