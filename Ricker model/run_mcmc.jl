@@ -9,7 +9,7 @@ include("rickermodel.jl")
 problem = set_up_problem(ploton = false)
 
 problem.alg_param.N = 1000
-problem.alg_param.R = 50000
+problem.alg_param.R = 5000
 problem.alg_param.burn_in = 2000
 problem.data.y = Array(readtable("Ricker model/y_data_set_2.csv"))[:,1]
 

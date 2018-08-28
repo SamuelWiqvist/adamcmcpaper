@@ -20,7 +20,7 @@ problem.adaptive_update = AMUpdate_gen(eye(3), 2.4/sqrt(3), 0.3, 1., 0.8, 25)
 
 # set algorithm parameters
 problem.alg_param.N = 1000 # nbr particels
-problem.alg_param.R = 50000 # nbr iterations
+problem.alg_param.R = 5000 # nbr iterations
 problem.alg_param.burn_in = 0 # burn in
 problem.alg_param.length_training_data = 2000
 problem.alg_param.alg = "MCWM" # we should only! use the MCWM algorithm
@@ -33,7 +33,7 @@ problem.alg_param.lasso = false
 
 #problem.data.y = Array(readtable("y.csv"))[:,1]
 #problem.data.y = Array(readtable("y_data_set_1.csv"))[:,1]
-problem.data.y = Array(readtable("y_data_set_2.csv"))[:,1]
+problem.data.y = Array(readtable("Ricker model/y_data_set_2.csv"))[:,1]
 
 ################################################################################
 ###      generate traning data                                               ###
@@ -52,7 +52,7 @@ burn_in = 2000
 problem_training.alg_param.N = 1000 # nbr particels
 problem_training.alg_param.R = length_training_data + length_test_data + burn_in # nbr iterations
 problem_training.alg_param.burn_in = burn_in # burn_in
-problem_training.data.y = Array(readtable("y_data_set_2.csv"))[:,1] #Array(readtable("y.csv"))[:,1]
+problem_training.data.y = Array(readtable("Ricker model/y_data_set_2.csv"))[:,1] #Array(readtable("y.csv"))[:,1]
 problem_training.alg_param.print_interval = 1000
 
 # test starting at true parameters
@@ -125,7 +125,7 @@ if !load_training_data
   data_training_star = [Theta_training_star; loglik_training_star']
   data_training_old = [Theta_training_old; loglik_training_old']
 
-  save("gp_training_and_test_data_ricker_gen_local.jld",
+  save("Ricker model/gp_training_and_test_data_ricker_gen_local.jld",
         "res_training", res_training,
         "data_training_star", data_training_star,
         "data_training_old", data_training_old,
@@ -135,7 +135,7 @@ if !load_training_data
 
 else
 
-  @load "gp_training_and_test_data_ricker_gen_local.jld"
+  @load "Ricker model/gp_training_and_test_data_ricker_gen_lunarc_new_code_structure.jld"
 
 end
 
@@ -206,13 +206,13 @@ algorithm_parameters[5:7,1] = problem.model_param.theta_0
 algorithm_parameters[8:end,:] = problem.prior_dist.prior_parameters
 
 if !accelerated_da
-  writetable("Results/Theta_dagpmcmc_local.csv", convert(DataFrame, Theta))
-  writetable("Results/loglik_avec_priorvec_dagpmcmc_local.csv", convert(DataFrame, loglik_avec_priorvec))
-  writetable("Results/algorithm_parameters_dagpmcmc_local.csv", convert(DataFrame, algorithm_parameters))
+  writetable("Ricker model/Results/Theta_dagpmcmc_local.csv", convert(DataFrame, Theta))
+  writetable("Ricker model/Results/loglik_avec_priorvec_dagpmcmc_local.csv", convert(DataFrame, loglik_avec_priorvec))
+  writetable("Ricker model/Results/algorithm_parameters_dagpmcmc_local.csv", convert(DataFrame, algorithm_parameters))
 else
-  writetable("Results/Theta_adagpmcmc_local.csv", convert(DataFrame, Theta))
-  writetable("Results/loglik_avec_priorvec_adagpmcmc_local.csv", convert(DataFrame, loglik_avec_priorvec))
-  writetable("Results/algorithm_parameters_adagpmcmc_local.csv", convert(DataFrame, algorithm_parameters))
+  writetable("Ricker model/Results/Theta_adagpmcmc_local.csv", convert(DataFrame, Theta))
+  writetable("Ricker model/Results/loglik_avec_priorvec_adagpmcmc_local.csv", convert(DataFrame, loglik_avec_priorvec))
+  writetable("Ricker model/Results/algorithm_parameters_adagpmcmc_local.csv", convert(DataFrame, algorithm_parameters))
 end
 
 
@@ -446,11 +446,11 @@ algorithm_parameters[5:7,1] = problem.model_param.theta_0
 algorithm_parameters[8:end,:] = problem.prior_dist.prior_parameters
 
 if !accelerated_da
-  writetable("Results/Theta_dagpmcmc_local.csv", convert(DataFrame, Theta))
-  writetable("Results/loglik_avec_priorvec_dagpmcmc_local.csv", convert(DataFrame, loglik_avec_priorvec))
-  writetable("Results/algorithm_parameters_dagpmcmc_local.csv", convert(DataFrame, algorithm_parameters))
+  writetable("Ricker model/Results/Theta_dagpmcmc_local.csv", convert(DataFrame, Theta))
+  writetable("Ricker model/Results/loglik_avec_priorvec_dagpmcmc_local.csv", convert(DataFrame, loglik_avec_priorvec))
+  writetable("Ricker model/Results/algorithm_parameters_dagpmcmc_local.csv", convert(DataFrame, algorithm_parameters))
 else
-  writetable("Results/Theta_adagpmcmc_local.csv", convert(DataFrame, Theta))
-  writetable("Results/loglik_avec_priorvec_adagpmcmc_local.csv", convert(DataFrame, loglik_avec_priorvec))
-  writetable("Results/algorithm_parameters_adagpmcmc_local.csv", convert(DataFrame, algorithm_parameters))
+  writetable("Ricker model/Results/Theta_adagpmcmc_local.csv", convert(DataFrame, Theta))
+  writetable("Ricker model/Results/loglik_avec_priorvec_adagpmcmc_local.csv", convert(DataFrame, loglik_avec_priorvec))
+  writetable("Ricker model/Results/algorithm_parameters_adagpmcmc_local.csv", convert(DataFrame, algorithm_parameters))
 end

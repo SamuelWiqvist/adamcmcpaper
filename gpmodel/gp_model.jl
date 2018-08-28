@@ -170,7 +170,7 @@ function prediction(x_pred::Array{Float64}, gp::GPModel, noisy_pred::Bool = true
   temp2 = copy(gp.diff)
 
   # set parameters
-  l_vec = -1/2*1./(exp(gp.logΦ[3:end]).^2)
+  l_vec = -1/2*1./(exp.(gp.logΦ[3:end]).^2)
 
 
   # calc variance vectro, i.e. calc K(x_pred, X)
@@ -385,7 +385,7 @@ function  objectivfunction(x::Array{Float64},X::Array{Float64},y::Vector{Float64
 
     R = chol(cov_m)
     # calc negloglik
-    negloglik =  2*sum(log(diag(R))) + (y-X*beta)'*cov_m_inv*(y-X*beta)
+    negloglik =  2*sum(log.(diag(R))) + (y-X*beta)'*cov_m_inv*(y-X*beta)
     negloglik = negloglik[1]
 
   else  # set negloglik to some value
