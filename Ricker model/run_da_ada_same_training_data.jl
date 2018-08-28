@@ -1,23 +1,7 @@
 # Script for running DA and ADA using the same traninig data
 
-# go to Ricker model folder
-try
-  cd("Ricker model")
-catch
- warn("Already in the Ricker model folder")
-end
-
-# load case models
-cd("..")
-include(pwd()*"\\select case\\selectcase.jl")
-cd("Ricker model")
-
 # load algorithms
 include("rickermodel.jl")
-
-# packages for storing data
-using JLD
-using HDF5
 
 ################################################################################
 ###      set up problem                                                      ###

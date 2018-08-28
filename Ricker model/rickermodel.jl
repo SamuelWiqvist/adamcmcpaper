@@ -6,17 +6,16 @@ using Distributions
 using DataFrames
 using StatsBase
 using Optim
-using Lasso
-using GLM
+#using Lasso
+#using GLM
 using JLD
 using HDF5
 
 
 # load functions
-cd("..")
-include(pwd()*"\\gpmodel\\gp_model.jl")
-include(pwd()*"\\adaptive updating algorithms\\adaptiveupdate.jl")
-cd("Ricker model") # cd to correct folder
+include(pwd()*"/Ricker model/gpmodel/gp_model.jl")
+include(pwd()*"/Ricker model/adaptive updating algorithms/adaptiveupdate.jl")
+include(pwd()*"/Ricker model/select case/selectcase.jl")
 
 
 # types:

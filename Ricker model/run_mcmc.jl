@@ -1,18 +1,5 @@
 # Script for running PMCMC/MCWM
 
-# go to Ricker model folder
-try
-  cd("Ricker model")
-catch
-  warn("Already in the Ricker model folder")
-end
-
-
-# load case models
-cd("..")
-include(pwd()*"\\select case\\selectcase.jl")
-cd("Ricker model")
-
 include("rickermodel.jl")
 
 # set up problem
@@ -104,9 +91,6 @@ using ProfileView
 
 ProfileView.view(li, lidict=lidict)
 ProfileView.view(li, lidict=lidict, colorgc=false)
-
-
-
 
 # write outputs
 res = res_MCMC[1]
