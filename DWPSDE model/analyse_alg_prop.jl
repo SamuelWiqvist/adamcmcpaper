@@ -639,6 +639,18 @@ println("Runtime:")
 print_stats(alg_prop_da[:,1])
 print_stats(alg_prop_ada[:,1])
 
+
+# box plot
+run_times = zeros(size(alg_prop_da,1), 2)
+run_times[:,1] = alg_prop_da[:,1]
+run_times[:,2] = alg_prop_ada[:,1]
+
+PyPlot.figure(figsize=(10,10))
+ax = axes()
+PyPlot.boxplot(run_times)
+ax[:tick_params]("both",labelsize = label_size)
+
+# histogram
 PyPlot.figure(figsize=(10,10))
 ax = axes()
 PyPlot.plt[:hist](alg_prop_da[:,1],10, alpha = 0.6)
@@ -659,6 +671,17 @@ println("Nbr pf eval:")
 print_stats(alg_prop_da[:,2])
 print_stats(alg_prop_ada[:,2])
 
+# box plot
+pf_eval = zeros(size(alg_prop_da,1), 2)
+pf_eval[:,1] = alg_prop_da[:,2]
+pf_eval[:,2] = alg_prop_ada[:,2]
+
+PyPlot.figure(figsize=(10,10))
+ax = axes()
+PyPlot.boxplot(pf_eval)
+ax[:tick_params]("both",labelsize = label_size)
+
+# histogram
 PyPlot.figure(figsize=(10,10))
 ax = axes()
 PyPlot.plt[:hist](alg_prop_da[:,2],10, alpha = 0.6)

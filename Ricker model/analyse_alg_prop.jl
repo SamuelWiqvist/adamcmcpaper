@@ -3,10 +3,6 @@
 # load algorithms
 include("rickermodel.jl")
 
-# packages for storing data
-using JLD
-using HDF5
-
 ################################################################################
 ###      set up problem                                                      ###
 ################################################################################
@@ -23,8 +19,8 @@ problem = set_up_gp_problem(ploton = false)
 problem.adaptive_update = AMUpdate_gen(eye(3), 2.4/sqrt(3), 0.3, 1., 0.8, 25)
 
 # set algorithm parameters
-problem.alg_param.N = 1000 # nbr particels
-problem.alg_param.R = 10000 # nbr iterations
+problem.alg_param.N = 1000 #1000 # nbr particels
+problem.alg_param.R = 2000 #10000 # nbr iterations
 problem.alg_param.burn_in = 0 # burn in
 problem.alg_param.length_training_data = 2000
 problem.alg_param.alg = "MCWM" # we should only! use the MCWM algorithm
@@ -37,7 +33,7 @@ problem.alg_param.lasso = false
 
 #problem.data.y = Array(readtable("y.csv"))[:,1]
 #problem.data.y = Array(readtable("y_data_set_1.csv"))[:,1]
-problem.data.y = Array(readtable("y_data_set_2.csv"))[:,1]
+problem.data.y = Array(readtable("Ricker model/y_data_set_2.csv"))[:,1]
 
 ################################################################################
 ###      generate traning data                                               ###
@@ -56,7 +52,7 @@ burn_in = 2000
 problem_training.alg_param.N = 1000 # nbr particels
 problem_training.alg_param.R = length_training_data + length_test_data + burn_in # nbr iterations
 problem_training.alg_param.burn_in = burn_in # burn_in
-problem_training.data.y = Array(readtable("y_data_set_2.csv"))[:,1] #Array(readtable("y.csv"))[:,1]
+problem_training.data.y = Array(readtable("Ricker model/y_data_set_2.csv"))[:,1] #Array(readtable("y.csv"))[:,1]
 problem_training.alg_param.print_interval = 1000
 
 # test starting at true parameters
@@ -139,7 +135,7 @@ if !load_training_data
 
 else
 
-  @load "gp_training_and_test_data_ricker_gen_lunarc_new_code_structure.jld"
+  @load "Ricker model/gp_training_and_test_data_ricker_gen_lunarc_new_code_structure.jld"
 
 end
 
@@ -222,13 +218,13 @@ algorithm_parameters[5:7,1] = problem.model_param.theta_0
 algorithm_parameters[8:end,:] = problem.prior_dist.prior_parameters
 
 if !accelerated_da
-  writetable("Results/Theta_dagpmcmc_local.csv", convert(DataFrame, Theta))
-  writetable("Results/loglik_avec_priorvec_dagpmcmc_local.csv", convert(DataFrame, loglik_avec_priorvec))
-  writetable("Results/algorithm_parameters_dagpmcmc_local.csv", convert(DataFrame, algorithm_parameters))
+  writetable("Ricker model/Results/Theta_dagpmcmc_local.csv", convert(DataFrame, Theta))
+  writetable("Ricker model/Results/loglik_avec_priorvec_dagpmcmc_local.csv", convert(DataFrame, loglik_avec_priorvec))
+  writetable("Ricker model/Results/algorithm_parameters_dagpmcmc_local.csv", convert(DataFrame, algorithm_parameters))
 else
-  writetable("Results/Theta_adagpmcmc_local.csv", convert(DataFrame, Theta))
-  writetable("Results/loglik_avec_priorvec_adagpmcmc_local.csv", convert(DataFrame, loglik_avec_priorvec))
-  writetable("Results/algorithm_parameters_adagpmcmc_local.csv", convert(DataFrame, algorithm_parameters))
+  writetable("Ricker model/Results/Theta_adagpmcmc_local.csv", convert(DataFrame, Theta))
+  writetable("Ricker model/Results/loglik_avec_priorvec_adagpmcmc_local.csv", convert(DataFrame, loglik_avec_priorvec))
+  writetable("Ricker model/Results/algorithm_parameters_adagpmcmc_local.csv", convert(DataFrame, algorithm_parameters))
 end
 
 
@@ -313,7 +309,7 @@ targets_case_2_and_4 = convert(Array{Float64,1}, targets_case_2_and_4)
 ##   set case model                                                          ###
 ################################################################################
 
-select_case_model = "dt" # logisticregression or dt
+select_case_model = "biasedcoin" #  biasedcoin logisticregression or dt
 
 nbr_GP_star_led_GP_old = n-nbr_GP_star_geq_GP_old
 
@@ -471,23 +467,23 @@ algorithm_parameters[5:7,1] = problem.model_param.theta_0
 algorithm_parameters[8:end,:] = problem.prior_dist.prior_parameters
 
 if !accelerated_da
-  writetable("Results/Theta_dagpmcmc_local.csv", convert(DataFrame, Theta))
-  writetable("Results/loglik_avec_priorvec_dagpmcmc_local.csv", convert(DataFrame, loglik_avec_priorvec))
-  writetable("Results/algorithm_parameters_dagpmcmc_local.csv", convert(DataFrame, algorithm_parameters))
+  writetable("Ricker model/Results/Theta_dagpmcmc_local.csv", convert(DataFrame, Theta))
+  writetable("Ricker model/Results/loglik_avec_priorvec_dagpmcmc_local.csv", convert(DataFrame, loglik_avec_priorvec))
+  writetable("Ricker model/Results/algorithm_parameters_dagpmcmc_local.csv", convert(DataFrame, algorithm_parameters))
 else
-  writetable("Results/Theta_adagpmcmc_local.csv", convert(DataFrame, Theta))
-  writetable("Results/loglik_avec_priorvec_adagpmcmc_local.csv", convert(DataFrame, loglik_avec_priorvec))
-  writetable("Results/algorithm_parameters_adagpmcmc_local.csv", convert(DataFrame, algorithm_parameters))
+  writetable("Ricker model/Results/Theta_adagpmcmc_local.csv", convert(DataFrame, Theta))
+  writetable("Ricker model/Results/loglik_avec_priorvec_adagpmcmc_local.csv", convert(DataFrame, loglik_avec_priorvec))
+  writetable("Ricker model/Results/algorithm_parameters_adagpmcmc_local.csv", convert(DataFrame, algorithm_parameters))
 end
 
 # save results
-writetable("alg_prop_da_dt.csv", convert(DataFrame, alg_prop_da))
-writetable("alg_prop_ada_dt.csv", convert(DataFrame, alg_prop_ada))
+writetable("Ricker model/Results/alg_prop_da_dt.csv", convert(DataFrame, alg_prop_da))
+writetable("Ricker model/Results/alg_prop_ada_dt.csv", convert(DataFrame, alg_prop_ada))
 
 # load results
 
-alg_prop_da = Matrix(readtable("Results/alg_prop_da_dt.csv"))
-alg_prop_ada = Matrix(readtable("Results/alg_prop_ada_dt.csv"))
+alg_prop_da = Matrix(readtable("Ricker model/Results/alg_prop_da_dt.csv"))
+alg_prop_ada = Matrix(readtable("Ricker model/Results/alg_prop_ada_dt.csv"))
 
 
 # analysis
@@ -510,6 +506,17 @@ println("Runtime:")
 print_stats(alg_prop_da[:,1])
 print_stats(alg_prop_ada[:,1])
 
+# box plot
+run_times = zeros(size(alg_prop_da,1), 2)
+run_times[:,1] = alg_prop_da[:,1]
+run_times[:,2] = alg_prop_ada[:,1]
+
+PyPlot.figure(figsize=(10,10))
+ax = axes()
+PyPlot.boxplot(run_times)
+ax[:tick_params]("both",labelsize = label_size)
+
+# histogram
 PyPlot.figure(figsize=(10,10))
 ax = axes()
 PyPlot.plt[:hist](alg_prop_da[:,1],10, alpha = 0.6)
@@ -530,6 +537,17 @@ println("Nbr pf eval:")
 print_stats(alg_prop_da[:,2])
 print_stats(alg_prop_ada[:,2])
 
+# box plot
+pf_eval = zeros(size(alg_prop_da,1), 2)
+pf_eval[:,1] = alg_prop_da[:,2]
+pf_eval[:,2] = alg_prop_ada[:,2]
+
+PyPlot.figure(figsize=(10,10))
+ax = axes()
+PyPlot.boxplot(pf_eval)
+ax[:tick_params]("both",labelsize = label_size)
+
+# histogram
 PyPlot.figure(figsize=(10,10))
 ax = axes()
 PyPlot.plt[:hist](alg_prop_da[:,2],10, alpha = 0.6)
@@ -653,96 +671,3 @@ PyPlot.figure()
 PyPlot.plt[:hist](percentage_pf_eval[:,3],5, alpha = 0.6)
 PyPlot.figure()
 PyPlot.plt[:hist](percentage_pf_eval[:,4],5, alpha = 0.6)
-
-# run analysis
-#=
-# profiling
-using ProfileView
-Profile.clear()
-res, res_traning, theta_training, loglik_training, assumption_list, loglik_list = @profile dagpMCMC(problem_training, problem, gp, cov_matrix,accelerated_da)
-ProfileView.view()
-
-
-
-# analyse results
-loglik_list_m = zeros(size(loglik_list,1),5)
-
-for i = 1:size(loglik_list_m,1)
-  loglik_list_m[i,:] = loglik_list[i][:]
-end
-
-idx_same = find(x->x==true, assumption_list)
-idx_diff = find(x->x==false, assumption_list)
-
-length(find(x->x==true, assumption_list))/length(assumption_list)
-
-loglik_list_m_same = loglik_list_m[idx_same,:]
-loglik_list_m_diff = loglik_list_m[idx_diff,:]
-
-std(loglik_list_m_same,1)
-std(loglik_list_m_diff,1)
-
-colwise(summarystats, convert(DataFrame, loglik_list_m_same))
-colwise(summarystats, convert(DataFrame, loglik_list_m_diff))
-
-for i = 1:size(loglik_list_m_same,2)
-  PyPlot.figure()
-  h = PyPlot.plt[:hist](loglik_list_m_same[:,i],50)
-  PyPlot.figure()
-  h = PyPlot.plt[:hist](loglik_list_m_diff[:,i],50)
-end
-
-
-for i = 1:size(loglik_list_m_same,2)
-  PyPlot.figure()
-  PyPlot.plot(loglik_list_m_same[:,i], "*")
-  PyPlot.figure()
-  PyPlot.plot(loglik_list_m_diff[:,i],"*")
-end
-
-
-PyPlot.figure()
-PyPlot.hold(true)
-PyPlot.plot(loglik_list_m_same[:,1],loglik_list_m_same[:,end] , "g*")
-PyPlot.plot(loglik_list_m_diff[:,1],loglik_list_m_diff[:,end],"r*")
-
-PyPlot.figure()
-PyPlot.hold(true)
-PyPlot.plot(loglik_list_m_same[:,3], "g*")
-PyPlot.plot(loglik_list_m_diff[:,3],"r*")
-
-
-
-
-dist_ll_gp_new_ll_gp_old = loglik_list_m[:,3]-loglik_list_m[:,4]
-dist_ll_pf_new_ll_pf_old = loglik_list_m[:,1]-loglik_list_m[:,2]
-
-summarystats(dist_ll_gp_new_ll_gp_old[idx_same])
-summarystats(dist_ll_gp_new_ll_gp_old[idx_diff])
-
-PyPlot.figure()
-PyPlot.plot(dist_ll_gp_new_ll_gp_old[idx_same], "*")
-PyPlot.figure()
-PyPlot.plot(dist_ll_gp_new_ll_gp_old[idx_diff],"*")
-
-PyPlot.figure()
-h = PyPlot.plt[:hist](dist_ll_gp_new_ll_gp_old[idx_same],50)
-PyPlot.figure()
-h = PyPlot.plt[:hist](dist_ll_gp_new_ll_gp_old[idx_diff],50)
-
-dist_ll_pf_new_ll_pf_old = loglik_list_m[:,3]-loglik_list_m[:,4]
-
-summarystats(dist_ll_pf_new_ll_pf_old[idx_same])
-summarystats(dist_ll_pf_new_ll_pf_old[idx_diff])
-
-PyPlot.figure()
-PyPlot.plot(dist_ll_pf_new_ll_pf_old[idx_same], "*")
-PyPlot.figure()
-PyPlot.plot(dist_ll_pf_new_ll_pf_old[idx_diff],"*")
-
-PyPlot.figure()
-h = PyPlot.plt[:hist](dist_ll_pf_new_ll_pf_old[idx_same],50)
-PyPlot.figure()
-h = PyPlot.plt[:hist](dist_ll_pf_new_ll_pf_old[idx_diff],50)
-
-=#
