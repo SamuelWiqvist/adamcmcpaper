@@ -1,21 +1,7 @@
 # running the MCMC algorithm using the adaptive AM algorithm for the adaptation
 
-# set correct path
-try
-  cd("DWPSDE model")
-catch
-  warn("Already in the DWP-SDE folder.")
-end
-
-# load case models
-cd("..")
-include(pwd()*"\\select case\\selectcase.jl")
-cd("DWPSDE model")
-
 # load files and functions
-include("set_up.jl")
-
-# set parameters for all jobs
+include(pwd()*"/DWPSDE model/set_up.jl")
 
 # nbr iterations
 nbr_iterations = 30000 # was 30000
@@ -24,7 +10,7 @@ nbr_iterations = 30000 # was 30000
 burn_in = 10000 # was 10000
 
 # nbr cores
-nbr_of_cores = 10
+nbr_of_cores = 1 # was 10
 
 # nbr parameters
 set_nbr_params = 7

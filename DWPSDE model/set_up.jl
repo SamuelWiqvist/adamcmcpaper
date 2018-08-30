@@ -4,7 +4,6 @@ using DataFrames
 using StatsBase
 import StatsBase.predict # this is needed to extend the predict function
 using Optim
-using Lasso
 using StatsFuns
 
 # paths for desktop
@@ -12,10 +11,9 @@ using StatsFuns
 # load functions
 
 # load functions
-cd("..")
-include(pwd()*"\\gpmodel\\gp_model.jl")
-include(pwd()*"\\adaptive updating algorithms\\adaptiveupdate.jl")
-cd("DWPSDE model") # cd to correct folder
+include(pwd()*"/gpmodel/gp_model.jl")
+include(pwd()*"/adaptive updating algorithms/adaptiveupdate.jl")
+include(pwd()*"/select case/selectcase.jl")
 
 
 "Type for prior distribution"
@@ -146,9 +144,9 @@ type gpResult
 end
 
 
-include("mcmc.jl")
-include("io_functions.jl")
-include("generate_data.jl")
+include(pwd()*"/DWPSDE model/mcmc.jl")
+include(pwd()*"/DWPSDE model/io_functions.jl")
+include(pwd()*"/DWPSDE model/generate_data.jl")
 
 
 doc"""
@@ -185,11 +183,11 @@ function set_up_problem(;use_sim_data::Bool=true,nbr_of_unknown_parameters::Int6
     if data_set == "old"
       # load simulated data from "data.csv"
       #Z_df = readtable("data.csv")
-      Z_df = readtable("data_old_new_dt.csv")
+      Z_df = readtable("DWPSDE model/data_old_new_dt.csv")
       Z = convert(Array, Z_df)
     else
       # load simulated data from "data.csv"
-      Z_df = readtable("data_new_new.csv")
+      Z_df = readtable("DWPSDE model/data_new_new.csv")
       Z = convert(Array, Z_df)
     end
   else
@@ -197,7 +195,7 @@ function set_up_problem(;use_sim_data::Bool=true,nbr_of_unknown_parameters::Int6
       Z = load_data()
     else
       # load data
-      file = open("new_data_set.txt")
+      file = open("DWPSDE model/new_data_set.txt")
       data = readlines(file)
       close(file)
 
