@@ -1,23 +1,11 @@
 # Script for evaluating the GP model
 
-# go to Ricker model folder
-try
-  cd("Ricker model")
-catch
-  warn("Already in the Ricker model folder")
-end
+using PyPlot
 
-
-using JLD
-using HDF5
-
-
-cd("..")
-include(pwd()*"\\utilities\\featurescaling.jl")
-include(pwd()*"\\utilities\\normplot.jl")
-include(pwd()*"\\utilities\\posteriorinference.jl")
-include(pwd()*"\\select case\\selectcase.jl")
-cd("Ricker model")
+include(pwd()*"/utilities/featurescaling.jl")
+include(pwd()*"/utilities/normplot.jl")
+include(pwd()*"/utilities/posteriorinference.jl")
+include(pwd()*"/select case/selectcase.jl")
 
 include("rickermodel.jl")
 
@@ -52,7 +40,7 @@ problem.alg_param.beta_MH = 0.15 # "local_loglik_approx" # "max_loglik"
 
 #problem.data.y = Array(readtable("y.csv"))[:,1]
 #problem.data.y = Array(readtable("y_data_set_1.csv"))[:,1]
-problem.data.y = Array(readtable("y_data_set_2.csv"))[:,1]
+problem.data.y = Array(readtable("Ricker model/y_data_set_2.csv"))[:,1]
 
 ################################################################################
 ##                         training data                                      ##
@@ -67,7 +55,7 @@ burn_in = 2000
 problem_training.alg_param.N = 1000 # nbr particels
 problem_training.alg_param.R = length_training_data + length_test_data + burn_in # nbr iterations
 problem_training.alg_param.burn_in = burn_in # burn_in
-problem_training.data.y = Array(readtable("y_data_set_2.csv"))[:,1] #Array(readtable("y.csv"))[:,1]
+problem_training.data.y = Array(readtable("Ricker model/y_data_set_2.csv"))[:,1] #Array(readtable("y.csv"))[:,1]
 problem_training.alg_param.print_interval = 1000
 
 # test starting at true parameters
@@ -157,7 +145,7 @@ else
   #@load "gp_training_$(set_nbr_params)_par.jld"
   #@load "gp_training_$(set_nbr_params)_par.jld"
 
-  @load "gp_training_and_test_data_ricker_gen_lunarc_new_code_structure.jld"
+  @load "Ricker model/gp_training_and_test_data_ricker_gen_lunarc_new_code_structure.jld"
 
 end
 
@@ -167,10 +155,6 @@ end
 ################################################################################
 
 #export_data(problem_training, res_training[1],"dagpMCMC_training_data"*jobname)
-
-
-using PyPlot
-
 
 # plot chains for tranining
 text_size = 15
@@ -196,7 +180,6 @@ PyPlot.ylabel(L"$\log \sigma$",fontsize=text_size)
 PyPlot.xlabel("Iteration",fontsize=text_size)
 
 # plot chains after burn-in for tranining
-text_size = 15
 
 PyPlot.figure(figsize=(10,20))
 
