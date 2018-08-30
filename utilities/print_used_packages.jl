@@ -8,7 +8,8 @@ used_packages =  ["Distributions";
                   "Lasso";
                   "StatsFuns";
                   "JLD";
-                  "HDF5"]
+                  "HDF5";
+				   "Yeppp"]
 
 for pack in used_packages
   Pkg.status(pack)

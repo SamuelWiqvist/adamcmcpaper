@@ -3,7 +3,7 @@
 # Set up for run: 
  
 # need this since I use a LU project 
-#SBATCH -A lu2017-2-14
+#SBATCH -A lu2018-2-22
 
 # need this since I use a LU project
 #SBATCH -p lu

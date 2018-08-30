@@ -22,18 +22,18 @@ problem.alg_param.print_interval = 10000 #problem.alg_param.R
 # test starting at true parameters
 #problem.model_param.theta_0 = problem.model_param.theta_true
 
-# MCWM
-jobname = "mcwm"
-problem.alg_param.alg = "MCWM"
-problem.adaptive_update = AMUpdate_gen(eye(3), 2.4/sqrt(3), 0.4, 1., 0.8, 25)
+#MCWM
+#jobname = "mcwm"
+#problem.alg_param.alg = "MCWM"
+#problem.adaptive_update = AMUpdate_gen(eye(3), 2.4/sqrt(3), 0.4, 1., 0.8, 25)
 
 # old setting of mcwm 
 #problem.adaptive_update = AMUpdate_gen(eye(3), 2.4/sqrt(3), 0.4, 1., 0.8, 25)
 
 # PMCMC
-#jobname = "pmcmc"
-#problem.alg_param.alg = "PMCMC"
-#problem.adaptive_update = AMUpdate_gen(eye(3), 2.4/sqrt(3), 0.4, 1., 0.8, 25)
+jobname = "pmcmc"
+problem.alg_param.alg = "PMCMC"
+problem.adaptive_update = AMUpdate_gen(eye(3), 2.4/sqrt(3), 0.4, 1., 0.8, 25)
 
 
 
