@@ -5,12 +5,8 @@ using PyPlot
 using KernelDensity
 using Distributions
 
-# load functions to compute posterior inference
-if Sys.CPU_CORES == 8
-  include("C:\\Users\\samuel\\Dropbox\\Phd Education\\Projects\\project 1 accelerated DA and DWP SDE\\code\\utilities\\posteriorinference.jl")
-else
-  include("C:\\Users\\samue\\OneDrive\\Documents\\GitHub\\adamcmcpaper\\utilities\\posteriorinference.jl")
-end
+
+include(pwd()*"/utilities/posteriorinference.jl")
 
 
 # plotting function
@@ -134,9 +130,9 @@ x_c2_kerneldens = x_c2
 x_c3_kerneldens = x_c3
 
 # calc prior dist
-priordens_c1 = pdf(Uniform(Theta_parameters[1,1], Theta_parameters[1,2]), x_c1)
-priordens_c2 = pdf(Uniform(Theta_parameters[2,1], Theta_parameters[2,2]), x_c2)
-priordens_c3 = pdf(Uniform(Theta_parameters[3,1], Theta_parameters[3,2]), x_c3)
+priordens_c1 = pdf.(Uniform(Theta_parameters[1,1], Theta_parameters[1,2]), x_c1)
+priordens_c2 = pdf.(Uniform(Theta_parameters[2,1], Theta_parameters[2,2]), x_c2)
+priordens_c3 = pdf.(Uniform(Theta_parameters[3,1], Theta_parameters[3,2]), x_c3)
 
 
 h1 = kde(Theta[1,burn_in:end])

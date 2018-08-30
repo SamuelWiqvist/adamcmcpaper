@@ -2,23 +2,18 @@
 
 # load packages
 using DataFrames
+using PyPlot
 
+# fix for removing missing values
+remove_missing_values(x) = reshape(collect(skipmissing(x)),3,:)
 
 ################################################################################
 ###   Plot data                                                              ###
 ################################################################################
 
-using PyPlot
-
-# go to Ricker model folder
-try
-  cd("Ricker model")
-catch
-  warn("Already in the Ricker model folder")
-end
 
 # load data
-y = Array(readtable("y_data_set_2.csv"))[:,1]
+y = Array(readtable("Ricker model/y_data_set_2.csv"))[:,1]
 
 text_size = 25
 label_size = 20
@@ -35,21 +30,8 @@ ax[:tick_params]("both",labelsize=label_size)
 ###   Plot resutls                                                              ###
 ################################################################################
 
-try
-  cd("Ricker model")
-catch
-  warn("Already in the Ricker model folder")
-end
-
-try
-  cd("Results")
-catch
-  warn("Already in the Results folder")
-end
-
-
 # load plotting function
-include("plotting.jl")
+include(pwd()*"/Ricker model/Results/plotting.jl")
 
 
 ################################################################################
@@ -75,10 +57,10 @@ jobname = "mcwm"
 jobname = "pmcmc"
 
 
-savepath = "" # we are currently in the Results folder
+savepath = "Ricker model/Results/" # we are currently in the Results folder
 
 # load data
-Theta = Array(readtable(savepath*"Theta"*jobname*".csv"))
+Theta = remove_missing_values(Array(readtable(savepath*"Theta"*jobname*".csv")))
 loklik_avec_priorv = Array(readtable(savepath*"loglik_avec_priorvec"*jobname*".csv"))
 algorithm_parameters = Array(readtable(savepath*"algorithm_parameters"*jobname*".csv"))
 
@@ -102,9 +84,9 @@ jobname_mcwm = "mcwm"
 jobname_da = "_dagpmcmc_lunarc"
 jobname_ada = "_adagpmcmc_lunarc"
 
-savepath = ""
+savepath = "Ricker model/Results/"
 
-Theta_mcwm = Array(readtable(savepath*"Theta"*jobname_mcwm*".csv"))
+Theta_mcwm = remove_missing_values(Array(readtable(savepath*"Theta"*jobname_mcwm*".csv")))
 loklik_avec_priorv_mcwm = Array(readtable(savepath*"loglik_avec_priorvec"*jobname_mcwm*".csv"))
 algorithm_parameters_mcwm = Array(readtable(savepath*"algorithm_parameters"*jobname_mcwm*".csv"))
 
@@ -118,7 +100,7 @@ theta_0_mcwm = algorithm_parameters_mcwm[5:7,1]
 prior_parameters = algorithm_parameters_mcwm[8:end,:]
 
 
-Theta_da = Array(readtable(savepath*"Theta"*jobname_da*".csv"))
+Theta_da = remove_missing_values(Array(readtable(savepath*"Theta"*jobname_da*".csv")))
 loklik_avec_priorv_da = Array(readtable(savepath*"loglik_avec_priorvec"*jobname_da*".csv"))
 algorithm_parameters_da = Array(readtable(savepath*"algorithm_parameters"*jobname_ada*".csv"))
 
@@ -131,7 +113,7 @@ theta_true_da = algorithm_parameters_da[2:4,1]
 theta_0_da = algorithm_parameters_da[5:7,1]
 
 
-Theta_ada = Array(readtable(savepath*"Theta"*jobname_ada*".csv"))
+Theta_ada = remove_missing_values(Array(readtable(savepath*"Theta"*jobname_ada*".csv")))
 loklik_avec_priorv_ada = Array(readtable(savepath*"loglik_avec_priorvec"*jobname_ada*".csv"))
 algorithm_parameters_ada = Array(readtable(savepath*"algorithm_parameters"*jobname_ada*".csv"))
 
@@ -149,9 +131,9 @@ x_c2 = prior_parameters[2,1]-0.5:0.01:prior_parameters[2,2]+0.5
 x_c3 = prior_parameters[3,1]-0.5:0.01:prior_parameters[3,2]+0.5
 
 
-priordens_c1 = pdf(Uniform(prior_parameters[1,1], prior_parameters[1,2]), x_c1)
-priordens_c2 = pdf(Uniform(prior_parameters[2,1], prior_parameters[2,2]), x_c2)
-priordens_c3 = pdf(Uniform(prior_parameters[3,1], prior_parameters[3,2]), x_c3)
+priordens_c1 = pdf.(Uniform(prior_parameters[1,1], prior_parameters[1,2]), x_c1)
+priordens_c2 = pdf.(Uniform(prior_parameters[2,1], prior_parameters[2,2]), x_c2)
+priordens_c3 = pdf.(Uniform(prior_parameters[3,1], prior_parameters[3,2]), x_c3)
 
 h1_mcwm = kde(Theta_mcwm[1,burn_in_mcwm:end])
 h2_mcwm = kde(Theta_mcwm[2,burn_in_mcwm:end])
@@ -207,10 +189,10 @@ jobname_mcwm = "mcwm"
 jobname_da = "_dagpmcmc_lunarc"
 jobname_ada = "_adagpmcmc_lunarc"
 
-savepath = ""
+savepath = "Ricker model/Results/"
 
 
-Theta_pmcmc = Array(readtable(savepath*"Theta"*jobname_pmcmc*".csv"))
+Theta_pmcmc = remove_missing_values(Array(readtable(savepath*"Theta"*jobname_pmcmc*".csv")))
 loklik_avec_priorv_pmcmc = Array(readtable(savepath*"loglik_avec_priorvec"*jobname_pmcmc*".csv"))
 algorithm_parameters_pmcmc = Array(readtable(savepath*"algorithm_parameters"*jobname_pmcmc*".csv"))
 
@@ -225,7 +207,7 @@ prior_parameters_pmcmc = algorithm_parameters_pmcmc[8:end,:]
 
 
 
-Theta_mcwm = Array(readtable(savepath*"Theta"*jobname_mcwm*".csv"))
+Theta_mcwm = remove_missing_values(Array(readtable(savepath*"Theta"*jobname_mcwm*".csv")))
 loklik_avec_priorv_mcwm = Array(readtable(savepath*"loglik_avec_priorvec"*jobname_mcwm*".csv"))
 algorithm_parameters_mcwm = Array(readtable(savepath*"algorithm_parameters"*jobname_mcwm*".csv"))
 
@@ -240,7 +222,7 @@ prior_parameters = algorithm_parameters_mcwm[8:end,:]
 
 
 
-Theta_da = Array(readtable(savepath*"Theta"*jobname_da*".csv"))
+Theta_da = remove_missing_values(Array(readtable(savepath*"Theta"*jobname_da*".csv")))
 loklik_avec_priorv_da = Array(readtable(savepath*"loglik_avec_priorvec"*jobname_da*".csv"))
 algorithm_parameters_da = Array(readtable(savepath*"algorithm_parameters"*jobname_ada*".csv"))
 
@@ -253,7 +235,7 @@ theta_true_da = algorithm_parameters_da[2:4,1]
 theta_0_da = algorithm_parameters_da[5:7,1]
 
 
-Theta_ada = Array(readtable(savepath*"Theta"*jobname_ada*".csv"))
+Theta_ada = remove_missing_values(Array(readtable(savepath*"Theta"*jobname_ada*".csv")))
 loklik_avec_priorv_ada = Array(readtable(savepath*"loglik_avec_priorvec"*jobname_ada*".csv"))
 algorithm_parameters_ada = Array(readtable(savepath*"algorithm_parameters"*jobname_ada*".csv"))
 
@@ -290,9 +272,9 @@ x_c2 = prior_parameters[2,1]-0.5:0.01:prior_parameters[2,2]+0.5
 x_c3 = prior_parameters[3,1]-0.5:0.01:prior_parameters[3,2]+0.5
 
 
-priordens_c1 = pdf(Uniform(prior_parameters[1,1], prior_parameters[1,2]), x_c1)
-priordens_c2 = pdf(Uniform(prior_parameters[2,1], prior_parameters[2,2]), x_c2)
-priordens_c3 = pdf(Uniform(prior_parameters[3,1], prior_parameters[3,2]), x_c3)
+priordens_c1 = pdf.(Uniform(prior_parameters[1,1], prior_parameters[1,2]), x_c1)
+priordens_c2 = pdf.(Uniform(prior_parameters[2,1], prior_parameters[2,2]), x_c2)
+priordens_c3 = pdf.(Uniform(prior_parameters[3,1], prior_parameters[3,2]), x_c3)
 
 text_size = 25
 label_size = 20
