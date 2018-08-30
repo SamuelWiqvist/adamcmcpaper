@@ -13,13 +13,13 @@ using HDF5
 # set parameters for all jobs
 
 # burn-in
-burn_in = 10000
+burn_in = 1 # 10000
 
 # length training data 
-length_training_data = 5000
+length_training_data = 5 # 5000
 
 # length test data 
-length_test_data = 5000
+length_test_data = 5 # 5000
 
 # nbr iterations 
 nbr_iterations = burn_in+length_training_data + length_test_data
@@ -37,7 +37,7 @@ log_scale_prior = false
 mcmc_alg = "MCWM"  # set MCWM or PMCMC
 
 # type of job 
-job = "new_data" # set work to simdata or new_data
+job = ARGS[1] # set work to simdata or new_data
 
 # set jod dep. parameters 
 if job == "simdata"
@@ -46,7 +46,7 @@ if job == "simdata"
 	jobname = "da_ada_training_data"*job 
 	
 	# nbr particels 
-	nbr_particels = 200
+	nbr_particels = 400
 
 	# use simulated data 	
 	sim_data = true # set to true to use sim data
@@ -66,7 +66,7 @@ elseif job == "new_data"
 	jobname = "da_ada_training_data"*job 
 	
 	# nbr particels 
-	nbr_particels = 250
+	nbr_particels = 500
 
 	# use simulated data 	
 	sim_data = false # set to true to use sim data
@@ -137,7 +137,7 @@ loglik_training = loglik_training[1:length_training_data]
 
 
 # save training data, test data, and covaraince matrix to a Julia workspace file 
-save("gp_training_$(set_nbr_params)_par_training_and_test"*job*"lunarc_new_data_4_cores.jld", "res_training", res_training, "theta_training", theta_training, "loglik_training", loglik_training, "theta_test", theta_test, "loglik_test", loglik_test,"cov_matrix",cov_matrix)
+save("gp_training_$(set_nbr_params)_par_training_and_test"*job*"lunarc_new.jld", "res_training", res_training, "theta_training", theta_training, "loglik_training", loglik_training, "theta_test", theta_test, "loglik_test", loglik_test,"cov_matrix",cov_matrix)
 
 
 
