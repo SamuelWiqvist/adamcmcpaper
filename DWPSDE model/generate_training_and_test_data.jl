@@ -1,37 +1,23 @@
 # set up
 
-# set correct path
-try
-  cd("DWPSDE model")
-catch
-  warn("Already in the Ricker model folder")
-end
 
-# load case models
-cd("..")
-include(pwd()*"\\select case\\selectcase.jl")
-cd("DWPSDE model")
-
-include("set_up.jl")
-
-using JLD
-using HDF5
+include(pwd()*"/select case/selectcase.jl")
+include(pwd()*"/DWPSDE model/set_up.jl")
 
 ################################################################################
 ##      parameters for training data                                          ##
 ################################################################################
 
-
 # set parameters for all jobs
 
 # burn-in
-burn_in = 10000
+burn_in = 10 # was 10000
 
 # length training data
-length_training_data = 5000
+length_training_data = 50 # was 5000
 
 # length test data
-length_test_data = 5000
+length_test_data = 50 # was 5000
 
 # nbr iterations
 nbr_iterations = burn_in+length_training_data + length_test_data
@@ -40,7 +26,7 @@ nbr_iterations = burn_in+length_training_data + length_test_data
 set_nbr_params = 7
 
 # set nbr cores
-nbr_of_cores = 4
+nbr_of_cores = 1 # was 4
 
 # log-scale prior
 log_scale_prior = false
@@ -117,8 +103,6 @@ problem_training.adaptive_update =  AMUpdate_gen(eye(set_nbr_params), 1/sqrt(set
 ################################################################################
 #set_nbr_cores(problem_training.alg_param.nbr_of_cores, problem_training.alg_param.pf_alg)
 
-
-
 if !log_scale_prior
 	tic()
   println("run Normal prior model")
@@ -150,4 +134,4 @@ loglik_training = loglik_training[1:length_training_data]
 
 
 # save training data, test data, and covaraince matrix to a Julia workspace file
-save("gp_training_$(set_nbr_params)_par_training_and_test_local"*job*".jld", "res_training", res_training, "theta_training", theta_training, "loglik_training", loglik_training, "theta_test", theta_test, "loglik_test", loglik_test,"cov_matrix",cov_matrix)
+save("DWPSDE model/gp_training_$(set_nbr_params)_par_training_and_test_local"*job*".jld", "res_training", res_training, "theta_training", theta_training, "loglik_training", loglik_training, "theta_test", theta_test, "loglik_test", loglik_test,"cov_matrix",cov_matrix)

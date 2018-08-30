@@ -74,7 +74,7 @@ function mcmc(problem::Problem, store_data::Bool=false, return_cov_matrix::Bool=
   loglik_vec = SharedArray{Float64}(nbr_of_proc)
 
   # print acceptance rate each print_interval:th iteration
-  print_interval = 1000
+  print_interval = 100
 
   # first iteration
   @printf "Iteration: %d\n" 1 # print first iteration
@@ -292,7 +292,7 @@ function dagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, cov
   loglik_vec = SharedArray{Float64}(nbr_of_cores)
 
   # print acceptance rate each print_interval:th iteration
-  print_interval = 1000
+  print_interval = 100
 
   # first iteration
   @printf "Iteration: %d\n" 1 # print first iteration
@@ -643,7 +643,7 @@ function adagpmcmc(problem_traning::Problem, problem::gpProblem, gp::GPModel, ca
 
 
   # print acceptance rate each print_interval:th iteration
-  print_interval = 1000
+  print_interval = 100
 
   # first iteration
   @printf "Iteration: %d\n" 1 # print first iteration
@@ -1008,7 +1008,7 @@ function set_nbr_cores(nbr_of_cores::Int64, pf_alg::String)
     nbr_of_proc = nbr_of_cores
     addprocs(nbr_of_proc)
     if pf_alg == "parallel_bootstrap"
-      @everywhere include("run_pf_paralell.jl")
+      @everywhere include(pwd()*"/DWPSDE model/run_pf_paralell.jl")
     else
       error("The auxiliary particle filter is not implemented.")
     end

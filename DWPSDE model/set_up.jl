@@ -5,6 +5,8 @@ using StatsBase
 import StatsBase.predict # this is needed to extend the predict function
 using Optim
 using StatsFuns
+using JLD
+using HDF5
 
 # paths for desktop
 
@@ -283,11 +285,11 @@ function set_up_gp_problem(;use_sim_data::Bool=true,nbr_of_unknown_parameters::I
     if data_set == "old"
       # load simulated data from "data.csv"
       #Z_df = readtable("data.csv")
-      Z_df = readtable("data_old_new_dt.csv")
+      Z_df = readtable("DWPSDE model/data_old_new_dt.csv")
       Z = convert(Array, Z_df)
     else
       # load simulated data from "data.csv"
-      Z_df = readtable("data_new.csv")
+      Z_df = readtable("DWPSDE model/data_new.csv")
       Z = convert(Array, Z_df)
     end
   else
@@ -297,7 +299,7 @@ function set_up_gp_problem(;use_sim_data::Bool=true,nbr_of_unknown_parameters::I
     else
       # load data
       println("test")
-      file = open("new_data_set.txt") # load the new data set
+      file = open("DWPSDE model/new_data_set.txt") # load the new data set
       data = readlines(file)
       close(file)
 

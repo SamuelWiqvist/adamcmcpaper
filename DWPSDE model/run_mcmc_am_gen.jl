@@ -4,10 +4,10 @@
 include(pwd()*"/DWPSDE model/set_up.jl")
 
 # nbr iterations
-nbr_iterations = 30000 # was 30000
+nbr_iterations = 100 # was 30000
 
 # burn-in
-burn_in = 10000 # was 10000
+burn_in = 50 # was 10000
 
 # nbr cores
 nbr_of_cores = 1 # was 10

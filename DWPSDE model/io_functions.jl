@@ -26,7 +26,7 @@ function export_data(problem::Problem, results::Result, jobname::String)
   data_param = zeros(1, length(theta_true)+1)
   data_param[1:length(theta_true)] = theta_true
   data_param[length(theta_true)+1:length(theta_true)+1] = burn_in
-  writetable("./Results/output_param"*jobname*".csv", convert(DataFrame, data_param))
+  writetable("./DWPSDE model/Results/output_param"*jobname*".csv", convert(DataFrame, data_param))
 
   data_output = zeros(length(loglik_est), length(theta_true) + 2)
   data_output[:,1:length(theta_true)] = Theta_est
@@ -36,13 +36,13 @@ function export_data(problem::Problem, results::Result, jobname::String)
   #
   data_used = zeros(length(problem.data.Z),2)
   data_used[:,1] = problem.data.Z
-  writetable("./Results/output_res"*jobname*".csv", convert(DataFrame, data_output))
+  writetable("./DWPSDE model/Results/output_res"*jobname*".csv", convert(DataFrame, data_output))
 
-  writetable("./Results/output_prior_dist"*jobname*".csv", convert(DataFrame, prior_parameters))
+  writetable("./DWPSDE model/Results/output_prior_dist"*jobname*".csv", convert(DataFrame, prior_parameters))
 
-  writetable("./Results/output_prior_dist_type"*jobname*".csv", convert(DataFrame, [1 dist_type]))
+  writetable("./DWPSDE model/Results/output_prior_dist_type"*jobname*".csv", convert(DataFrame, [1 dist_type]))
 
-  writetable("./Results/data_used"*jobname*".csv", convert(DataFrame,data_used))
+  writetable("./DWPSDE model/Results/data_used"*jobname*".csv", convert(DataFrame,data_used))
 
 end
 
@@ -73,7 +73,7 @@ function export_data(problem::gpProblem, results::Result, jobname::String)
   data_param = zeros(1, length(theta_true)+1)
   data_param[1:length(theta_true)] = theta_true
   data_param[length(theta_true)+1:length(theta_true)+1] = burn_in + length_training_data
-  writetable("./Results/output_param_dagp"*jobname*".csv", convert(DataFrame, data_param))
+  writetable("./DWPSDE model/Results/output_param_dagp"*jobname*".csv", convert(DataFrame, data_param))
 
   data_output = zeros(length(loglik_est), length(theta_true) + 2)
   data_output[:,1:length(theta_true)] = Theta_est
@@ -83,13 +83,13 @@ function export_data(problem::gpProblem, results::Result, jobname::String)
   #
   data_used = zeros(length(problem.data.Z),2)
   data_used[:,1] = problem.data.Z
-  writetable("./Results/output_res_dagp"*jobname*".csv", convert(DataFrame, data_output))
+  writetable("./DWPSDE model/Results/output_res_dagp"*jobname*".csv", convert(DataFrame, data_output))
 
-  writetable("./Results/output_prior_dist_dagp"*jobname*".csv", convert(DataFrame, prior_parameters))
+  writetable("./DWPSDE model/Results/output_prior_dist_dagp"*jobname*".csv", convert(DataFrame, prior_parameters))
 
-  writetable("./Results/output_prior_dist_type_dagp"*jobname*".csv", convert(DataFrame, [1 dist_type]))
+  writetable("./DWPSDE model/Results/output_prior_dist_type_dagp"*jobname*".csv", convert(DataFrame, [1 dist_type]))
 
-  writetable("./Results/data_used_dagp"*jobname*".csv", convert(DataFrame,data_used))
+  writetable("./DWPSDE model/Results/data_used_dagp"*jobname*".csv", convert(DataFrame,data_used))
 
 end
 

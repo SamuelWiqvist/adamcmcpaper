@@ -1,21 +1,6 @@
 # set up
 
-# set correct path
-try
-  cd("DWPSDE model")
-catch
-  warn("Already in the DWPSDE model folder")
-end
-
-# load case models
-cd("..")
-include(pwd()*"\\select case\\selectcase.jl")
-cd("DWPSDE model")
-
-include("set_up.jl")
-
-using JLD
-using HDF5
+include(pwd()*"/DWPSDE model/set_up.jl")
 
 ################################################################################
 ##      parameters                                      					            ##
@@ -27,7 +12,7 @@ using HDF5
 set_nbr_params = 7
 
 # nbr cores
-nbr_of_cores = 4 # was 10
+nbr_of_cores = 1 # was 10
 
 # length burn-in
 burn_in = 1
@@ -179,10 +164,10 @@ if !load_tranining_data
 else
 
 	if job == "simdata"
-		@load "gp_training_7_par_training_and_test_lunarc.jld"
-    @load "fited_gp_simdata.jld"
+		@load "DWPSDE model/gp_training_7_par_training_and_testsimdatalunarc_simdata_4_cores.jld"
+    #@load "fited_gp_simdata.jld"
 	elseif job == "new_data"
-		@load "gp_training_7_par_training_and_test_new_data.jld"
+		@load "DWPSDE model/gp_training_7_par_training_and_testnew_datalunarc_new_data_4_cores.jld"
 	end
 
 
@@ -260,7 +245,7 @@ time_fit_gp = toc()
 
 
 ################################################################################
-##               Run ADA-GP-MCMC                                              ###
+##               Run DA-GP-MCMC                                              ###
 ################################################################################
 
 
