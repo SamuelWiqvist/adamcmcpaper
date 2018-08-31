@@ -18,7 +18,7 @@ nbr_of_cores = 1 # was 10
 burn_in = 1
 
 # nbr iterations
-nbr_iterations = 10 # should be 20000
+nbr_iterations = 200 # should be 20000
 
 # length training data
 length_training_data = 5000 # thid should ne 5000

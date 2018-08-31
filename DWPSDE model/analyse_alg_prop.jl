@@ -1,21 +1,7 @@
 # set up
 
-# set correct path
-try
-  cd("DWPSDE model")
-catch
-  warn("Already in the DWPSDE model folder")
-end
-
-# load case models
-cd("..")
-include(pwd()*"\\select case\\selectcase.jl")
-cd("DWPSDE model")
-
-include("set_up.jl")
-
-using JLD
-using HDF5
+include(pwd()*"/select case/selectcase.jl")
+include(pwd()*"/DWPSDE model/set_up.jl")
 
 ################################################################################
 ##      parameters                                      					            ##
@@ -27,13 +13,13 @@ using HDF5
 set_nbr_params = 7
 
 # nbr cores
-nbr_of_cores = 4 # was 10
+nbr_of_cores = 1 # was 10
 
 # length burn-in
 burn_in = 1
 
 # nbr iterations
-nbr_iterations = 500 # should be 20000
+nbr_iterations = 50 # should be 20000
 
 # length training data
 length_training_data = 5000 # thid should ne 5000
@@ -114,7 +100,7 @@ end
 
 nbr_iterations_tranining = burn_in_tranining +length_training_data
 nbr_particels_tranining = 25 # should be 200
-nbr_of_cores_tranining = 2 # should be 8
+nbr_of_cores_tranining = 1 # should be 8
 
 
 ################################################################################
@@ -179,10 +165,10 @@ if !load_tranining_data
 else
 
 	if job == "simdata"
-		@load "gp_training_7_par_training_and_test_lunarc.jld"
-    @load "fited_gp_simdata.jld"
+		@load "DWPSDE model/gp_training_7_par_training_and_testsimdatalunarc_simdata_4_cores.jld"
+    #@load "fited_gp_simdata.jld"
 	elseif job == "new_data"
-		@load "gp_training_7_par_training_and_test_new_data.jld"
+		@load "DWPSDE model/gp_training_7_par_training_and_testnew_datalunarc_new_data_4_cores.jld"
 	end
 
 
@@ -286,7 +272,7 @@ problem.alg_param.beta_MH = beta_MH
 
 
 
-nbr_alg_iter = 50
+nbr_alg_iter = 5
 
 ################################################################################
 ##               Run DA-GP-MCMC                                              ###
@@ -295,7 +281,7 @@ nbr_alg_iter = 50
 
 problem.model_param.theta_0 = mean(theta_training,2)
 
-alg_prop_da = zeros(nbr_alg_iter,3)
+alg_prop_da = zeros(nbr_alg_iter,5)
 
 
 for i = 1:nbr_alg_iter
