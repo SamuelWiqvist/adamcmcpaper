@@ -1,0 +1,19 @@
+run Normal prior model
+#####################################################################
+Starting MCMC with adaptive RW estimating 7 parameters
+Algorithm: MCWM
+Adaptation algorithm: AMUpdate_gen
+Prior distribution: Normal
+Particel filter: parallel_bootstrap, on 4 cores
+Nbr particles for particel filter: 400
+Iteration: 1
+Covariance:
+[0.142857 0.0 0.0 0.0 0.0 0.0 0.0; 0.0 0.142857 0.0 0.0 0.0 0.0 0.0; 0.0 0.0 0.142857 0.0 0.0 0.0 0.0; 0.0 0.0 0.0 0.142857 0.0 0.0 0.0; 0.0 0.0 0.0 0.0 0.142857 0.0 0.0; 0.0 0.0 0.0 0.0 0.0 0.142857 0.0; 0.0 0.0 0.0 0.0 0.0 0.0 0.142857]
+Loglik: -177821.4904 
+Ending MCMC with adaptive RW estimating 7 parameters
+Algorithm: MCWM
+Adaptation algorithm: AMUpdate_gen
+Prior distribution: Normal
+Particel filter: parallel_bootstrap, on 4 cores
+#####################################################################
+elapsed time: 816.15940725 seconds

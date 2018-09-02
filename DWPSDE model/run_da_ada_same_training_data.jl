@@ -49,7 +49,7 @@ if job == "simdata"
 	global_jobname = "est7"*job
 
 	# nbr particels
-	nbr_particels = 200
+	nbr_particels = 400
 
 	# use simulated data
 	sim_data = true # set to true to use sim data
@@ -69,7 +69,7 @@ elseif job == "new_data"
 	global_jobname = "est7"*job
 
 	# nbr particels
-	nbr_particels = 250
+	nbr_particels = 500
 
 	# use simulated data
 	sim_data = false # set to true to use sim data
@@ -168,9 +168,9 @@ if !load_tranining_data
 else
 
 	if job == "simdata"
-		@load "gp_training_7_par_training_and_testsimdatalunarc_simdata_4_cores.jld"
+		@load "gp_training_7_par_training_and_testsimdatalunarc_new.jld"
 	elseif job == "new_data"
-		@load "gp_training_7_par_training_and_testnew_datalunarc_new_data_4_cores.jld"
+		@load "gp_training_7_par_training_and_testnew_datalunarc_new.jld"
 	end
 
 

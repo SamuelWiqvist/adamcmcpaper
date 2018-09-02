@@ -13,13 +13,13 @@ using HDF5
 # set parameters for all jobs
 
 # burn-in
-burn_in = 1 # 10000
+burn_in = 10000 # 10000
 
 # length training data 
-length_training_data = 5 # 5000
+length_training_data = 5000 # 5000
 
 # length test data 
-length_test_data = 5 # 5000
+length_test_data = 5000 # 5000
 
 # nbr iterations 
 nbr_iterations = burn_in+length_training_data + length_test_data
