@@ -2,31 +2,14 @@
 
 #using Plots
 using PyPlot
-using StatPlots
 using KernelDensity
 using Distributions
 using DataFrames
 
-# set correct path
-try
-  cd("DWPSDE model")
-catch
-  warn("Already in the DWP-SDE folder.")
-end
+include(pwd()*"/utilities/posteriorinference.jl")
 
-# set dir
-try
-    cd("Results")
-catch
-    warn("Already in the Results folder for the DWP model.")
-end
+remove_missing_values(x) = reshape(collect(skipmissing(x)),7,:)
 
-# load functions to compute posterior inference
-if Sys.CPU_CORES == 8
-    include("C:\\Users\\samuel\\Dropbox\\Phd Education\\Projects\\project 1 accelerated DA and DWP SDE\\code\\utilities\\posteriorinference.jl")
-else
-    include("C:\\Users\\samue\\OneDrive\\Documents\\GitHub\\adamcmcpaper\\utilities\\posteriorinference.jl")
-end
 
 # text and lable size
 text_size = 25
@@ -34,39 +17,41 @@ label_size = 20
 
 load_data_from_files = true # load data from files or form some  workspace
 dagp = true # was true #  set to _dagp to load ER-GP file  o.w. use ""
-jobname = "_dagpest7simdataada_gp_mcmc_dt" # was "_dagpest7_real_dataada_gp_mcmc_dt" # set to jobname string
+jobname = "_dagpest7new_dataada_gp_mcmc_dt" # was "_dagpest7_real_dataada_gp_mcmc_dt" # set to jobname string
 
 
-plot_theta_true = false
+plot_theta_true = true
 
 # training data from lunarc
 
-# gp_training_7_par_lunarc_new_data_4_coresnew_data at 2018-05-22 14:14.24
-# gp_training_7_par_lunarc_simdata_4_coressimdata 2018-05-09 23:42:50
+# gp_training_7_par_lunarc_new_data_4_coressimdata
+# _dagpest7simdatada_gp_mcmc
+# _dagpest7simdataada_gp_mcmc_dt
 
-# _dagpest7new_dataada_gp_mcmc_dt 2018-05-28 07:14:14
-# _dagpest7new_datada_gp_mcmc 2018-05-28 04:55:39
 
-# _dagpest7simdataada_gp_mcmc_dt 2018-05-28 01:10:42
-# _dagpest7simdatada_gp_mcmc 2018-05-27 22:31:57
+# gp_training_7_par_lunarc_new_data_4_coresnew_data
+# _dagpest7new_datada_gp_mcmc
+# _dagpest7new_dataada_gp_mcmc_dt
+
+
 
 if load_data_from_files
 
-    data_res = convert(Array,readtable("output_res"*jobname*".csv"))
+    data_res = convert(Array,readtable("DWPSDE model/Results/output_res"*jobname*".csv"))
 
     M, N = size(data_res)
 
-    data_param = convert(Array,readtable("output_param"*jobname*".csv"))
+    data_param = convert(Array,readtable("DWPSDE model/Results/output_param"*jobname*".csv"))
 
     theta_true = data_param[1:N-2]
     burn_in = Int64(data_param[N-2+1])
 
-    data_prior_dist = convert(Array,readtable("output_prior_dist"*jobname*".csv"))
+    data_prior_dist = convert(Array,readtable("DWPSDE model/Results/output_prior_dist"*jobname*".csv"))
 
-    data_prior_dist_type = convert(Array,readtable("output_prior_dist_type"*jobname*".csv"))
+    data_prior_dist_type = convert(Array,readtable("DWPSDE model/Results/output_prior_dist_type"*jobname*".csv"))
     data_prior_dist_type = data_prior_dist_type[2]
 
-    Z = convert(Array,readtable("data_used"*jobname*".csv"))
+    Z = convert(Array,readtable("DWPSDE model/Results/data_used"*jobname*".csv"))
     Z = Z[:,1]
 
 else
@@ -79,7 +64,7 @@ if dagp
   burn_in = 1
 end
 
-Theta = data_res[:,1:N-2]' # stor data in column-major order
+Theta = remove_missing_values(data_res[:,1:N-2]') # stor data in column-major order
 loglik = data_res[:,N-1]
 accept_vec = data_res[:,N]
 
@@ -243,6 +228,7 @@ PyPlot.plot(loglik)
 PyPlot.ylabel(L"$\log-likelhood")
 PyPlot.xlabel("Iteration")
 
+#=
 # plot acceptance rate for each K:th iteration
 k = 500
 
@@ -270,6 +256,7 @@ for j = 1:length(intervals)
     intervals_vec(j) = {strcat(num2str(intervals(j,1)), "-", num2str(intervals(j,2)))}; % I should probably use vertical concatunate here!
 end
 =#
+
 
 PyPlot.figure()
 PyPlot.bar(1:length(accept_vec_k),accept_vec_k)

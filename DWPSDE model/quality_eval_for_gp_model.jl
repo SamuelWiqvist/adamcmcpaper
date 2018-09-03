@@ -1,28 +1,12 @@
 # Script for evaluating the GP model
 
-# set correct path
-try
-  cd("DWPSDE model")
-catch
-  warn("Already in the Ricker model folder")
-end
-
-# load case models
-cd("..")
-include(pwd()*"\\select case\\selectcase.jl")
-cd("DWPSDE model")
-include("set_up.jl")
 
 using JLD
 using HDF5
 
-# load functions to compute posterior inference
-
-cd("..")
-include(pwd()*"\\utilities\\posteriorinference.jl")
-include(pwd()*"\\utilities\\normplot.jl")
-cd("DWPSDE model")
-
+include(pwd()*"/DWPSDE model/set_up.jl")
+include(pwd()*"/utilities/posteriorinference.jl")
+include(pwd()*"/utilities/normplot.jl")
 
 
 ################################################################################
@@ -68,7 +52,7 @@ if job == "simdata"
 	global_jobname = "est7"*job
 
 	# nbr particels
-	nbr_particels = 200
+	nbr_particels = 400
 
 	# use simulated data
 	sim_data = true # set to true to use sim data
@@ -88,7 +72,7 @@ elseif job == "new_data"
 	global_jobname = "est7"*job
 
 	# nbr particels
-	nbr_particels = 250
+	nbr_particels = 500
 
 	# use simulated data
 	sim_data = false # set to true to use sim data
@@ -103,17 +87,6 @@ elseif job == "new_data"
 	dt_U = 1. # new = 1 old = 1
 
 end
-
-#=
-
-# set parameters
-burn_in = 10000 # this should be 2000 when estimating 2 parameters
-
-if set_nbr_params == 2
-	burn_in = 1000 # this should be 2000
-	length_training_data = 2000
-end
-=#
 
 ################################################################################
 ##                         set DA problem                               ##
@@ -170,21 +143,23 @@ problem_training.adaptive_update =  AMUpdate_gen(eye(set_nbr_params), 1/sqrt(set
 ##                generate training data                                     ###
 ################################################################################
 
+
 if !load_tranining_data
 
-  if !log_scale_prior
-    tic()
-    res_training, theta_training, loglik_training, cov_matrix = MCMC(problem_training, true, true)
-    time_pre_er = toc()
-    #export_parameters(res_problem_normal_prior_est_AM_gen[2],jobname)
-  else
-    tic()
-    res_training, theta_training, loglik_training, cov_matrix  = @time MCMC(problem_training_nonlog, true, true)
-    time_pre_er = toc()
-  end
+	#=
+	  if !log_scale_prior
+	    tic()
+	    res_training, theta_training, loglik_training, cov_matrix = MCMC(problem_training, true, true)
+	    time_pre_er = toc()
+	    #export_parameters(res_problem_normal_prior_est_AM_gen[2],jobname)
+	  else
+	    tic()
+	    res_training, theta_training, loglik_training, cov_matrix  = @time MCMC(problem_training_nonlog, true, true)
+	    time_pre_er = toc()
+	  end
 
-  save("gp_training.jld", "res_training", res_training, "theta_training", theta_training, "loglik_training", loglik_training,"cov_matrix",cov_matrix)
-
+	  save("gp_training.jld", "res_training", res_training, "theta_training", theta_training, "loglik_training", loglik_training,"cov_matrix",cov_matrix)
+	=#
 else
 
   #@load "gp_training_2_par_training_and_test_data_test_new_code_structure.jld"
@@ -193,9 +168,9 @@ else
 
   #@load "gp_training_7_par_training_and_test_lunarc.jld"
   if job == "simdata"
-		@load "gp_training_7_par_training_and_testsimdatalunarc_simdata_4_cores.jld"
+		@load "DWPSDE model/gp_training_7_par_training_and_testsimdatalunarc_new.jld"
 	elseif job == "new_data"
-		@load "gp_training_7_par_training_and_testnew_datalunarc_new_data_4_cores.jld"
+		@load "DWPSDE model/gp_training_7_par_training_and_testnew_datalunarc_new.jld"
 		#@load "fited_gp_new_data.jld"
 	end
 

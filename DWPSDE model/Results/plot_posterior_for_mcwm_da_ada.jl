@@ -2,42 +2,22 @@
 
 using Plots
 using PyPlot
-using StatPlots
 using KernelDensity
 using Distributions
 using DataFrames
 
-# set correct path
-try
-  cd("DWPSDE model")
-catch
-  warn("Already in the DWP-SDE folder.")
-end
-
-# set dir
-try
-    cd("Results")
-catch
-    warn("Already in the Results folder for the DWP model.")
-end
-
-# load functions to compute posterior inference
-if Sys.CPU_CORES == 8
-    include("C:\\Users\\samuel\\Dropbox\\Phd Education\\Projects\\project 1 accelerated DA and DWP SDE\\code\\utilities\\posteriorinference.jl")
-else
-    include("C:\\Users\\samue\\OneDrive\\Documents\\GitHub\\adamcmcpaper\\utilities\\posteriorinference.jl")
-end
+remove_missing_values(x) = reshape(collect(skipmissing(x)),7,:)
 
 load_data_from_files = true # load data from files or form some workspace
 plot_theta_true = false
 
 # load data for MCWM
 
-dataset = "simdata" # select simdata or new_data (i.e the new dataset)
+dataset = "new_data" # select simdata or new_data (i.e the new dataset)
 
 if dataset == "simdata"
 
-  jobname_mcwm = "gp_training_7_par_lunarc_simdata_4_coressimdata" # jobname for mcwm
+  jobname_mcwm = "gp_training_7_par_lunarc_new_data_4_coressimdata" # jobname for mcwm
   jobname_da = "_dagpest7simdatada_gp_mcmc"
   jobname_ada = "_dagpest7simdataada_gp_mcmc_dt"
 
@@ -54,34 +34,34 @@ end
 
 if load_data_from_files
 
-    data_res = convert(Array,readtable("output_res"*jobname_mcwm*".csv"))
+    data_res = convert(Array,readtable("DWPSDE model/Results/output_res"*jobname_mcwm*".csv"))
 
     M, N = size(data_res)
 
-    data_param = convert(Array,readtable("output_param"*jobname_mcwm*".csv"))
+    data_param = convert(Array,readtable("DWPSDE model/Results/output_param"*jobname_mcwm*".csv"))
 
     theta_true = data_param[1:N-2]
     burn_in = Int64(data_param[N-2+1])
 
-    data_prior_dist = convert(Array,readtable("output_prior_dist"*jobname_mcwm*".csv"))
+    data_prior_dist = convert(Array,readtable("DWPSDE model/Results/output_prior_dist"*jobname_mcwm*".csv"))
 
-    data_prior_dist_type = convert(Array,readtable("output_prior_dist_type"*jobname_mcwm*".csv"))
+    data_prior_dist_type = convert(Array,readtable("DWPSDE model/Results/output_prior_dist_type"*jobname_mcwm*".csv"))
     data_prior_dist_type = data_prior_dist_type[2]
 
-    Z = convert(Array,readtable("data_used"*jobname_mcwm*".csv"))
+    Z = convert(Array,readtable("DWPSDE model/Results/data_used"*jobname_mcwm*".csv"))
     Z = Z[:,1]
 
-    Theta_mcwm = data_res[burn_in:end,1:N-2]' # stor data in column-major order
+    Theta_mcwm = remove_missing_values(data_res[burn_in:end,1:N-2]') # stor data in column-major order
 
     burn_in = 1
 
-    data_res = convert(Array,readtable("output_res"*jobname_da*".csv"))
+    data_res = convert(Array,readtable("DWPSDE model/Results/output_res"*jobname_da*".csv"))
     M, N = size(data_res)
-    Theta_da = data_res[burn_in:end,1:N-2]' # stor data in column-major order
+    Theta_da = remove_missing_values(data_res[burn_in:end,1:N-2]') # stor data in column-major order
 
-    data_res = convert(Array,readtable("output_res"*jobname_ada*".csv"))
+    data_res = convert(Array,readtable("DWPSDE model/Results/output_res"*jobname_ada*".csv"))
     M, N = size(data_res)
-    Theta_ada = data_res[burn_in:end,1:N-2]' # stor data in column-major order
+    Theta_ada = remove_missing_values(data_res[burn_in:end,1:N-2]') # stor data in column-major order
 
 
 else
