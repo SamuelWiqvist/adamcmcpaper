@@ -43,7 +43,7 @@ beta_MH = 0.15 # should be 0.1
 load_tranining_data = true
 
 # type of job
-job = "new_data" # set work to simdata or new_data
+job = "simdata" # set work to simdata or new_data
 
 # set jod dep. parameters
 if job == "simdata"
@@ -52,7 +52,7 @@ if job == "simdata"
 	global_jobname = "est7"*job
 
 	# nbr particels
-	nbr_particels = 400
+	nbr_particels = 3*400
 
 	# use simulated data
 	sim_data = true # set to true to use sim data
@@ -72,7 +72,7 @@ elseif job == "new_data"
 	global_jobname = "est7"*job
 
 	# nbr particels
-	nbr_particels = 500
+	nbr_particels = 2000
 
 	# use simulated data
 	sim_data = false # set to true to use sim data
@@ -183,7 +183,7 @@ end
 
 #export_data(problem_training, res_training[1],"dagpMCMC_training_data"*jobname)
 
-plot_theta_true = false
+plot_theta_true = true
 
 
 using PyPlot
@@ -304,7 +304,6 @@ text_size = 15
 loglik_pf = data_test[end,:]
 
 (loglik_mean,loglik_std,loglik_sample) = predict(data_test[1:end-1,:], gp, problem.alg_param.noisy_est)
-
 
 # plot param vs loglik values
 PyPlot.figure(figsize=(10,5))
