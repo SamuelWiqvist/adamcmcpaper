@@ -12,7 +12,7 @@ nbr_iterations = 30000 # was 30000
 burn_in = 10000 # was 10000
 
 # nbr cores 
-nbr_of_cores = 10
+nbr_of_cores = 4
 
 # nbr parameters 
 set_nbr_params = 7
@@ -21,7 +21,7 @@ set_nbr_params = 7
 log_scale_prior = false
 
 # algorithm
-mcmc_alg = "MCWM"  # set MCWM or PMCMC
+mcmc_alg = "PMCMC"  # set MCWM or PMCMC
 
 # type of job 
 job = "simdata" # set work to simdata or new_data
@@ -33,7 +33,7 @@ if job == "simdata"
 	jobname = "mcwm_7_par"*job 
 	
 	# nbr particels 
-	nbr_particels = 200
+	nbr_particels = 3*400
 
 	# use simulated data 	
 	sim_data = true # set to true to use sim data
@@ -53,7 +53,7 @@ elseif job == "new_data"
 	jobname = "mcwm_7_par"*job 
 	
 	# nbr particels 
-	nbr_particels = 500
+	nbr_particels = 3*500
 
 	# use simulated data 	
 	sim_data = false # set to true to use sim data

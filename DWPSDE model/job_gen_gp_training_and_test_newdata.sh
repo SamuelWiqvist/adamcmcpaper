@@ -9,7 +9,7 @@
 #SBATCH -p lu
 
 # time consumption HH:MM:SS
-#SBATCH -t 160:00:00 
+#SBATCH -t 168:00:00 
 
 # name for script 
 #SBATCH -J gen_gp_training_and_test_data

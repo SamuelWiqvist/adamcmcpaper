@@ -9,7 +9,7 @@
 #SBATCH -p lu
 
 # time consumption HH:MM:SS
-#SBATCH -t 100:00:00 
+#SBATCH -t 160:00:00 
 
 # name for script 
 #SBATCH -J mcmc_dwpsde_model
@@ -21,7 +21,7 @@
 # set number of nodes 
 #SBATCH -N 1
 #SBATCH --tasks-per-node=20
-#SBATCH -n 12
+#SBATCH -n 5
 #SBATCH --exclusive
 
 # notification 

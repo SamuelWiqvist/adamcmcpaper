@@ -11,7 +11,7 @@
 #SBATCH -p lu
 
 # time consumption HH:MM:SS
-#SBATCH -t 10:00:00 
+#SBATCH -t 100:00:00 
 
 # name for script 
 #SBATCH -J mcmc_da_ada_dwpsde_model 

@@ -48,7 +48,7 @@ if job == "simdata"
 	global_jobname = "est7"*job
 
 	# nbr particels
-	nbr_particels = 400
+	nbr_particels = 3*400
 
 	# use simulated data
 	sim_data = true # set to true to use sim data
@@ -68,7 +68,7 @@ elseif job == "new_data"
 	global_jobname = "est7"*job
 
 	# nbr particels
-	nbr_particels = 500
+	nbr_particels = 2000
 
 	# use simulated data
 	sim_data = false # set to true to use sim data
@@ -237,7 +237,7 @@ accelerated_da = false
 
 jobname = global_jobname*"da_gp_mcmc"
 
-nbr_alg_iter = 100
+nbr_alg_iter = 50
 
 ################################################################################
 ##               Run DA-GP-MCMC                                              ###

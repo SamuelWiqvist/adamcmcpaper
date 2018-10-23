@@ -9,7 +9,7 @@
 #SBATCH -p lu
 
 # time consumption HH:MM:SS
-#SBATCH -t 100:00:00 
+#SBATCH -t 160:00:00 
 
 # name for script 
 #SBATCH -J job_ana_new_data_dt
