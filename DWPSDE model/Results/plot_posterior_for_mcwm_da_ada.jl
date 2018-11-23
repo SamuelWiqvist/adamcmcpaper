@@ -9,11 +9,11 @@ using DataFrames
 remove_missing_values(x) = reshape(collect(skipmissing(x)),7,:)
 
 load_data_from_files = true # load data from files or form some workspace
-plot_theta_true = false
+plot_theta_true = true
 
 # load data for MCWM
 
-dataset = "new_data" # select simdata or new_data (i.e the new dataset)
+dataset = "simdata" # select simdata or new_data (i.e the new dataset)
 
 if dataset == "simdata"
 

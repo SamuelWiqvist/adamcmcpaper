@@ -600,13 +600,15 @@ writetable("alg_prop_ada_biasedcoin.csv", convert(DataFrame, alg_prop_ada))
 # alg_prop_da_newdatabiasedcoin
 # alg_prop_ada_newdatabiasedcoin
 
-
-alg_prop_da = Matrix(readtable("Results/alg_prop_da_new_datadt.csv"))
-alg_prop_ada = Matrix(readtable("Results/alg_prop_ada_new_datadt.csv"))
-
-
 # analysis
 using PyPlot
+using DataFrames
+
+
+alg_prop_da = Matrix(readtable("DWPSDE model/Results/alg_prop_da_simdatadt.csv"))
+alg_prop_ada = Matrix(readtable("DWPSDE model/Results/alg_prop_ada_simdatadt.csv"))
+
+
 
 function print_stats(x::Vector)
   @printf "--------------------------\n"
@@ -686,8 +688,19 @@ ax[:tick_params]("both",labelsize = label_size)
 # nbr pf eval in secound stage
 
 println("Nbr pf eval in secound stage:")
+
 print_stats(alg_prop_da[:,3])
 print_stats(sum(alg_prop_ada[:,end-3:end],2)[:])
+
+pf_eval = zeros(size(alg_prop_da,1), 2)
+pf_eval[:,1] = alg_prop_da[:,3]
+pf_eval[:,2] = sum(alg_prop_ada[:,end-3:end],2)
+
+PyPlot.figure(figsize=(10,10))
+ax = axes()
+PyPlot.boxplot(pf_eval)
+ax[:tick_params]("both",labelsize = label_size)
+
 
 PyPlot.figure(figsize=(10,10))
 ax = axes()
