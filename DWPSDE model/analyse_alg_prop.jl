@@ -604,9 +604,11 @@ writetable("alg_prop_ada_biasedcoin.csv", convert(DataFrame, alg_prop_ada))
 using PyPlot
 using DataFrames
 
-
 alg_prop_da = Matrix(readtable("DWPSDE model/Results/alg_prop_da_simdatadt.csv"))
 alg_prop_ada = Matrix(readtable("DWPSDE model/Results/alg_prop_ada_simdatadt.csv"))
+
+alg_prop_da = Matrix(readtable("DWPSDE model/Results/alg_prop_da_smallsimdatadt.csv"))
+alg_prop_ada = Matrix(readtable("DWPSDE model/Results/alg_prop_ada_smallsimdatadt.csv"))
 
 
 
@@ -650,7 +652,7 @@ print_stats(speed_up)
 
 PyPlot.figure(figsize=(10,10))
 ax = axes()
-PyPlot.plt[:hist](speed_up,10, alpha = 0.6)
+PyPlot.plt[:hist](speed_up,20, alpha = 0.6)
 ax[:tick_params]("both",labelsize = label_size)
 
 # nbr pf eval
