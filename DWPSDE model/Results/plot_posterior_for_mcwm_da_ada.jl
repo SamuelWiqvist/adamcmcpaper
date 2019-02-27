@@ -11,7 +11,6 @@ remove_missing_values(x) = reshape(collect(skipmissing(x)),7,:)
 # load data for MCWM
 
 problem = "real data"
-problem = "sim data scaled up problem"
 problem = "sim data small problem"
 
 
@@ -21,17 +20,11 @@ if problem == "real data"
   jobname_da = "_dagpest7new_datada_gp_mcmc"
   jobname_ada = "_dagpest7new_dataada_gp_mcmc_dt"
 
-elseif problem == "sim data scaled up problem"
+else# problem == "sim data small problem"
 
   jobname_mcwm = "gp_training_7_par_lunarc_new_data_4_coressimdata"
   jobname_da = "_dagpest7simdatada_gp_mcmc"
   jobname_ada = "_dagpest7simdataada_gp_mcmc_dt"
-
-else #problem == "sim data small problem"
-
-  jobname_mcwm = "gp_training_7_par_lunarc_new_data_4_coresnew_data"
-  jobname_da = "_dagpest7new_datada_gp_mcmc"
-  jobname_ada = "_dagpest7new_dataada_gp_mcmc_dt"
 
 end
 

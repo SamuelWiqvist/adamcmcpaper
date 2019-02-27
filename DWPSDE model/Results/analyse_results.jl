@@ -16,7 +16,6 @@ text_size = 25
 label_size = 20
 
 problem = "real data"
-problem = "sim data scaled up problem"
 problem = "sim data small problem"
 
 algorithm = "MCWM"
@@ -30,12 +29,6 @@ elseif problem == "real data" && algorithm == "DA"
     jobname = "_dagpest7new_datada_gp_mcmc"
 elseif problem == "real data" && algorithm == "ADA"
     jobname = "_dagpest7new_dataada_gp_mcmc_dt"
-elseif problem == "sim data scaled up problem" && algorithm == "MCWM"
-    jobname = 1
-elseif problem == "sim data scaled up problem" && algorithm == "DA"
-    jobname = 1
-elseif problem == "sim data scaled up problem" && algorithm == "ADA"
-    jobname = 1
 elseif problem == "sim data small problem" && algorithm == "MCWM"
     jobname = 1
 elseif problem == "sim data small problem" && algorithm == "DA"
