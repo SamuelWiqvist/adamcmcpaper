@@ -1,19 +1,15 @@
-# load packages
+# Analyse results, deprecated file 
 
 #using Plots
 using PyPlot
 using KernelDensity
 using Distributions
+
 using DataFrames
 
 include(pwd()*"/utilities/posteriorinference.jl")
 
 remove_missing_values(x) = reshape(collect(skipmissing(x)),7,:)
-
-
-# text and lable size
-text_size = 25
-label_size = 20
 
 problem = "real data"
 problem = "sim data small problem"
@@ -30,11 +26,11 @@ elseif problem == "real data" && algorithm == "DA"
 elseif problem == "real data" && algorithm == "ADA"
     jobname = "_dagpest7new_dataada_gp_mcmc_dt"
 elseif problem == "sim data small problem" && algorithm == "MCWM"
-    jobname = 1
+    jobname = "gp_training_7_par_lunarc_simdata_4_coressimdata"
 elseif problem == "sim data small problem" && algorithm == "DA"
-    jobname = 1
+    jobname = "_dagpest7simdatada_gp_mcmc"
 else #problem == "sim data scaled up problem" && algorithm = "ADA"
-    jobname = 1
+    jobname = "_dagpest7simdataada_gp_mcmc_dt"
 end
 
 if problem == "real data"

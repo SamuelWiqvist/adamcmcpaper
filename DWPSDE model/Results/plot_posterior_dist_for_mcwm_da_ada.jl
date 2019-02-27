@@ -1,4 +1,4 @@
-# load packages
+# File used for plot the posterior dist for MCWM DA and ADA
 
 using Plots
 using PyPlot
@@ -22,7 +22,7 @@ if problem == "real data"
 
 else# problem == "sim data small problem"
 
-  jobname_mcwm = "gp_training_7_par_lunarc_new_data_4_coressimdata"
+  jobname_mcwm = "gp_training_7_par_lunarc_simdata_4_coressimdata"
   jobname_da = "_dagpest7simdatada_gp_mcmc"
   jobname_ada = "_dagpest7simdataada_gp_mcmc_dt"
 
