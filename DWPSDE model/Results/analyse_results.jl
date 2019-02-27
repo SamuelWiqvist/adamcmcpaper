@@ -19,17 +19,17 @@ problem = "real data"
 problem = "sim data scaled up problem"
 problem = "sim data small problem"
 
+algorithm = "MCWM"
 algorithm = "DA"
 algorithm = "ADA"
-algorithm = "MCWM"
 
 
 if problem == "real data" && algorithm == "MCWM"
-    jobname = 1
+    jobname = "gp_training_7_par_lunarc_new_data_4_coresnew_data"
 elseif problem == "real data" && algorithm == "DA"
     jobname = "_dagpest7new_datada_gp_mcmc"
 elseif problem == "real data" && algorithm == "ADA"
-    jobname = "_dagpest7new_datada_gp_mcmc"
+    jobname = "_dagpest7new_dataada_gp_mcmc_dt"
 elseif problem == "sim data scaled up problem" && algorithm == "MCWM"
     jobname = 1
 elseif problem == "sim data scaled up problem" && algorithm == "DA"
@@ -111,25 +111,42 @@ end
 acceptance_rate = sum(accept_vec[burn_in:end])/length(accept_vec[burn_in:end])
 
 # print info
+println("---------------------------------------------------")
+print("Problem:")
+print(problem)
+println("")
+print("Algorithm:")
+print(algorithm)
+println("")
+println("")
+
 
 @printf "Accept rate: %.4f %% \n" round(acceptance_rate*100,2)
 
+println("")
+
 @printf "True parameter values:\n"
-Base.showarray(STDOUT,round(theta_true,2),false)
+Base.showarray(STDOUT,round.(theta_true,2),false)
 @printf "\n"
+
+println("")
 
 @printf "Posterior mean:\n"
-Base.showarray(STDOUT,round(mean(Theta[:,burn_in+1:end],2),2),false)
+Base.showarray(STDOUT,round.(mean(Theta[:,burn_in+1:end],2),2),false)
 @printf "\n"
+
+println("")
 
 @printf "Posterior standard deviation:\n"
-Base.showarray(STDOUT,round(std(Theta[:,burn_in+1:end],2),2),false)
+Base.showarray(STDOUT,round.(std(Theta[:,burn_in+1:end],2),2),false)
 @printf "\n"
+
+println("")
 
 @printf "Posterior quantile intervals (2.5th and 97.5th quantiles as default):\n"
-Base.showarray(STDOUT,round(calcquantileint(Theta[:,burn_in+1:end],lower_q_int_limit,upper_q_int_limit),2),false)
+Base.showarray(STDOUT,round.(calcquantileint(Theta[:,burn_in+1:end],lower_q_int_limit,upper_q_int_limit),2),false)
 @printf "\n"
-
+println("---------------------------------------------------")
 
 # plot trace plots
 
@@ -234,64 +251,3 @@ PyPlot.figure()
 PyPlot.plot(loglik)
 PyPlot.ylabel(L"$\log-likelhood")
 PyPlot.xlabel("Iteration")
-
-#=
-# plot acceptance rate for each K:th iteration
-k = 500
-
-accept_vec_k = zeros(size(Theta,2)/k ,1)
-intervals = zeros(length(accept_vec_k),2)
-
-j = 1
-for r = 2:size(Theta,2)
-    if mod(r-1,k) == 0
-        accept_vec_k[j] = sum(accept_vec[r-k:r-1])/( r-1 - (r-k) ) * 100
-        intervals[j,:] = [r-k, r-1]
-        j = j +1
-    end
-end
-
-accept_vec_k[end] = sum(accept_vec[(length(accept_vec)-k+1):end])/( k ) * 100
-
-intervals[Int(size(Theta,2)/k),:] = [length(accept_vec)-k+1, length(accept_vec)]
-
-# the "names" for the intervals are not used
-#=
-intervals_vec = {"start"};
-
-for j = 1:length(intervals)
-    intervals_vec(j) = {strcat(num2str(intervals(j,1)), "-", num2str(intervals(j,2)))}; % I should probably use vertical concatunate here!
-end
-=#
-
-
-PyPlot.figure()
-PyPlot.bar(1:length(accept_vec_k),accept_vec_k)
-PyPlot.ylabel("Acceptance rate")
-PyPlot.xlabel("Iteration")
-
-
-# text and lable size
-text_size = 25
-label_size = 20
-
-# plot data
-PyPlot.figure(figsize=(15,10))
-ax = axes()
-PyPlot.plot(1:length(Z),Z)
-#PyPlot.xlabel("Index")
-ax[:tick_params]("both",labelsize = label_size)
-
-PyPlot.figure(figsize=(10,10))
-ax = axes()
-PyPlot.plt[:hist](Z,50)
-#PyPlot.ylabel("Freq.", fontsize=text_size)
-ax[:tick_params]("both",labelsize = label_size)
-
-# leave results folder
-#cd("..")
-
-
-# save results to jld file
-
-# this feature is not needed...

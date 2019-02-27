@@ -1,29 +1,15 @@
 # this file is only used to plot the results computed at luanrc
 
-# file names:
-
-# alg_prop_da_simdatadt
-# alg_prop_ada_simdatadt
-
-# alg_prop_da_simdatabiasedcoin
-# alg_prop_ada_simdatabiasedcoin
-
-# alg_prop_da_new_datadt
-# alg_prop_ada_new_datadt
-
-# alg_prop_da_newdatabiasedcoin
-# alg_prop_ada_newdatabiasedcoin
-
-# analysis
 using PyPlot
 using DataFrames
 
-alg_prop_da = Matrix(readtable("DWPSDE model/Results/alg_prop_da_simdatadt.csv"))
-alg_prop_ada = Matrix(readtable("DWPSDE model/Results/alg_prop_ada_simdatadt.csv"))
+# scaled up problem
+alg_prop_da = Matrix(readtable("DWPSDE model/Results/alg prop/alg_prop_da_simdatadt.csv"))
+alg_prop_ada = Matrix(readtable("DWPSDE model/Results/alg prop/alg_prop_ada_simdatadt.csv"))
 
-alg_prop_da = Matrix(readtable("DWPSDE model/Results/alg_prop_da_smallsimdatadt.csv"))
-alg_prop_ada = Matrix(readtable("DWPSDE model/Results/alg_prop_ada_smallsimdatadt.csv"))
-
+# small problem
+alg_prop_da = Matrix(readtable("DWPSDE model/Results/alg prop/alg_prop_da_smallsimdatadt.csv"))
+alg_prop_ada = Matrix(readtable("DWPSDE model/Results/alg prop/alg_prop_ada_smallsimdatadt.csv"))
 
 
 function print_stats(x::Vector)

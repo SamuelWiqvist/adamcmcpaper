@@ -8,8 +8,6 @@ using DataFrames
 
 remove_missing_values(x) = reshape(collect(skipmissing(x)),7,:)
 
-plot_theta_true = true
-
 # load data for MCWM
 
 problem = "real data"
@@ -17,51 +15,58 @@ problem = "sim data scaled up problem"
 problem = "sim data small problem"
 
 
-dataset = "simdata" # select simdata or new_data (i.e the new dataset)
+if problem == "real data"
 
-if dataset == "simdata"
+  jobname_mcwm = "gp_training_7_par_lunarc_new_data_4_coresnew_data"
+  jobname_da = "_dagpest7new_datada_gp_mcmc"
+  jobname_ada = "_dagpest7new_dataada_gp_mcmc_dt"
 
-  jobname_mcwm = "gp_training_7_par_lunarc_new_data_4_coressimdata" # jobname for mcwm
+elseif problem == "sim data scaled up problem"
+
+  jobname_mcwm = "gp_training_7_par_lunarc_new_data_4_coressimdata"
   jobname_da = "_dagpest7simdatada_gp_mcmc"
   jobname_ada = "_dagpest7simdataada_gp_mcmc_dt"
 
-elseif dataset == "new_data"
+else #problem == "sim data small problem"
 
-  # select res for real data
-  # important! These files should be update later on!!!
-  jobname_mcwm = "gp_training_7_par_lunarc_new_data_4_coresnew_data" # jobname for mcwm
+  jobname_mcwm = "gp_training_7_par_lunarc_new_data_4_coresnew_data"
   jobname_da = "_dagpest7new_datada_gp_mcmc"
   jobname_ada = "_dagpest7new_dataada_gp_mcmc_dt"
 
 end
 
+if problem == "real data"
+    plot_theta_true = false
+else
+    plot_theta_true = true
+end
 
-data_res = convert(Array,readtable("DWPSDE model/Results/output_res"*jobname_mcwm*".csv"))
+data_res = convert(Array,readtable("DWPSDE model/Results/"*problem*"/output_res"*jobname_mcwm*".csv"))
 
 M, N = size(data_res)
 
-data_param = convert(Array,readtable("DWPSDE model/Results/output_param"*jobname_mcwm*".csv"))
+data_param = convert(Array,readtable("DWPSDE model/Results/"*problem*"/output_param"*jobname_mcwm*".csv"))
 
 theta_true = data_param[1:N-2]
 burn_in = Int64(data_param[N-2+1])
 
-data_prior_dist = convert(Array,readtable("DWPSDE model/Results/output_prior_dist"*jobname_mcwm*".csv"))
+data_prior_dist = convert(Array,readtable("DWPSDE model/Results/"*problem*"/output_prior_dist"*jobname_mcwm*".csv"))
 
-data_prior_dist_type = convert(Array,readtable("DWPSDE model/Results/output_prior_dist_type"*jobname_mcwm*".csv"))
+data_prior_dist_type = convert(Array,readtable("DWPSDE model/Results/"*problem*"/output_prior_dist_type"*jobname_mcwm*".csv"))
 data_prior_dist_type = data_prior_dist_type[2]
 
-Z = convert(Array,readtable("DWPSDE model/Results/data_used"*jobname_mcwm*".csv"))
+Z = convert(Array,readtable("DWPSDE model/Results/"*problem*"/data_used"*jobname_mcwm*".csv"))
 Z = Z[:,1]
 
 Theta_mcwm = remove_missing_values(data_res[burn_in:end,1:N-2]') # stor data in column-major order
 
 burn_in = 1
 
-data_res = convert(Array,readtable("DWPSDE model/Results/output_res"*jobname_da*".csv"))
+data_res = convert(Array,readtable("DWPSDE model/Results/"*problem*"/output_res"*jobname_da*".csv"))
 M, N = size(data_res)
 Theta_da = remove_missing_values(data_res[burn_in:end,1:N-2]') # stor data in column-major order
 
-data_res = convert(Array,readtable("DWPSDE model/Results/output_res"*jobname_ada*".csv"))
+data_res = convert(Array,readtable("DWPSDE model/Results/"*problem*"/output_res"*jobname_ada*".csv"))
 M, N = size(data_res)
 Theta_ada = remove_missing_values(data_res[burn_in:end,1:N-2]') # stor data in column-major order
 
@@ -134,25 +139,9 @@ PyPlot.plot(1:length(Z),Z)
 #PyPlot.xlabel("Index")
 ax[:tick_params]("both",labelsize = label_size)
 
+# plot hist of data
 PyPlot.figure(figsize=(10,10))
 ax = axes()
 PyPlot.plt[:hist](Z,50)
 #PyPlot.ylabel("Freq.", fontsize=text_size)
 ax[:tick_params]("both",labelsize = label_size)
-
-
-
-#=
-# plot posterior, non-log scale
-PyPlot.figure()
-for i = 1:N-2
-    PyPlot.subplot(N-2,1,i)
-    h = kde(exp.(Theta[i,burn_in+1:end]))
-    PyPlot.plot(h.x,h.density, "b")
-    PyPlot.plot((exp(theta_true[i]), exp(theta_true[i])), (0, maximum(h.density)), "k")
-    PyPlot.ylabel(title_vec[i])
-end
-=#
-
-# leave results folder
-cd("..")
