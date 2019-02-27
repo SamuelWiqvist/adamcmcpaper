@@ -8,10 +8,14 @@ using DataFrames
 
 remove_missing_values(x) = reshape(collect(skipmissing(x)),7,:)
 
-load_data_from_files = true # load data from files or form some workspace
 plot_theta_true = true
 
 # load data for MCWM
+
+problem = "real data"
+problem = "sim data scaled up problem"
+problem = "sim data small problem"
+
 
 dataset = "simdata" # select simdata or new_data (i.e the new dataset)
 
@@ -32,43 +36,34 @@ elseif dataset == "new_data"
 end
 
 
-if load_data_from_files
+data_res = convert(Array,readtable("DWPSDE model/Results/output_res"*jobname_mcwm*".csv"))
 
-    data_res = convert(Array,readtable("DWPSDE model/Results/output_res"*jobname_mcwm*".csv"))
+M, N = size(data_res)
 
-    M, N = size(data_res)
+data_param = convert(Array,readtable("DWPSDE model/Results/output_param"*jobname_mcwm*".csv"))
 
-    data_param = convert(Array,readtable("DWPSDE model/Results/output_param"*jobname_mcwm*".csv"))
+theta_true = data_param[1:N-2]
+burn_in = Int64(data_param[N-2+1])
 
-    theta_true = data_param[1:N-2]
-    burn_in = Int64(data_param[N-2+1])
+data_prior_dist = convert(Array,readtable("DWPSDE model/Results/output_prior_dist"*jobname_mcwm*".csv"))
 
-    data_prior_dist = convert(Array,readtable("DWPSDE model/Results/output_prior_dist"*jobname_mcwm*".csv"))
+data_prior_dist_type = convert(Array,readtable("DWPSDE model/Results/output_prior_dist_type"*jobname_mcwm*".csv"))
+data_prior_dist_type = data_prior_dist_type[2]
 
-    data_prior_dist_type = convert(Array,readtable("DWPSDE model/Results/output_prior_dist_type"*jobname_mcwm*".csv"))
-    data_prior_dist_type = data_prior_dist_type[2]
+Z = convert(Array,readtable("DWPSDE model/Results/data_used"*jobname_mcwm*".csv"))
+Z = Z[:,1]
 
-    Z = convert(Array,readtable("DWPSDE model/Results/data_used"*jobname_mcwm*".csv"))
-    Z = Z[:,1]
+Theta_mcwm = remove_missing_values(data_res[burn_in:end,1:N-2]') # stor data in column-major order
 
-    Theta_mcwm = remove_missing_values(data_res[burn_in:end,1:N-2]') # stor data in column-major order
+burn_in = 1
 
-    burn_in = 1
+data_res = convert(Array,readtable("DWPSDE model/Results/output_res"*jobname_da*".csv"))
+M, N = size(data_res)
+Theta_da = remove_missing_values(data_res[burn_in:end,1:N-2]') # stor data in column-major order
 
-    data_res = convert(Array,readtable("DWPSDE model/Results/output_res"*jobname_da*".csv"))
-    M, N = size(data_res)
-    Theta_da = remove_missing_values(data_res[burn_in:end,1:N-2]') # stor data in column-major order
-
-    data_res = convert(Array,readtable("DWPSDE model/Results/output_res"*jobname_ada*".csv"))
-    M, N = size(data_res)
-    Theta_ada = remove_missing_values(data_res[burn_in:end,1:N-2]') # stor data in column-major order
-
-
-else
-
-    # this option should be used to load from stored .jld files
-
-end
+data_res = convert(Array,readtable("DWPSDE model/Results/output_res"*jobname_ada*".csv"))
+M, N = size(data_res)
+Theta_ada = remove_missing_values(data_res[burn_in:end,1:N-2]') # stor data in column-major order
 
 
 if N == 6

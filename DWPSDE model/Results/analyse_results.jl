@@ -15,52 +15,59 @@ remove_missing_values(x) = reshape(collect(skipmissing(x)),7,:)
 text_size = 25
 label_size = 20
 
-load_data_from_files = true # load data from files or form some  workspace
-dagp = true # was true #  set to _dagp to load ER-GP file  o.w. use ""
-jobname = "_dagpest7simdatada_gp_mcmc" # was "_dagpest7_real_dataada_gp_mcmc_dt" # set to jobname string
+problem = "real data"
+problem = "sim data scaled up problem"
+problem = "sim data small problem"
+
+algorithm = "DA"
+algorithm = "ADA"
+algorithm = "MCWM"
 
 
-plot_theta_true = true
-
-# training data from lunarc
-
-# gp_training_7_par_lunarc_new_data_4_coressimdata
-# _dagpest7simdatada_gp_mcmc
-# _dagpest7simdataada_gp_mcmc_dt
-
-
-# gp_training_7_par_lunarc_new_data_4_coresnew_data
-# _dagpest7new_datada_gp_mcmc
-# _dagpest7new_dataada_gp_mcmc_dt
-
-
-
-if load_data_from_files
-
-    data_res = convert(Array,readtable("DWPSDE model/Results/output_res"*jobname*".csv"))
-
-    M, N = size(data_res)
-
-    data_param = convert(Array,readtable("DWPSDE model/Results/output_param"*jobname*".csv"))
-
-    theta_true = data_param[1:N-2]
-    burn_in = Int64(data_param[N-2+1])
-
-    data_prior_dist = convert(Array,readtable("DWPSDE model/Results/output_prior_dist"*jobname*".csv"))
-
-    data_prior_dist_type = convert(Array,readtable("DWPSDE model/Results/output_prior_dist_type"*jobname*".csv"))
-    data_prior_dist_type = data_prior_dist_type[2]
-
-    Z = convert(Array,readtable("DWPSDE model/Results/data_used"*jobname*".csv"))
-    Z = Z[:,1]
-
-else
-
-    # this option should be used to load from stored .jld files
-
+if problem == "real data" && algorithm == "MCWM"
+    jobname = 1
+elseif problem == "real data" && algorithm == "DA"
+    jobname = "_dagpest7new_datada_gp_mcmc"
+elseif problem == "real data" && algorithm == "ADA"
+    jobname = "_dagpest7new_datada_gp_mcmc"
+elseif problem == "sim data scaled up problem" && algorithm == "MCWM"
+    jobname = 1
+elseif problem == "sim data scaled up problem" && algorithm == "DA"
+    jobname = 1
+elseif problem == "sim data scaled up problem" && algorithm == "ADA"
+    jobname = 1
+elseif problem == "sim data small problem" && algorithm == "MCWM"
+    jobname = 1
+elseif problem == "sim data small problem" && algorithm == "DA"
+    jobname = 1
+else #problem == "sim data scaled up problem" && algorithm = "ADA"
+    jobname = 1
 end
 
-if dagp
+if problem == "real data"
+    plot_theta_true = false
+else
+    plot_theta_true = true
+end
+
+data_res = convert(Array,readtable("DWPSDE model/Results/"*problem*"/output_res"*jobname*".csv"))
+
+M, N = size(data_res)
+
+data_param = convert(Array,readtable("DWPSDE model/Results/"*problem*"/output_param"*jobname*".csv"))
+
+theta_true = data_param[1:N-2]
+burn_in = Int64(data_param[N-2+1])
+
+data_prior_dist = convert(Array,readtable("DWPSDE model/Results/"*problem*"/output_prior_dist"*jobname*".csv"))
+
+data_prior_dist_type = convert(Array,readtable("DWPSDE model/Results/"*problem*"/output_prior_dist_type"*jobname*".csv"))
+data_prior_dist_type = data_prior_dist_type[2]
+
+Z = convert(Array,readtable("DWPSDE model/Results/"*problem*"/data_used"*jobname*".csv"))
+Z = Z[:,1]
+
+if algorithm == "DA" || algorithm == "ADA"
   burn_in = 1
 end
 
