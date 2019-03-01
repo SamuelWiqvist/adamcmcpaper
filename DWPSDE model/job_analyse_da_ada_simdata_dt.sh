@@ -22,6 +22,7 @@
 #SBATCH -N 1
 #SBATCH --tasks-per-node=20
 #SBATCH -n 5
+#SBATCH --exclusive
 
 # notification 
 #SBATCH --mail-user=samuel.wiqvist@matstat.lu.se 

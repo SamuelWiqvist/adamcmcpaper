@@ -10,7 +10,7 @@
 #SBATCH -p lu
 
 # time consumption HH:MM:SS
-#SBATCH -t 30:00:00 
+#SBATCH -t 160:00:00 
 
 # name for script 
 #SBATCH -J da_ada_simdata_dt 

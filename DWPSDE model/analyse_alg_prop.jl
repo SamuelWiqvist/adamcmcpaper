@@ -33,7 +33,7 @@ log_scale_prior = false
 mcmc_alg = "MCWM"  # set MCWM or PMCMC
 
 # prob run MH update
-beta_MH = 0.15 # should be 0.1
+beta_MH = 0 # usual setting 0.15 # should be 0.1
 
 # load training data
 load_tranining_data = true
@@ -48,7 +48,7 @@ if job == "simdata"
 	global_jobname = "est7"*job
 
 	# nbr particels
-	nbr_particels = 3*400
+	nbr_particels = 200 # scaled up problem 3*400, small problem 200
 
 	# use simulated data
 	sim_data = true # set to true to use sim data
@@ -169,7 +169,7 @@ else
 
 
 	if job == "simdata"
-		@load "gp_training_7_par_training_and_testsimdatalunarc_new.jld"
+		@load "gp_training_7_par_training_and_testsimdatalunarc_simdata_4_cores_small.jld" # scaled up problem gp_training_7_par_training_and_testsimdatalunarc_new, small problem gp_training_7_par_training_and_testsimdatalunarc_simdata_4_cores_small
 	elseif job == "new_data"
 		@load "gp_training_7_par_training_and_testnew_datalunarc_new.jld"
 	end
@@ -237,7 +237,7 @@ accelerated_da = false
 
 jobname = global_jobname*"da_gp_mcmc"
 
-nbr_alg_iter = 50
+nbr_alg_iter = 100 # 25 # was 50
 
 ################################################################################
 ##               Run DA-GP-MCMC                                              ###
@@ -549,7 +549,12 @@ end
 
 
 # save results
-writetable("Results/alg_prop_da_"*job*select_case_model*".csv", convert(DataFrame, alg_prop_da))
-writetable("Results/alg_prop_ada_"*job*select_case_model*".csv", convert(DataFrame, alg_prop_ada))
 
+# scaled up problem 
+#writetable("Results/alg_prop_da_3"*job*select_case_model*".csv", convert(DataFrame, alg_prop_da))
+#writetable("Results/alg_prop_ada_3"*job*select_case_model*".csv", convert(DataFrame, alg_prop_ada))
+
+# small problem 
+writetable("Results/alg_prop_da_small"*job*select_case_model*".csv", convert(DataFrame, alg_prop_da))
+writetable("Results/alg_prop_ada_small"*job*select_case_model*".csv", convert(DataFrame, alg_prop_ada))
 
