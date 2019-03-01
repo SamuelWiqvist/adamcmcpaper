@@ -16,22 +16,24 @@ dX_t = -V_extended'(X_t)dt + dWt and U_t follows an UO-process.
 * `dt`: dt for X process.
 * `diff_dt`: differeance between dt for X and U process.
 """
-function generate_data(theta, theta_known, scale_grid, dt, dt_U)
+function generate_data(theta,theta_known, scale_grid, dt, dt_U, nbr_sim_steps, start_val)
 
   # set parameters, use this to move between difference parameter combinations easily
   (Κ, Γ, A,A_sign,B,c,d,g,f,power1,power2,sigma) = set_parameters(theta, theta_known, length(theta))
 
   # grid for the X_t process
-  length_of_data = 25000
+  #length_of_data = 25000
+  length_of_data = nbr_sim_steps
   #scale_grid = 4 #1  # choose lenght of data
   T = 1*scale_grid
   N = convert(Int64, scale_grid*length_of_data)
 
   # grid for X process
-  N_dt = Int(round(dt_U/dt))
+  N_dt = 1 #Int(round(dt_U/dt))
 
-  Z_0 = 24.5 # start in the lower state
+  #Z_0 = 24.5 # start in the lower state
 
+  Z_0 =  start_val
   X_sim = zeros(N+1)
   U_sim = zeros(N+1)
   dB = zeros(N_dt)

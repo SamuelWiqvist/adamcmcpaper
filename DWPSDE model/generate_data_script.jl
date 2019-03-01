@@ -1,22 +1,12 @@
 # load files and functions
-try
-  cd("DWPSDE model")
-catch
-  warn("Already in the DWP-SDE folder.")
-end
 
-
-cd("..")
-include(pwd()*"\\select case\\selectcase.jl")
-cd("DWPSDE model")
 
 # load files and functions
-include("set_up.jl")
+include(pwd()*"/DWPSDE model/set_up.jl")
 
 using PyPlot
 using KernelDensity
 using Distributions
-
 # true parameter valuse
 #Κ = 0.3
 #Γ = 0.9
@@ -37,15 +27,19 @@ using Distributions
 
 
 # load data
+Z = convert(Array,readtable("DWPSDE model/Results/sim data small problem/data_usedgp_training_7_par_lunarc_simdata_4_coressimdata.csv"))
+Z_data = Z[:,1]
 
-Z_data = load_data()
+
+
+#Z_data = load_data()
 
 PyPlot.figure()
-PyPlot.plot(Z_data')
+PyPlot.plot(Z_data)
 
-bins = 100
+bins = 50
 PyPlot.figure()
-h1 = PyPlot.plt[:hist](Z_data',bins)
+h1 = PyPlot.plt[:hist](Z_data,bins)
 
 
 
@@ -89,8 +83,10 @@ theta_known = [Κ, Γ, A, A_sign, B, f, g, power1, power2, sigma] # set vector w
 #theta = log([0.2415 1.0075 28.4738 3.8861 1.5036 1.5500 1.6472]) # true values for the unknown parameters
 #theta_known = [A,B,f,g] # set vector with known parameters
 
+dt
+dt_U
 
-Z_sim, N_dt = generate_data(theta, theta_known,1,dt,dt_U)
+Z_sim, N_dt = generate_data(theta, theta_known,1,dt,dt_U,length(Z_data), 28.)
 
 PyPlot.figure()
 PyPlot.plot(X_thinned)
