@@ -81,21 +81,35 @@ end
 
 # compute paramter estimations
 Theta = remove_missing_values(data_res[:,1:N-2]') # stor data in column-major order
-posterior_param_est = round.(mean(Theta[:,burn_in+1:end],2),2)
+Theta = Theta[:,burn_in+1:end]
+posterior_param_est = round.(mean(Theta,2),2)
 
 # set paramters for forward sim
 N_simulations = 3
-theta = posterior_param_est
 nbr_sim_steps = length(Z)
 start_val = Z[1]
 
+# high density region of posterior
+dist_from_posterior_mean = zeros(size(Theta,2))
+
+for i = 1:size(Theta,2)
+    dist_from_posterior_mean[i] = norm(Theta[:,i]-posterior_param_est)
+end
+
+sum(dist_from_posterior_mean .< quantile(dist_from_posterior_mean, 0.25))
+idx = find(x -> x < quantile(dist_from_posterior_mean, 0.25),dist_from_posterior_mean)
+posterior_high_dens = Theta[:,idx]
 
 # pre-allocate data martix
 forward_sim = zeros(N_simulations, nbr_sim_steps+1)
 
+posterior_dist = Categorical(1/size(posterior_high_dens,2)*ones(size(posterior_high_dens,2)))
+
 # run forward simulations
 for i = 1:N_simulations
-    forward_sim[i,:] = generate_data(theta, theta_known, 1., dt, dt_U, nbr_sim_steps, start_val)[1]
+    idx = rand(posterior_dist)
+    theta = posterior_high_dens[:,idx]
+    forward_sim[i,:] = generate_data(posterior_param_est, theta_known, 1., dt, dt_U, nbr_sim_steps, start_val)[1]
 end
 
 # plot forward simulations
