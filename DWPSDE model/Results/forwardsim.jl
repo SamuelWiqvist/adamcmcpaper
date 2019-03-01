@@ -96,7 +96,6 @@ for i = 1:size(Theta,2)
     dist_from_posterior_mean[i] = norm(Theta[:,i]-posterior_param_est)
 end
 
-sum(dist_from_posterior_mean .< quantile(dist_from_posterior_mean, 0.25))
 idx = find(x -> x < quantile(dist_from_posterior_mean, 0.25),dist_from_posterior_mean)
 posterior_high_dens = Theta[:,idx]
 
@@ -109,7 +108,7 @@ posterior_dist = Categorical(1/size(posterior_high_dens,2)*ones(size(posterior_h
 for i = 1:N_simulations
     idx = rand(posterior_dist)
     theta = posterior_high_dens[:,idx]
-    forward_sim[i,:] = generate_data(posterior_param_est, theta_known, 1., dt, dt_U, nbr_sim_steps, start_val)[1]
+    forward_sim[i,:] = generate_data(theta, theta_known, 1., dt, dt_U, nbr_sim_steps, start_val)[1]
 end
 
 # plot forward simulations
