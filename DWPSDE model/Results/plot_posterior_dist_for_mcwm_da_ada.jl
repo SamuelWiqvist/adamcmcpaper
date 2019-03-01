@@ -92,9 +92,13 @@ end
 text_size = 25
 label_size = 20
 
+(1:N-2)[1]
+
+
+
 # plot posterior
 #PyPlot.figure()
-for i = 1:N-2
+for i = (1:N-2) # (1:N-2)[j] to only plot figure j
     #PyPlot.subplot(N-2,1,i)
     PyPlot.figure(figsize=(10,10))
     ax = axes()

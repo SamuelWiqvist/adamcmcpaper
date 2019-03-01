@@ -1,4 +1,4 @@
-# Analyse results, deprecated file 
+# Analyse results, used to print posterior inference results  
 
 #using Plots
 using PyPlot
