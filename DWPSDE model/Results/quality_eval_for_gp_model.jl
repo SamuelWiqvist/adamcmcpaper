@@ -1,5 +1,7 @@
 # Script for evaluating the GP model
 
+# 1) load correct files
+# 2) fix the code (remove unnecessary parts)
 
 using JLD
 using HDF5

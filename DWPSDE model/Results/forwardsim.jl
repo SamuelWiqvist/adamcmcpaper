@@ -98,11 +98,10 @@ end
 
 idx = find(x -> x < quantile(dist_from_posterior_mean, 0.25),dist_from_posterior_mean)
 posterior_high_dens = Theta[:,idx]
+posterior_dist = Categorical(1/size(posterior_high_dens,2)*ones(size(posterior_high_dens,2)))
 
 # pre-allocate data martix
 forward_sim = zeros(N_simulations, nbr_sim_steps+1)
-
-posterior_dist = Categorical(1/size(posterior_high_dens,2)*ones(size(posterior_high_dens,2)))
 
 # run forward simulations
 for i = 1:N_simulations

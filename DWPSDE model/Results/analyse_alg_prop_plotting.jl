@@ -55,8 +55,8 @@ ax = axes()
 PyPlot.plt[:hist](speed_up,20, alpha = 0.6)
 ax[:tick_params]("both",labelsize = label_size)
 
-# nbr pf eval
 
+# nbr pf eval
 println("Nbr pf eval:")
 print_stats(alg_prop_da[:,2])
 print_stats(alg_prop_ada[:,2])

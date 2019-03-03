@@ -1,4 +1,4 @@
-# This file contains a script to run posterior checks
+# This file contains a script to run posterior checks, deprecated. 
 
 using Plots
 using PyPlot
