@@ -1,13 +1,13 @@
 # profiler output #
 ###################
 *.jlprof
-*jld 
+*.jld
 
 # gp data file    #
 ###################
 DWPSDE model/fited_gp_simdata.jld
 DWPSDE model/fited_gp_new_data.jld
 
-# do not upload data 
+# do not upload data
 DWPSDE model/new_data_set.txt
 DWPSDE model/1LE1_L.dat
