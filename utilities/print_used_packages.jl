@@ -1,5 +1,5 @@
 # simple script to print the status (i.e. version) for
-# all packages that we use 
+# all packages that we use
 
 used_packages =  ["Distributions";
                   "DataFrames";
@@ -9,7 +9,7 @@ used_packages =  ["Distributions";
                   "StatsFuns";
                   "JLD";
                   "HDF5";
-				   "Yeppp"]
+	"Yeppp"]
 
 for pack in used_packages
   Pkg.status(pack)

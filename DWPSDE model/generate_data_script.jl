@@ -22,7 +22,21 @@ using Distributions
 ###        old data set                                                      ###
 ################################################################################
 
+# load new data 
+# load data
+Z = convert(Array,readtable("DWPSDE model/Results/sim data small problem/data_usedgp_training_7_par_lunarc_simdata_4_coressimdata.csv"))
+Z_data = Z[:,1]
 
+
+
+#Z_data = load_data()
+
+PyPlot.figure()
+PyPlot.plot(Z_data)
+
+bins = 50
+PyPlot.figure()
+h1 = PyPlot.plt[:hist](Z_data,bins)
 
 # load data
 
