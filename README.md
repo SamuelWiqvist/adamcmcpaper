@@ -1,3 +1,5 @@
+# This branch is deprecated
+
 Code used to run the algorithms on Lunarc (http://www.lunarc.lu.se/).
 
 ## Software
@@ -19,7 +21,7 @@ Platform Info:
 
 ##### Packages
 
-```julia 
+```julia
 julia>include("utilities/print_used_packages.jl")
  - Distributions                 0.13.0
  - DataFrames                    0.9.1
@@ -31,4 +33,3 @@ julia>include("utilities/print_used_packages.jl")
  - HDF5                          0.8.1
 
 ```
-
