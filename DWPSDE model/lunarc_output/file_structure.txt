@@ -1,0 +1,8 @@
+/DWPSDE model/lunarc_output/analyse alg
+- output files from LUNARC for algorithm analyses
+
+/DWPSDE model/lunarc_output/gen training test data
+- output files from LUNARC for generating the training and test data
+
+/DWPSDE model/lunarc_output/mcmc algorithms
+- output files from LUNARC for running the MCMC algorithms

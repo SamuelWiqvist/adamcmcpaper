@@ -4,28 +4,43 @@ This repository contains all code for the pre-print paper *Accelerating delayed-
 
 **N.B.:** The results in the pre-print at arXiv v1 are computed using the version of the code at tag *preprint_v1_master* and *preprint_v1_lunarc* for the `master` and the `lunarc` branch respectively.  
 
+All computations are carried out on the AURORA@LUNARC http://www.lunarc.lu.se/resources/hardware/aurora/ cluster.
+
+**The lunarc branch is depreciated, only the master branch is used now**
 
 ## File structure
 
-The files (in the master branch) are structured as following:
+The files are structured as following:
 
 /DWPSDE model
 - source files for the implementations of the algorithms for the DWP-SDE model
 - scripts to run the algorithms
+- run-scripts for LUNARC
 - datasets and simulated data
 - training data for DA and ADA
 
 /DWPSDE model/Results
 - all numerical results in .csv files
 
+/DWPSDE model/lunarc_output
+- output files from LUNARC
+
+/DWPSDE model/analyses
+- scripts for analyzing the results  
+
 /Ricker model
 - source files for the implementations of the algorithms for the Ricker model
 - scripts to run the algorithms
 - simulated data
 - training data for DA and ADA
+- run-scripts for LUNARC
+- scripts for analyzing the results  
 
 /Ricker model/Results
 - all numerical results in .csv files
+
+/Ricker model/lunarc_output
+- output files from LUNARC
 
 /adaptive update algorithms
 - source files for the adaptive tuning algorithms
@@ -40,25 +55,21 @@ The files (in the master branch) are structured as following:
 
 - source files for various help functions
 
-
-The `lunarc` branch contains the code used to run the algorithms on AURORA@LUNARC  http://www.lunarc.lu.se/resources/hardware/aurora/. The source code in the `lunarc` branch is similar to the source code on the `master` branch. The `lunarc` branch also contains scripts to run the algorithms on AURORA@LUNARC, and all numerical results.
-
 ## Software  
 
 #### Julia version
 
 ```julia
 julia> versioninfo()
-Julia Version 0.6.3
-Commit d55cadc350 (2018-05-28 20:20 UTC)
+Julia Version 0.5.2
 Platform Info:
   OS: Linux (x86_64-pc-linux-gnu)
-  CPU: Intel(R) Core(TM) i7-6600U CPU @ 2.60GHz
+  CPU: Intel(R) Xeon(R) CPU E5-2650 v3 @ 2.30GHz
   WORD_SIZE: 64
-  BLAS: libopenblas (USE64BITINT DYNAMIC_ARCH NO_AFFINITY Haswell)
-  LAPACK: libopenblas64_
-  LIBM: libopenlibm
-  LLVM: libLLVM-3.9.1 (ORCJIT, skylake)
+  BLAS: libmkl_rt
+  LAPACK: libmkl_rt
+  LIBM: libimf
+  LLVM: libLLVM-3.7.1 (ORCJIT, haswell)
 ```
 
 #### Packages
