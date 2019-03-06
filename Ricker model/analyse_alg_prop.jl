@@ -136,7 +136,7 @@ if !load_training_data
   data_training_star = [Theta_training_star; loglik_training_star']
   data_training_old = [Theta_training_old; loglik_training_old']
 
-  save("gp_training_and_test_data_ricker_gen_lunarc_new_code_structure.jld",
+  save("gp_training_and_test_data.jld",
         "res_training", res_training,
         "data_training_star", data_training_star,
         "data_training_old", data_training_old,
@@ -146,7 +146,7 @@ if !load_training_data
 
 else
 
-  @load "gp_training_and_test_data_ricker_gen_lunarc_new_code_structure.jld"
+  @load "gp_training_and_test_data.jld"
 
 end
 

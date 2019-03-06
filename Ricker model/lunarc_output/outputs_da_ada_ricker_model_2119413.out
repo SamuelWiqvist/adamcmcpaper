@@ -1,0 +1,154 @@
+Starting ml estimationLength of training data: 1800Start values for optimization:
+[-1504.26; 1330.67; 4707.63; -27.0965; -69.7612; -741.896; -4.55606; -349.435; 4.25544; -1.14751; 1.04256; 0.695988; -1.63806; -2.80095; -0.698151]Iter     Function value   Gradient norm 
+     0     4.051978e+03     6.469485e+03
+     1     3.199954e+03     1.278037e+03
+     2     2.480539e+03     1.886427e+03
+     3     2.348307e+03     2.212974e+03
+     4     2.244520e+03     1.318612e+03
+     5     2.201741e+03     7.844310e+02
+     6     2.188646e+03     7.239698e+02
+     7     2.170086e+03     7.051042e+02
+     8     2.144532e+03     5.540758e+02
+     9     2.137979e+03     3.541595e+02
+    10     2.115339e+03     1.181726e+02
+    11     2.029192e+03     4.641639e+02
+    12     1.950620e+03     1.246054e+03
+    13     1.736410e+03     1.381985e+03
+    14     1.729256e+03     1.894662e+03
+    15     1.696098e+03     4.079087e+03
+    16     1.643650e+03     8.728227e+03
+    17     1.627430e+03     1.994795e+04
+    18     1.627432e+03     1.995128e+04
+Estimated parameters of the GP model:
+Estimated Β:s:
+[-1504.49,1330.45,4706.94,-26.8161,-67.9115,-743.81,-3.75538,-350.547,4.29949,-0.28211]
+Estimated log Φ:s:
+[-0.30009,1.08334,-2.42283,-1.87928,-0.778379]
+elapsed time: 211.518876984 seconds
+Starting DA-GP-MCMC with adaptive RW estimating 3 parameters
+Covariance - kernel_MH_direct:
+[0.0249302 -0.00431953 0.0217013; -0.00431953 0.00153451 -0.00292223; 0.0217013 -0.00292223 0.151787]
+MCMC algorithm: MCWM
+Adaptation algorithm: noAdaptation
+Prior distribution: Uniform
+Particel filter: bootstrap
+Iteration: 1
+Covariance:
+[0.0301655 -0.00522663 0.0262586; -0.00522663 0.00185676 -0.00353589; 0.0262586 -0.00353589 0.183662]
+ESS: 239.0013
+Loglik: 6405.8080 
+Percentage done: 20.00 % 
+Acceptance rate on iteration 1 to 10000 is 6.3806 %
+Covariance:
+[0.0301655 -0.00522663 0.0262586; -0.00522663 0.00185676 -0.00353589; 0.0262586 -0.00353589 0.183662]
+Loglik: 6402.7464 
+ESS: 403.4712
+ESS: 427.0188
+Percentage done: 40.00 % 
+Acceptance rate on iteration 10001 to 20000 is 6.4406 %
+Covariance:
+[0.0301655 -0.00522663 0.0262586; -0.00522663 0.00185676 -0.00353589; 0.0262586 -0.00353589 0.183662]
+Loglik: 6403.6679 
+Percentage done: 60.00 % 
+Acceptance rate on iteration 20001 to 30000 is 6.2206 %
+Covariance:
+[0.0301655 -0.00522663 0.0262586; -0.00522663 0.00185676 -0.00353589; 0.0262586 -0.00353589 0.183662]
+Loglik: 6404.6961 
+Percentage done: 80.00 % 
+Acceptance rate on iteration 30001 to 40000 is 6.7407 %
+Covariance:
+[0.0301655 -0.00522663 0.0262586; -0.00522663 0.00185676 -0.00353589; 0.0262586 -0.00353589 0.183662]
+Loglik: 6403.2190 
+ESS: 175.2375
+ESS: 157.5241
+elapsed time: 421.300778128 seconds
+Ending DA-GP-MCMC with adaptive RW estimating 3 parameters
+Algorithm: MCWM
+Adaptation algorithm: noAdaptation
+Prior distribution: Uniform
+Particel filter: bootstrap
+Time pre-er:  0
+Time fit GP model:  0
+Time er-part:  421
+Number early-rejections: 32465
+Number of cases directly to ordinary MH: 7454
+Number of cases directly to ordinary MH accapted: 2640
+Number cases in secound stage: 10080
+Number accepted in secound stage: 544
+Total number of evaluations of the particle filter: 17534
+Acceptance rate for ordinary MH accapted: 35.4172
+Acceptance rate a_1: 23.6926
+Acceptance rate a_2: 5.3968
+Acceptance rate a_1*a_2: 1.2786
+Acceptance rate a (for entier algorithm): 6.3680
+424.822423 seconds (11.24 G allocations: 546.351 GB, 15.08% gc time)
+Est prob:
+[0.30593,0.853736,0.69407,0.146264]
+Covariance - kernel_secound_stage_direct:
+[0.0249302 -0.00431953 0.0217013; -0.00431953 0.00153451 -0.00292223; 0.0217013 -0.00292223 0.151787]
+Starting ADA-GP-MCMC with adaptive RW estimating 3 parameters
+MCMC algorithm: MCWM
+Adaptation algorithm: noAdaptation
+Select case model: DT
+Prior distribution: Uniform
+Particel filter: bootstrap
+Iteration: 1
+Covariance:
+[0.0301655 -0.00522663 0.0262586; -0.00522663 0.00185676 -0.00353589; 0.0262586 -0.00353589 0.183662]
+ESS: 221.4411
+Loglik: 6404.5972 
+Percentage done: 20.00 % 
+Acceptance rate on iteration 1 to 10000 is 6.8807 %
+Covariance:
+[0.0301655 -0.00522663 0.0262586; -0.00522663 0.00185676 -0.00353589; 0.0262586 -0.00353589 0.183662]
+Loglik: 6402.6729 
+Percentage done: 40.00 % 
+Acceptance rate on iteration 10001 to 20000 is 6.4306 %
+Covariance:
+[0.0301655 -0.00522663 0.0262586; -0.00522663 0.00185676 -0.00353589; 0.0262586 -0.00353589 0.183662]
+Loglik: 6405.3576 
+Percentage done: 60.00 % 
+Acceptance rate on iteration 20001 to 30000 is 6.7507 %
+Covariance:
+[0.0301655 -0.00522663 0.0262586; -0.00522663 0.00185676 -0.00353589; 0.0262586 -0.00353589 0.183662]
+Loglik: 6399.8086 
+Percentage done: 80.00 % 
+Acceptance rate on iteration 30001 to 40000 is 6.3906 %
+Covariance:
+[0.0301655 -0.00522663 0.0262586; -0.00522663 0.00185676 -0.00353589; 0.0262586 -0.00353589 0.183662]
+Loglik: 6400.8928 
+ESS: 83.2378
+ESS: 192.2380
+elapsed time: 355.114602023 seconds
+Ending ADA-GP-MCMC with adaptive RW estimating 3 parameters
+Algorithm: MCWM
+Adaptation algorithm: noAdaptation
+Prior distribution: Uniform
+Particel filter: bootstrap
+Time consumption:Time pre-er:  0
+Time fit GP model:  0
+Time er-part:  355
+Number early-rejections: 32100
+Number of cases directly to ordinary MH: 7353
+Number of cases directly to ordinary MH accapted: 2715
+Number split accaptance region early-accept: 157
+Number split accaptance region early-reject: 6354
+Number cases in secound stage: 10546
+Number accepted in secound stage: 384
+Acceptance rate for ordinary MH accapted: 36.9237
+Acceptance rate a_1: 24.7292
+Acceptance rate a_2: 3.6412
+Acceptance rate a_1*a_2: 0.9004
+Acceptance rate a (for entier algorithm): 6.5120
+Total number of evaluations of the particle filter: 11388
+Number case 1 or 3: 10350
+Number case 2 or 4: 196
+Number case 1: 3639, 35.1594 % of all cases
+Number case 2: 163, 83.1633 % of all cases
+Number case 3: 6711, 64.8406 % of all cases
+Number case 4: 33, 16.8367 % of all cases
+Number pf runs in case 1: 3515, prob pf given case 1 96.5925 %
+Number pf runs in case 2: 163, prob pf given case 2 100.0000 %
+Number pf runs in case 3: 357, prob pf given case 3 5.3196 %
+Number pf runs in case 4: 0, prob pf given case 4 0.0000 %
+365.889417 seconds (7.31 G allocations: 363.245 GB, 24.78% gc time)

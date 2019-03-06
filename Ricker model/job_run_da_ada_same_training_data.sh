@@ -21,6 +21,7 @@
 # set number of nodes 
 #SBATCH -N 1
 #SBATCH -n 1
+#SBATCH --exclusive
 
 # notification 
 #SBATCH --mail-user=samuel.wiqvist@matstat.lu.se 
