@@ -1,0 +1,9 @@
+WARNING: Method definition describe(AbstractArray) in module StatsBase at /home/samwiq/.julia/v0.5/StatsBase/src/scalarstats.jl:573 overwritten in module DataFrames at /home/samwiq/.julia/v0.5/DataFrames/src/abstractdataframe/abstractdataframe.jl:407.
+WARNING: Already in the Ricker model folder
+ERROR: LoadError: LoadError: LoadError: syntax: invalid type signature
+ in include_from_node1(::String) at ./loading.jl:488 (repeats 3 times)
+ in process_options(::Base.JLOptions) at ./client.jl:265
+ in _start() at ./client.jl:321
+while loading /home/samwiq/project 1 accalerated delated accaptance mcmc/adaptive updating algorithms/adaptiveupdate.jl, in expression starting on line 3
+while loading /home/samwiq/project 1 accalerated delated accaptance mcmc/Ricker model/rickermodel.jl, in expression starting on line 17
+while loading /home/samwiq/project 1 accalerated delated accaptance mcmc/Ricker model/analyse_alg_prop.jl, in expression starting on line 11

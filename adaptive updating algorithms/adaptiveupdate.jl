@@ -1,6 +1,6 @@
-# This file contains the functions and types related to the adaptive updating algorithms 
+# This file contains the functions and types related to the
 
-abstract type  AdaptationAlgorithm end
+abstract AdaptationAlgorithm
 
 type noAdaptation <: AdaptationAlgorithm
   Cov::Array{Float64}
@@ -84,7 +84,6 @@ end
 
 doc"""
     return_covariance_matrix(algorithm::AMUpdate, adaptive_update_params::Tuple,r::Int64)
-
 Print function for AMUpdate.
 """
 function return_covariance_matrix(algorithm::AMUpdate, adaptive_update_params::Tuple,r::Int64)
@@ -95,7 +94,6 @@ end
 
 doc"""
     return_covariance_matrix(algorithm::AMUpdate_gen, adaptive_update_params::Tuple,r::Int64)
-
 Print function for AMUpdate_gen.
 """
 function return_covariance_matrix(algorithm::AMUpdate_gen, adaptive_update_params::Tuple,r::Int64)
@@ -190,7 +188,6 @@ end
 
 doc"""
     gaussian_random_walk(algorithm::AMUpdate_gen, adaptive_update_params::Tuple, Theta::Vector, r::Int64)
-
 RW for AMUpdate_gen.
 """
 function gaussian_random_walk(algorithm::AMUpdate_gen, adaptive_update_params::Tuple, Theta::Vector, r::Int64)
