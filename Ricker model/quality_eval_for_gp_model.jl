@@ -5,10 +5,20 @@ using PyPlot
 include(pwd()*"/utilities/featurescaling.jl")
 include(pwd()*"/utilities/normplot.jl")
 include(pwd()*"/utilities/posteriorinference.jl")
-include(pwd()*"/select case/selectcase.jl")
+
+try
+  cd("Ricker model")
+catch
+ warn("Already in the Ricker model folder")
+end
 
 include("rickermodel.jl")
 
+try
+  cd("..")
+catch
+ warn("Already in main folder")
+end
 
 ################################################################################
 ##     set up  problem                                                        ##
@@ -81,71 +91,14 @@ load_training_data = true
 
 if !load_training_data
 
-  # generate training data
-  tic()
-  # collect data
-  res_training, Theta_star_training, loglik_star_training,Theta_old_training,loglik_old_training, cov_matrix = mcmc(problem_training, true, true)
-
-  time_pre_er = toc()
-
-  # write outputs
-  res = res_training[1]
-
-  Theta = res.Theta_est
-  loglik = res.loglik_est
-  accept_vec = res.accept_vec
-  prior_vec = res.prior_vec
-
-  loglik_avec_priorvec = zeros(3, length(loglik))
-  loglik_avec_priorvec[1,:] = loglik
-  loglik_avec_priorvec[2,:] = accept_vec
-  loglik_avec_priorvec[3,:] = prior_vec
-
-  algorithm_parameters = zeros(10, 2)
-
-  algorithm_parameters[1,1] = problem_training.alg_param.burn_in
-  algorithm_parameters[2:4,1] = problem_training.model_param.theta_true
-  algorithm_parameters[5:7,1] = problem_training.model_param.theta_0
-  algorithm_parameters[8:end,:] = problem_training.prior_dist.prior_parameters
-
-  writetable("Results/Theta_training.csv", convert(DataFrame, Theta))
-  writetable("Results/loglik_avec_priorvec_training.csv", convert(DataFrame, loglik_avec_priorvec))
-  writetable("Results/algorithm_parameters_training.csv", convert(DataFrame, algorithm_parameters))
-
-  # split tranining and test data
-
-  Theta_test_star = Theta_star_training[:,(end-length_test_data+1):end]
-  loglik_test_star = loglik_star_training[(end-length_test_data+1):end]
-
-  Theta_test_old = Theta_old_training[:,(end-length_test_data+1):end]
-  loglik_test_old = loglik_old_training[(end-length_test_data+1):end]
-
-  data_test_star = [Theta_test_star; loglik_test_star']
-  data_test_old = [Theta_test_old; loglik_test_old']
-
-  Theta_training_star = Theta_star_training[:,1:length_training_data]
-  loglik_training_star = loglik_star_training[1:length_training_data]
-
-  Theta_training_old = Theta_old_training[:,1:length_training_data]
-  loglik_training_old = loglik_old_training[1:length_training_data]
-
-  data_training_star = [Theta_training_star; loglik_training_star']
-  data_training_old = [Theta_training_old; loglik_training_old']
-
-  save("gp_training_and_test_data_ricker_gen_local.jld",
-        "res_training", res_training,
-        "data_training_star", data_training_star,
-        "data_training_old", data_training_old,
-        "data_test_star", data_test_star,
-        "data_test_old", data_test_old,
-        "cov_matrix",cov_matrix)
+    # we can only load the training and test data
 
 else
 
   #@load "gp_training_$(set_nbr_params)_par.jld"
   #@load "gp_training_$(set_nbr_params)_par.jld"
 
-  @load "Ricker model/gp_training_and_test_data_ricker_gen_lunarc_new_code_structure.jld"
+  @load "Ricker model/gp_training_and_test_data.jld"
 
 end
 

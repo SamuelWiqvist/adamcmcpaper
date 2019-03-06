@@ -6,16 +6,19 @@ using Distributions
 using DataFrames
 using StatsBase
 using Optim
-using Lasso
+#using Lasso
 using GLM
 using JLD
 using HDF5
 
-
 # load functions
-include("/home/samwiq/project 1 accalerated delated accaptance mcmc/gpmodel/gp_model.jl")
-include("/home/samwiq/project 1 accalerated delated accaptance mcmc/adaptive updating algorithms/adaptiveupdate.jl")
-include("/home/samwiq/project 1 accalerated delated accaptance mcmc/select case/selectcase.jl")
+#include("/home/samwiq/project 1 accalerated delated accaptance mcmc/gpmodel/gp_model.jl")
+#include("/home/samwiq/project 1 accalerated delated accaptance mcmc/adaptive updating algorithms/adaptiveupdate.jl")
+#include("/home/samwiq/project 1 accalerated delated accaptance mcmc/select case/selectcase.jl")
+
+include(pwd()[1:end-13]*"/gpmodel/gp_model.jl")
+include(pwd()[1:end-13]*"/adaptive updating algorithms/adaptiveupdate.jl")
+include(pwd()[1:end-13]*"/select case/selectcase.jl")
 
 # types:
 

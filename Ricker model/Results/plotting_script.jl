@@ -33,19 +33,6 @@ ax[:tick_params]("both",labelsize=label_size)
 # load plotting function
 include(pwd()*"/Ricker model/Results/plotting.jl")
 
-
-################################################################################
-###   Notes regarding the different job in Lunarc                            ###
-################################################################################
-
-# add this information when I do the final simulations
-
-# MCWM: Job_id=791451; Runtime: ??
-
-# PMCMC: Job_id=791448; Runtime: ??
-
-# DA/ADA dt: Job_id=791450; Runtime: ??
-
 ################################################################################
 ###   Results for PMCMC, MCWM, DA-GP-MCMC, and ADA-GP-MCMC                          ###
 ################################################################################
