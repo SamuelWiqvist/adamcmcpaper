@@ -4,12 +4,12 @@ using PyPlot
 using DataFrames
 
 # scaled up problem
-alg_prop_da = Matrix(readtable("DWPSDE model/Results/alg prop/alg_prop_da_simdatadt.csv"))
-alg_prop_ada = Matrix(readtable("DWPSDE model/Results/alg prop/alg_prop_ada_simdatadt.csv"))
+alg_prop_da = Matrix(readtable("DWPSDE model/analyses/alg prop/alg_prop_da_simdatadt.csv"))
+alg_prop_ada = Matrix(readtable("DWPSDE model/analyses/alg prop/alg_prop_ada_simdatadt.csv"))
 
 # small problem
-alg_prop_da = Matrix(readtable("DWPSDE model/Results/alg prop/alg_prop_da_smallsimdatadt.csv"))
-alg_prop_ada = Matrix(readtable("DWPSDE model/Results/alg prop/alg_prop_ada_smallsimdatadt.csv"))
+alg_prop_da = Matrix(readtable("DWPSDE model/analyses/alg prop/alg_prop_da_smallsimdatadt.csv"))
+alg_prop_ada = Matrix(readtable("DWPSDE model/analyses/alg prop/alg_prop_ada_smallsimdatadt.csv"))
 
 
 function print_stats(x::Vector)
@@ -38,6 +38,7 @@ run_times[:,2] = alg_prop_ada[:,1]
 PyPlot.figure(figsize=(10,10))
 ax = axes()
 PyPlot.boxplot(run_times)
+PyPlot.xticks([1, 2], ["DA", "ADA"])
 ax[:tick_params]("both",labelsize = label_size)
 
 # histogram
@@ -69,6 +70,7 @@ pf_eval[:,2] = alg_prop_ada[:,2]
 PyPlot.figure(figsize=(10,10))
 ax = axes()
 PyPlot.boxplot(pf_eval)
+PyPlot.xticks([1, 2], ["DA", "ADA"])
 ax[:tick_params]("both",labelsize = label_size)
 
 # histogram
