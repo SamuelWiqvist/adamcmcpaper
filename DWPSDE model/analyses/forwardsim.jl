@@ -61,18 +61,19 @@ else
 
 end
 
+problem
 
 # load data
-data_res = convert(Array,readtable("DWPSDE model/Results/"*problem*"/output_res"*jobname*".csv"))
+data_res = convert(Array,readtable("DWPSDE model/analyses/"*problem*"/output_res"*jobname*".csv"))
 
 M, N = size(data_res)
 
-data_param = convert(Array,readtable("DWPSDE model/Results/"*problem*"/output_param"*jobname*".csv"))
+data_param = convert(Array,readtable("DWPSDE model/analyses/"*problem*"/output_param"*jobname*".csv"))
 
 theta_true = data_param[1:N-2]
 burn_in = Int64(data_param[N-2+1])
 
-Z = convert(Array,readtable("DWPSDE model/Results/"*problem*"/data_used"*jobname*".csv"))
+Z = convert(Array,readtable("DWPSDE model/analyses/"*problem*"/data_used"*jobname*".csv"))
 Z = Z[:,1]
 
 if algorithm == "DA" || algorithm == "ADA"

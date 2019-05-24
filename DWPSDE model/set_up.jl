@@ -4,17 +4,20 @@ using DataFrames
 using StatsBase
 import StatsBase.predict # this is needed to extend the predict function
 using Optim
-using Lasso
+#using Lasso
 using StatsFuns
 
 # paths for desktop
 
 # load functions
+#include("/home/samwiq/project 1 accalerated delated accaptance mcmc/gpmodel/gp_model.jl")
+#include("/home/samwiq/project 1 accalerated delated accaptance mcmc/adaptive updating algorithms/adaptiveupdate.jl")
+#include("/home/samwiq/project 1 accalerated delated accaptance mcmc/select case/selectcase.jl")
 
-# load functions
-include("/home/samwiq/project 1 accalerated delated accaptance mcmc/gpmodel/gp_model.jl")
-include("/home/samwiq/project 1 accalerated delated accaptance mcmc/adaptive updating algorithms/adaptiveupdate.jl")
-include("/home/samwiq/project 1 accalerated delated accaptance mcmc/select case/selectcase.jl")
+include(pwd()*"/gpmodel/gp_model.jl")
+include(pwd()*"/adaptive updating algorithms/adaptiveupdate.jl")
+include(pwd()*"/select case/selectcase.jl")
+
 
 
 "Type for prior distribution"
