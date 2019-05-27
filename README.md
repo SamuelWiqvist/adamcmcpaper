@@ -6,7 +6,7 @@ This repository contains all code for the pre-print paper *Accelerating delayed-
 
 All computations are carried out on the AURORA@LUNARC http://www.lunarc.lu.se/resources/hardware/aurora/ cluster.
 
-**The lunarc branch is depreciated, only the master branch is used now**
+**The lunarc branch is deprecated, only the master branch is used now**
 
 ## File structure
 
@@ -89,4 +89,7 @@ julia> include("utilities/print_used_packages.jl")
 ```
 ## Data
 
-To get access to the reaction coordinate data sets, please contact the authors.
+The protein folding data is provided in the files:
+
+DWPSDE model/new_data_set.txt
+DWPSDE model/1LE1_L.dat
