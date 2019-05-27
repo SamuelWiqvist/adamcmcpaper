@@ -96,4 +96,5 @@ julia> include("utilities/print_used_packages.jl")
 The protein folding data is provided in the files:
 
 DWPSDE model/new_data_set.txt
+
 DWPSDE model/1LE1_L.dat
