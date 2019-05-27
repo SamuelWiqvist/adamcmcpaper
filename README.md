@@ -6,7 +6,7 @@ This repository contains all code for the pre-print paper *Accelerating delayed-
 
 All computations are carried out on the AURORA@LUNARC http://www.lunarc.lu.se/resources/hardware/aurora/ cluster.
 
-**The lunarc branch is deprecated, only the master branch is used now**
+**The lunarc branch is deprecated, only the master branch is used now.**
 
 ## File structure
 
@@ -38,6 +38,10 @@ The files are structured as following:
 
 /Ricker model/Results
 - all numerical results in .csv files
+The protein folding data is provided in the files:
+
+DWPSDE model/new_data_set.txt
+DWPSDE model/1LE1_L.dat
 
 /Ricker model/lunarc_output
 - output files from LUNARC
